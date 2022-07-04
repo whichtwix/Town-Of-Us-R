@@ -265,7 +265,7 @@ namespace TownOfUs
 
                         if (GUILayout.Button("Call a meeting"))
                         {
-                            PlayerControl.LocalPlayer.StartMeeting(null);
+                            PlayerControl.LocalPlayer.CmdReportDeadBody(null);
                         }
                         if (GUILayout.Button("role"))
                         {
