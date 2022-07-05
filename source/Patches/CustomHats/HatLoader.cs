@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using BepInEx.Logging;
-using System.Text.Json;
+using Newtonsoft.Json;
 using Reactor;
 using Reactor.Extensions;
 using UnityEngine;
+
 namespace TownOfUs.Patches.CustomHats
 {
     internal static class HatLoader
@@ -15,9 +16,12 @@ namespace TownOfUs.Patches.CustomHats
         private const string HAT_RESOURCE_NAMESPACE = "TownOfUs.Resources.Hats";
         private const string HAT_METADATA_JSON = "metadata.json";
         private const int HAT_ORDER_BASELINE = 99;
+
         private static ManualLogSource Log => PluginSingleton<TownOfUs>.Instance.Log;
         private static Assembly Assembly => typeof(TownOfUs).Assembly;
+
         private static bool LoadedHats = false;
+
         internal static void LoadHatsRoutine()
         {
             if (LoadedHats || !DestroyableSingleton<HatManager>.InstanceExists || DestroyableSingleton<HatManager>.Instance.allHats.Count == 0)
@@ -25,6 +29,7 @@ namespace TownOfUs.Patches.CustomHats
             LoadedHats = true;
             Coroutines.Start(LoadHats());
         }
+
         internal static IEnumerator LoadHats()
         {
           
@@ -32,6 +37,7 @@ namespace TownOfUs.Patches.CustomHats
             {
                 var hatJson = LoadJson();
                 var hatBehaviours = DiscoverHatBehaviours(hatJson);
+
                 DestroyableSingleton<HatManager>.Instance.allHats.ForEach(
                     (Action<HatData>)(x => x.StoreName = "Vanilla")
                 );
@@ -41,6 +47,7 @@ namespace TownOfUs.Patches.CustomHats
                     hatBehaviours[i].displayOrder = originalCount + i;
                     HatManager.Instance.allHats.Add(hatBehaviours[i]);
                 }
+
             }
             catch (Exception e)
             {
@@ -48,19 +55,17 @@ namespace TownOfUs.Patches.CustomHats
             }
             yield return null;
         }
+
         private static HatMetadataJson LoadJson()
         {
             var stream = Assembly.GetManifestResourceStream($"{HAT_RESOURCE_NAMESPACE}.{HAT_METADATA_JSON}");
-            return JsonSerializer.Deserialize<HatMetadataJson>(Encoding.UTF8.GetString(stream.ReadFully()), new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                ReadCommentHandling = JsonCommentHandling.Skip
-            });
+            return JsonConvert.DeserializeObject<HatMetadataJson>(Encoding.UTF8.GetString(stream.ReadFully()));
         }
 
         private static List<HatData> DiscoverHatBehaviours(HatMetadataJson metadata)
         {
             var hatBehaviours = new List<HatData>();
+
             foreach (var hatCredit in metadata.Credits)
             {
                 try
@@ -83,8 +88,10 @@ namespace TownOfUs.Patches.CustomHats
                      Log.LogError($"{e.Message}\nStack:{e.StackTrace}");
                 }
             }
+
             return hatBehaviours;
         }
+
         private static HatData GenerateHatBehaviour(byte[] mainImg)
         {
             
@@ -92,6 +99,8 @@ namespace TownOfUs.Patches.CustomHats
             var tex2D = new Texture2D(1, 1, TextureFormat.ARGB32, false);
             TownOfUs.LoadImage(tex2D, mainImg, false);
             var sprite = Sprite.Create(tex2D, new Rect(0.0f, 0.0f, tex2D.width, tex2D.height), new Vector2(0.5f, 0.5f), 100);
+
+
             var hat = ScriptableObject.CreateInstance<HatData>();
             var a = new HatViewData();
             var b = new AddressableLoadWrapper<HatViewData>();
@@ -99,8 +108,10 @@ namespace TownOfUs.Patches.CustomHats
             a.MainImage = sprite;
             hat.hatViewData = b;
             hat.ChipOffset = new Vector2(-0.1f, 0.35f);
+
             hat.InFront = true;
             hat.NoBounce = true;
+
             return hat;
         }
     }
