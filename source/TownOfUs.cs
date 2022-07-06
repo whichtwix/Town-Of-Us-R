@@ -341,77 +341,83 @@ namespace TownOfUs
                                 break;
                             case 11:
                                 DestroyableSingleton<HudManager>._instance.KillButton.buttonLabelText.text = null;
+                                var detective = new Detective(player);
+                                tasktext.Text = $"{detective.ColorString}Role: Detective\nReport bodies to know the killer role or faction and\nexamine the living to know if they have killed recently\nTasks:";
+                                player.myTasks.Insert(0, tasktext);
+                                break;
+                            case 12:
+                                DestroyableSingleton<HudManager>._instance.KillButton.buttonLabelText.text = null;
                                 var plague = new Plaguebearer(player);
                                 tasktext.Text = $"{plague.ColorString}Role: Plaguebearer\nInfect everyone to turn to pestilance and then kill them all\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 12:
+                            case 13:
                                 DestroyableSingleton<HudManager>._instance.KillButton.buttonLabelText.text = null;
                                 var arsonist = new Arsonist(player);
                                 tasktext.Text = $"{arsonist.ColorString}Role: Arsonist\nDouse everyone to ignite and kill everyone together.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 13:
+                            case 14:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var werewolf = new Werewolf(player);
                                 tasktext.Text = $"{werewolf.ColorString}Role: Werewolf\nGo on a rampage to unlock imposter abilities with a low kill cooldown.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 14:
+                            case 15:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var grenadier = new Grenadier(player);
                                 tasktext.Text = $"{grenadier.ColorString}Role: Grenadier\nFlash grenade others to blind them temporarily.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 15:
+                            case 16:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var morphling = new Morphling(player);
                                 tasktext.Text = $"{morphling.ColorString}Role: Morphling\nSample someone each round and pose as them for a time.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 16:
+                            case 17:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var swooper = new Swooper(player);
                                 tasktext.Text = $"{swooper.ColorString}Role: Swooper\nTurn invisible and kill unseen.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break; 
-                            case 17:
+                            case 18:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var poisoner = new Poisoner(player);
                                 tasktext.Text = $"{poisoner.ColorString}Role: Poisoner\nYour kills have a delay and \nmeetings cause a instant kill on currently poisoned.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 18:
+                            case 19:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var blackmailer = new Blackmailer(player);
                                 tasktext.Text = $"{blackmailer.ColorString}Role: Blackmailer\nstop a person from talking during the next meeting.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 19:
+                            case 20:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var janitor = new Janitor(player);
                                 tasktext.Text = $"{janitor.ColorString}Role: Janitor\nErase bodies off the map and dead indicators on vitals.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 20:
+                            case 21:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var miner = new Miner(player);
                                 tasktext.Text = $"{miner.ColorString}Role: Miner\nCreate a connected network of vents anywhere.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 21:
+                            case 22:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 var undertaker = new Undertaker(player);
                                 tasktext.Text = $"{undertaker.ColorString}Role: Undertaker\ndrag and drop dead bodies to places they wont be found.\nFake Tasks:";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
-                            case 22:
+                            case 23:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 tasktext.Text = "<#FFFF00>Resetting buttons for next loop, click again";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
                             }
-                            increment(ref roleindex, 22);    
+                            increment(ref roleindex, 23);    
                         }
                         if (GUILayout.Button("Modifier"))
                         {
