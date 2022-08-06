@@ -150,6 +150,8 @@ namespace TownOfUs
         RemoveAllBodies,
         CheckMurder,
 
-        SubmergedFixOxygen
+        SubmergedFixOxygen,
+
+        Sendchat
     }
 }

@@ -1051,6 +1051,13 @@ namespace TownOfUs
                         var setplayer = Utils.PlayerById(reader.ReadByte());
                         setplayer.transform.position = new Vector3(reader.ReadSingle(), reader.ReadSingle(), setplayer.transform.position.z);
                         break;
+                    case CustomRPC.Sendchat:
+                        string report = reader.ReadString();
+                        if (PlayerControl.LocalPlayer.Data.IsDead == false) 
+                        {
+                            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(PlayerControl.LocalPlayer, report);
+                        }
+                        break;
                 }
             }
         }

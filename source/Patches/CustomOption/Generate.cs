@@ -84,6 +84,7 @@ namespace TownOfUs.CustomOption
         public static CustomToggleOption DeadSeeRoles;
         public static CustomToggleOption DisableLevels;
         public static CustomToggleOption WhiteNameplates;
+        public static CustomToggleOption Locationreports;
         public static CustomNumberOption VanillaGame;
         public static CustomNumberOption InitialCooldowns;
         public static CustomToggleOption ParallelMedScans;
@@ -500,6 +501,7 @@ namespace TownOfUs.CustomOption
             SkipButtonDisable = new CustomStringOption(num++, "Disable Meeting Skip Button", new[] { "No", "Emergency", "Always" });
             DisableLevels = new CustomToggleOption(num++, "Disable Level Icons", false);
             WhiteNameplates = new CustomToggleOption(num++, "Disable Player Nameplates", false);
+            Locationreports = new CustomToggleOption(num++, "locations of body reports are displayed at the start of a meeting", false);
 
             RoleCountSettings =
                 new CustomHeaderOption(num++, "Role Count Settings");
