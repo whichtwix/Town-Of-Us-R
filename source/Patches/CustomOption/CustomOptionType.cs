@@ -8,4 +8,13 @@ namespace TownOfUs.CustomOption
         String,
         Button
     }
+    public enum MultiMenu
+    {
+        main,
+        crewmate,
+        neutral,
+        imposter,
+        modifiers,
+        external
+    }
 }

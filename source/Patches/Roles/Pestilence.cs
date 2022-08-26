@@ -14,8 +14,8 @@ namespace TownOfUs.Roles
             LastKill = DateTime.UtcNow;
             RoleType = RoleEnum.Pestilence;
             AddToRoleHistory(RoleType);
-            ImpostorText = () => "Kill everyone with your unstoppable abilities!";
-            TaskText = () => "Kill everyone with your unstoppable abilities!";
+            ImpostorText = () => "";
+            TaskText = () => "Kill everyone with your unstoppable abilities!\nFake Tasks:";
             Faction = Faction.Neutral;
         }
 

@@ -16,8 +16,8 @@ namespace TownOfUs.Roles
         public Medium(PlayerControl player) : base(player)
         {
             Name = "Medium";
-            ImpostorText = () => "Gain info from dead players";
-            TaskText = () => "Gain info from dead players";
+            ImpostorText = () => "Watch The Spooky Ghosts";
+            TaskText = () => "Follow ghosts to get clues from them";
             Color = Patches.Colors.Medium;
             LastMediated = DateTime.UtcNow;
             RoleType = RoleEnum.Medium;

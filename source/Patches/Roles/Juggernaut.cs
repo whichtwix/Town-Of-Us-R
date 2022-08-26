@@ -14,8 +14,8 @@ namespace TownOfUs.Roles
             LastKill = DateTime.UtcNow;
             RoleType = RoleEnum.Juggernaut;
             AddToRoleHistory(RoleType);
-            ImpostorText = () => "With each kill your kill cooldown decreases";
-            TaskText = () => "Your power grows with every kill!";
+            ImpostorText = () => "Your Power Grows With Every Kill";
+            TaskText = () => "With each kill your kill cooldown decreases\nFake Tasks:";
             Faction = Faction.Neutral;
         }
 
@@ -51,7 +51,6 @@ namespace TownOfUs.Roles
 
         public void Wins()
         {
-            //System.Console.WriteLine("Reached Here - Glitch Edition");
             JuggernautWins = true;
         }
 

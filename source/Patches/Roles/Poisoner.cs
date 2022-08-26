@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using HarmonyLib;
 
 namespace TownOfUs.Roles
 {
@@ -17,7 +16,7 @@ namespace TownOfUs.Roles
         public Poisoner(PlayerControl player) : base(player)
         {
             Name = "Poisoner";
-            ImpostorText = () => "Poison a crewmate to kill them in a few seconds";
+            ImpostorText = () => "Poison A Crewmate To Kill Them In A Few Seconds";
             TaskText = () => "Poison the crewmates";
             Color = Palette.ImpostorRed;
             LastPoisoned = DateTime.UtcNow;

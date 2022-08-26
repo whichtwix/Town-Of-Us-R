@@ -17,10 +17,9 @@ namespace TownOfUs.Roles
 {
     public class Glitch : Role, IVisualAlteration
     {
-        public static AssetBundle bundle = loadBundle();
-        public static Sprite MimicSprite = bundle.LoadAsset<Sprite>("MimicSprite").DontUnload();
-        public static Sprite HackSprite = bundle.LoadAsset<Sprite>("HackSprite").DontUnload();
-        public static Sprite LockSprite = bundle.LoadAsset<Sprite>("Lock").DontUnload();
+        public static Sprite MimicSprite = TownOfUs.MimicSprite;
+        public static Sprite HackSprite = TownOfUs.HackSprite;
+        public static Sprite LockSprite = TownOfUs.LockSprite;
 
         public bool lastMouse;
 
@@ -39,8 +38,8 @@ namespace TownOfUs.Roles
             IsUsingMimic = false;
             RoleType = RoleEnum.Glitch;
             AddToRoleHistory(RoleType);
-            ImpostorText = () => "You are the glitch";
-            TaskText = () => "Murder players as the Glitch:";
+            ImpostorText = () => "Murder, Mimic, Hack... Data Lost";
+            TaskText = () => "Murder everyone to win\nFake Tasks:";
             Faction = Faction.Neutral;
         }
 
@@ -57,14 +56,6 @@ namespace TownOfUs.Roles
 
         public PlayerControl MimicTarget { get; set; }
         public bool GlitchWins { get; set; }
-
-        public static AssetBundle loadBundle()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream("TownOfUs.Resources.glitchbundle");
-            var assets = stream.ReadFully();
-            return AssetBundle.LoadFromMemory(assets);
-        }
 
         internal override bool EABBNOODFGL(ShipStatus __instance)
         {
@@ -479,6 +470,25 @@ namespace TownOfUs.Roles
                     if (__gInstance.Player.inVent) return;
                     if (__gInstance.KillTarget.Is(RoleEnum.Pestilence))
                     {
+                        if (__gInstance.Player.IsShielded())
+                        {
+                            var medic = __gInstance.Player.GetMedic().Player.PlayerId;
+                            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                                (byte)CustomRPC.AttemptSound, SendOption.Reliable, -1);
+                            writer.Write(medic);
+                            writer.Write(__gInstance.Player.PlayerId);
+                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                            if (CustomGameOptions.ShieldBreaks) __gInstance.LastKill = DateTime.UtcNow;
+
+                            StopKill.BreakShield(medic, __gInstance.Player.PlayerId,
+                                CustomGameOptions.ShieldBreaks);
+                        }
+                        if (__gInstance.Player.IsProtected())
+                        {
+                            __gInstance.LastKill.AddSeconds(CustomGameOptions.ProtectKCReset);
+                            return;
+                        }
                         Utils.RpcMurderPlayer(__gInstance.KillTarget, __gInstance.Player);
                         return;
                     }
@@ -627,16 +637,11 @@ namespace TownOfUs.Roles
             {
                 if (__gInstance.HackTarget != null)
                 {
-                    if (__gInstance.HackTarget.Is(RoleEnum.Pestilence))
-                    {
-                        Utils.RpcMurderPlayer(__gInstance.HackTarget, __gInstance.Player);
-                        return;
-                    }
                     if (__gInstance.HackTarget.IsInfected() || __gInstance.Player.IsInfected())
                     {
                         foreach (var pb in Role.GetRoles(RoleEnum.Plaguebearer)) ((Plaguebearer)pb).RpcSpreadInfection(__gInstance.HackTarget, __gInstance.Player);
                     }
-                    if (__gInstance.HackTarget.IsOnAlert())
+                    if (__gInstance.HackTarget.IsOnAlert() || __gInstance.HackTarget.Is(RoleEnum.Pestilence))
                     {
                         if (__gInstance.Player.IsShielded())
                         {

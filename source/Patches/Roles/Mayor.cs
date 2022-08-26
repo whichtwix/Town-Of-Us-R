@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TownOfUs.Roles
 {
@@ -10,7 +9,7 @@ namespace TownOfUs.Roles
         public Mayor(PlayerControl player) : base(player)
         {
             Name = "Mayor";
-            ImpostorText = () => "Save your votes to double vote";
+            ImpostorText = () => "Save Your Votes To Mayor Dump Someone";
             TaskText = () => "Save your votes to vote multiple times";
             Color = Patches.Colors.Mayor;
             RoleType = RoleEnum.Mayor;

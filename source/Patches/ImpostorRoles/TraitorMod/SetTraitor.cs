@@ -157,6 +157,22 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
                 }
             }
 
+            foreach (var haunter in Role.GetRoles(RoleEnum.Haunter))
+            {
+                var haunterRole = (Haunter)haunter;
+                if (haunterRole.Revealed && PlayerControl.LocalPlayer.Is(RoleEnum.Traitor))
+                {
+                    var gameObj = new GameObject();
+                    var arrow = gameObj.AddComponent<ArrowBehaviour>();
+                    gameObj.transform.parent = PlayerControl.LocalPlayer.gameObject.transform;
+                    var renderer = gameObj.AddComponent<SpriteRenderer>();
+                    renderer.sprite = Sprite;
+                    arrow.image = renderer;
+                    gameObj.layer = 5;
+                    haunterRole.ImpArrows.Add(arrow);
+                }
+            }
+
             Lights.SetLights();
         }
 

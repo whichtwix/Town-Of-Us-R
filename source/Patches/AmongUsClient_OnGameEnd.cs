@@ -66,7 +66,6 @@ namespace TownOfUs
                             win.IsDead = false;
                             TempData.winners.Add(win);
                         }
-
                         return;
                     }
                 }
@@ -213,7 +212,6 @@ namespace TownOfUs
 
                 if (type == ModifierEnum.Lover)
                 {
-
                     var lover = (Lover)modifier;
                     if (lover.LoveCoupleWins)
                     {
@@ -228,7 +226,6 @@ namespace TownOfUs
                         foreach (var win in winners) TempData.winners.Add(win);
                         return;
                     }
-
                 }
             }
         }

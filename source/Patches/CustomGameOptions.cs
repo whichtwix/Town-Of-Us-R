@@ -14,6 +14,12 @@ namespace TownOfUs
         Emergency,
         Always
     }
+    public enum GameMode
+    {
+        Classic,
+        AllAny,
+        KillingOnly
+    }
     public static class CustomGameOptions
     {
         public static int MayorOn => (int)Generate.MayorOn.Get();
@@ -142,6 +148,12 @@ namespace TownOfUs
         public static int MaxNeutralNonKillingRoles => (int)Generate.MaxNeutralNonKillingRoles.Get();
         public static int MinNeutralKillingRoles => (int)Generate.MinNeutralKillingRoles.Get();
         public static int MaxNeutralKillingRoles => (int)Generate.MaxNeutralKillingRoles.Get();
+        public static bool RandomNumberImps => Generate.RandomNumberImps.Get();
+        public static int NeutralRoles => (int)Generate.NeutralRoles.Get();
+        public static int VeteranCount => (int)Generate.VeteranCount.Get();
+        public static int VigilanteCount => (int)Generate.VigilanteCount.Get();
+        public static bool AddArsonist => Generate.AddArsonist.Get();
+        public static bool AddPlaguebearer => Generate.AddPlaguebearer.Get();
         public static bool ParallelMedScans => Generate.ParallelMedScans.Get();
         public static EngineerFixPer EngineerFixPer => (EngineerFixPer)Generate.EngineerPer.Get();
         public static float ReviveDuration => Generate.ReviveDuration.Get();
@@ -243,8 +255,27 @@ namespace TownOfUs
         public static bool DetectiveReportOn => Generate.DetectiveReportOn.Get();
         public static float DetectiveRoleDuration => Generate.DetectiveRoleDuration.Get();
         public static float DetectiveFactionDuration => Generate.DetectiveFactionDuration.Get();
-
+        public static bool VentImprovements => Generate.VentImprovements.Get();
+        public static bool VitalsLab => Generate.VitalsLab.Get();
+        public static bool ColdTempDeathValley => Generate.ColdTempDeathValley.Get();
+        public static bool WifiChartCourseSwap => Generate.WifiChartCourseSwap.Get();
+        public static bool RandomMapEnabled => Generate.RandomMapEnabled.Get();
+        public static float RandomMapSkeld => Generate.RandomMapSkeld.Get();
+        public static float RandomMapMira => Generate.RandomMapMira.Get();
+        public static float RandomMapPolus => Generate.RandomMapPolus.Get();
+        public static float RandomMapAirship => Generate.RandomMapAirship.Get();
+        public static float RandomMapSubmerged => Patches.SubmergedCompatibility.Loaded ? Generate.RandomMapSubmerged.Get() : 0f;
+        public static bool AutoAdjustSettings => Generate.AutoAdjustSettings.Get();
+        public static bool SmallMapHalfVision => Generate.SmallMapHalfVision.Get();
+        public static float SmallMapDecreasedCooldown => Generate.SmallMapDecreasedCooldown.Get();
+        public static float LargeMapIncreasedCooldown => Generate.LargeMapIncreasedCooldown.Get();
+        public static int SmallMapIncreasedShortTasks => (int)Generate.SmallMapIncreasedShortTasks.Get();
+        public static int SmallMapIncreasedLongTasks => (int)Generate.SmallMapIncreasedLongTasks.Get();
+        public static int LargeMapDecreasedShortTasks => (int)Generate.LargeMapDecreasedShortTasks.Get();
+        public static int LargeMapDecreasedLongTasks => (int)Generate.LargeMapDecreasedLongTasks.Get();
         public static DisableSkipButtonMeetings SkipButtonDisable =>
             (DisableSkipButtonMeetings)Generate.SkipButtonDisable.Get();
+        public static GameMode GameMode =>
+            (GameMode)Generate.GameMode.Get();
     }
 }

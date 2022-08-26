@@ -146,7 +146,7 @@ namespace TownOfUs.Roles
         }
         internal virtual bool GuardianAngelCriteria()
         {
-            return PlayerControl.LocalPlayer.Is(RoleEnum.GuardianAngel) && CustomGameOptions.GAKnowsTargetRole && Player == Role.GetRole<GuardianAngel>(PlayerControl.LocalPlayer).target;
+            return PlayerControl.LocalPlayer.Is(RoleEnum.GuardianAngel) && CustomGameOptions.GAKnowsTargetRole && Player == GetRole<GuardianAngel>(PlayerControl.LocalPlayer).target;
         }
 
         protected virtual void IntroPrefix(IntroCutscene._ShowTeam_d__21 __instance)
@@ -218,7 +218,6 @@ namespace TownOfUs.Roles
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -234,14 +233,12 @@ namespace TownOfUs.Roles
             if (Player == null) return "";
 
             String PlayerName = Player.GetDefaultOutfit().PlayerName;
-            if (CustomGameOptions.GATargetKnows) {
-                foreach (var role in Role.GetRoles(RoleEnum.GuardianAngel))
+            foreach (var role in GetRoles(RoleEnum.GuardianAngel))
+            {
+                var ga = (GuardianAngel)role;
+                if (Player == ga.target && Player == PlayerControl.LocalPlayer && CustomGameOptions.GATargetKnows)
                 {
-                    var ga = (GuardianAngel)role;
-                    if (Player == ga.target)
-                    {
-                        PlayerName += "<color=#B2FFFFFF> ★</color>";
-                    }
+                    PlayerName += "<color=#B2FFFFFF> ★</color>";
                 }
             }
 
@@ -459,7 +456,6 @@ namespace TownOfUs.Roles
                 public static void Postfix(IntroCutscene._ShowRole_d__24 __instance)
                 {
                     var role = GetRole(PlayerControl.LocalPlayer);
-                    //var alpha = __instance.__4__this.RoleText.color.a;
                     if (role != null && !role.Hidden)
                     {
                         __instance.__4__this.TeamTitle.text = role.Faction == Faction.Neutral ? "Neutral" : __instance.__4__this.TeamTitle.text;
@@ -468,9 +464,7 @@ namespace TownOfUs.Roles
                         __instance.__4__this.RoleText.color = role.Color;
                         __instance.__4__this.RoleBlurbText.text = role.ImpostorText();
                         __instance.__4__this.BackgroundBar.material.color = role.Color;
-
                     }
-
 
                     if (ModifierText != null)
                     {
@@ -485,11 +479,13 @@ namespace TownOfUs.Roles
                         }
                         ModifierText.color = modifier.Color;
 
-                        //
                         ModifierText.transform.position =
                             __instance.__4__this.transform.position - new Vector3(0f, 1.6f, 0f);
                         ModifierText.gameObject.SetActive(true);
                     }
+
+                    if (CustomGameOptions.GameMode == GameMode.AllAny && CustomGameOptions.RandomNumberImps)
+                        __instance.__4__this.ImpostorText.text = "There are an <color=#FF0000FF>Unknown Number of Impostors</color> among us";
                 }
             }
 
@@ -499,7 +495,6 @@ namespace TownOfUs.Roles
                 public static void Postfix(IntroCutscene._CoBegin_d__19 __instance)
                 {
                     var role = GetRole(PlayerControl.LocalPlayer);
-                    //var alpha = __instance.__4__this.RoleText.color.a;
                     if (role != null && !role.Hidden)
                     {
                         __instance.__4__this.TeamTitle.text = role.Faction == Faction.Neutral ? "Neutral" : __instance.__4__this.TeamTitle.text;
@@ -508,7 +503,6 @@ namespace TownOfUs.Roles
                         __instance.__4__this.RoleText.color = role.Color;
                         __instance.__4__this.RoleBlurbText.text = role.ImpostorText();
                         __instance.__4__this.BackgroundBar.material.color = role.Color;
-
                     }
 
                     if (ModifierText != null)
@@ -524,19 +518,21 @@ namespace TownOfUs.Roles
                         }
                         ModifierText.color = modifier.Color;
 
-                        //
                         ModifierText.transform.position =
                             __instance.__4__this.transform.position - new Vector3(0f, 1.6f, 0f);
                         ModifierText.gameObject.SetActive(true);
                     }
+
+                    if (CustomGameOptions.GameMode == GameMode.AllAny && CustomGameOptions.RandomNumberImps)
+                        __instance.__4__this.ImpostorText.text = "There are an <color=#FF0000FF>Unknown Number of Impostors</color> among us";
                 }
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__104), nameof(PlayerControl._CoSetTasks_d__104.MoveNext))]
+        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__107), nameof(PlayerControl._CoSetTasks_d__107.MoveNext))]
         public static class PlayerControl_SetTasks
         {
-            public static void Postfix(PlayerControl._CoSetTasks_d__104 __instance)
+            public static void Postfix(PlayerControl._CoSetTasks_d__107 __instance)
             {
                 if (__instance == null) return;
                 var player = __instance.__4__this;

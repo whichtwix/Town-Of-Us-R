@@ -40,6 +40,25 @@ namespace TownOfUs.NeutralRoles.WerewolfMod
 
             if (role.ClosestPlayer.Is(RoleEnum.Pestilence))
             {
+                if (role.Player.IsShielded())
+                {
+                    var medic = role.Player.GetMedic().Player.PlayerId;
+                    var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                        (byte)CustomRPC.AttemptSound, SendOption.Reliable, -1);
+                    writer.Write(medic);
+                    writer.Write(role.Player.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                    if (CustomGameOptions.ShieldBreaks) role.LastKilled = DateTime.UtcNow;
+
+                    StopKill.BreakShield(medic, role.Player.PlayerId,
+                        CustomGameOptions.ShieldBreaks);
+                }
+                if (role.Player.IsProtected())
+                {
+                    role.LastKilled.AddSeconds(CustomGameOptions.ProtectKCReset);
+                    return false;
+                }
                 Utils.RpcMurderPlayer(role.ClosestPlayer, role.Player);
                 return false;
             }

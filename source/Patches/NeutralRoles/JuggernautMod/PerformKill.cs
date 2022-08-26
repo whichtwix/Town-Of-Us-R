@@ -26,6 +26,25 @@ namespace TownOfUs.NeutralRoles.JuggernautMod
             if (!flag3) return false;
             if (role.ClosestPlayer.Is(RoleEnum.Pestilence))
             {
+                if (role.Player.IsShielded())
+                {
+                    var medic = role.Player.GetMedic().Player.PlayerId;
+                    var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                        (byte)CustomRPC.AttemptSound, SendOption.Reliable, -1);
+                    writer.Write(medic);
+                    writer.Write(role.Player.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                    if (CustomGameOptions.ShieldBreaks) role.LastKill = DateTime.UtcNow;
+
+                    StopKill.BreakShield(medic, role.Player.PlayerId,
+                        CustomGameOptions.ShieldBreaks);
+                }
+                if (role.Player.IsProtected())
+                {
+                    role.LastKill.AddSeconds(CustomGameOptions.ProtectKCReset);
+                    return false;
+                }
                 Utils.RpcMurderPlayer(role.ClosestPlayer, role.Player);
                 return false;
             }

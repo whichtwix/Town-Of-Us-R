@@ -13,7 +13,7 @@ namespace TownOfUs.Roles
         public Blackmailer(PlayerControl player) : base(player)
         {
             Name = "Blackmailer";
-            ImpostorText = () => "Silence crewmates during meetings";
+            ImpostorText = () => "Silence Crewmates During Meetings";
             TaskText = () => "Silence a crewmate for the next meeting";
             Color = Patches.Colors.Impostor;
             LastBlackmailed = DateTime.UtcNow;

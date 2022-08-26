@@ -49,8 +49,16 @@ namespace TownOfUs.CrewmateRoles.InvestigatorMod
 
                 for (var i = 0; i < investigator.AllPrints.Count; i++)
                 {
-                    var footprint = investigator.AllPrints[i];
-                    if (footprint.Update()) i--;
+                    try
+                    {
+                        var footprint = investigator.AllPrints[i];
+                        if (footprint.Update()) i--;
+                    } catch
+                    {
+                        //assume footprint value is null and allow the loop to continue
+                        continue;
+                    }
+                    
                 }
             }
         }

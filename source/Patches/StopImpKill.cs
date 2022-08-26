@@ -19,6 +19,26 @@ namespace TownOfUs
             if (!__instance.isActiveAndEnabled || __instance.isCoolingDown) return true;
             if (target.Is(RoleEnum.Pestilence))
             {
+                if (PlayerControl.LocalPlayer.IsShielded())
+                {
+                    var medic = PlayerControl.LocalPlayer.GetMedic().Player.PlayerId;
+                    var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                        (byte)CustomRPC.AttemptSound, SendOption.Reliable, -1);
+                    writer.Write(medic);
+                    writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                    if (CustomGameOptions.ShieldBreaks) PlayerControl.LocalPlayer.SetKillTimer(PlayerControl.GameOptions.KillCooldown);
+                    else PlayerControl.LocalPlayer.SetKillTimer(0.01f);
+
+                    StopKill.BreakShield(medic, PlayerControl.LocalPlayer.PlayerId,
+                        CustomGameOptions.ShieldBreaks);
+                }
+                if (PlayerControl.LocalPlayer.IsProtected())
+                {
+                    PlayerControl.LocalPlayer.SetKillTimer(CustomGameOptions.ProtectKCReset + 0.01f);
+                    return false;
+                }
                 Utils.RpcMurderPlayer(target, PlayerControl.LocalPlayer);
                 return false;
             }
@@ -74,8 +94,8 @@ namespace TownOfUs
                     }
                     if (CustomGameOptions.KilledOnAlert && !target.IsProtected())
                     {
-                        Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, target);
                         PlayerControl.LocalPlayer.SetKillTimer(PlayerControl.GameOptions.KillCooldown);
+                        Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, target);
                     }
                     else
                     {
@@ -108,8 +128,8 @@ namespace TownOfUs
                 PlayerControl.LocalPlayer.SetKillTimer(CustomGameOptions.ProtectKCReset + 0.01f);
                 return false;
             }
-            Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, target);
             PlayerControl.LocalPlayer.SetKillTimer(PlayerControl.GameOptions.KillCooldown);
+            Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, target);
             return false;
         }
     }
