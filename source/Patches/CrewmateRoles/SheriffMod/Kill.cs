@@ -73,7 +73,7 @@ namespace TownOfUs.CrewmateRoles.SheriffMod
                     if (CustomGameOptions.ShieldBreaks) role.LastKilled = DateTime.UtcNow;
                     StopKill.BreakShield(medic, role.Player.PlayerId, CustomGameOptions.ShieldBreaks);
                     Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, PlayerControl.LocalPlayer);
-                    if (CustomGameOptions.SheriffKillOther && !role.ClosestPlayer.IsProtected())
+                    if (CustomGameOptions.SheriffKillOther && !role.ClosestPlayer.IsProtected() && CustomGameOptions.KilledOnAlert)
                         Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, role.ClosestPlayer);
                 }
                 else
@@ -108,7 +108,7 @@ namespace TownOfUs.CrewmateRoles.SheriffMod
 
                 return false;
             }
-            if (role.ClosestPlayer.IsProtected())
+            else if (role.ClosestPlayer.IsProtected())
             {
                 if (!flag4)
                 {

@@ -7,9 +7,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Twitch;
 using Reactor;
+using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace TownOfUs {
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
@@ -103,6 +105,7 @@ namespace TownOfUs {
         public static void LaunchUpdater() {
             if (running) return;
             running = true;
+
             checkForUpdate("TOU").GetAwaiter().GetResult();
 
             //Only check of Submerged update if Submerged is already installed
@@ -170,15 +173,15 @@ namespace TownOfUs {
                 HttpClient http = new HttpClient();
                 http.DefaultRequestHeaders.Add("User-Agent", "TownOfUs Updater");
                 var response = await http.GetAsync(new System.Uri(githubURI), HttpCompletionOption.ResponseContentRead);
-                //var response = await http.GetAsync(new System.Uri("https://api.github.com/repos/ItsTheNumberH/Town-Of-H/releases/latest"), HttpCompletionOption.ResponseContentRead);
+                
                 if (response.StatusCode != HttpStatusCode.OK || response.Content == null) {
                     PluginSingleton<TownOfUs>.Instance.Log.LogMessage("Server returned no data: " + response.StatusCode.ToString());
                     return false;
                 }
                 string json = await response.Content.ReadAsStringAsync();
-                JObject data = JObject.Parse(json);
-                
-                string tagname = data["tag_name"]?.ToString();
+                var data = JsonSerializer.Deserialize<GitHubApiObject>(json);
+
+                string tagname = data.tag_name;
                 if (tagname == null) {
                     return false; // Something went wrong
                 }
@@ -202,21 +205,24 @@ namespace TownOfUs {
                         }
                     } 
                 }
-                JToken assets = data["assets"];
-                if (!assets.HasValues)
+                var assets = data.assets;
+                if (assets == null)
                     return false;
 
-                for (JToken current = assets.First; current != null; current = current.Next) {
-                    string browser_download_url = current["browser_download_url"]?.ToString();
-                    if (browser_download_url != null && current["content_type"] != null) {
-                        if (browser_download_url.EndsWith(".dll")) {
-                            if (updateType == "TOU") {
-                                updateTOUURI = browser_download_url;
-                            } else if (updateType == "Submerged") {
-                                updateSubmergedURI = browser_download_url;
-                            }
-                            return true;
+                foreach (var asset in assets)
+                {
+                    if (asset.browser_download_url == null) continue;
+                    if (asset.browser_download_url.EndsWith(".dll"))
+                    {
+                        if (updateType == "TOU")
+                        {
+                            updateTOUURI = asset.browser_download_url;
                         }
+                        else if (updateType == "Submerged")
+                        {
+                            updateSubmergedURI = asset.browser_download_url;
+                        }
+                        return true;
                     }
                 }
             } catch (System.Exception ex) {
@@ -280,5 +286,23 @@ namespace TownOfUs {
                 InfoPopup.TextAreaTMP.text = message;
             }
         }
+
+
+        class GitHubApiObject
+        {
+            [JsonPropertyName("tag_name")]
+            public string tag_name { get; set; }
+            [JsonPropertyName("assets")]
+            public GitHubApiAsset[] assets { get; set; }
+        }
+
+        class GitHubApiAsset
+        {
+            [JsonPropertyName("browser_download_url")]
+            public string browser_download_url { get; set; }
+        }
+
+
     }
+
 }

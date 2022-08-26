@@ -12,7 +12,7 @@ namespace TownOfUs.NeutralRoles.PhantomMod
         public static void Postfix(EndGameManager __instance)
         {
             var role = Role.AllRoles.FirstOrDefault(x =>
-                x.RoleType == RoleEnum.Phantom && ((Phantom) x).CompletedTasks);
+                x.RoleType == RoleEnum.Phantom && ((Phantom)x).CompletedTasks);
             if (role == null) return;
             PoolablePlayer[] array = Object.FindObjectsOfType<PoolablePlayer>();
             array[0].NameText().text = role.ColorString + array[0].NameText().text + "</color>";

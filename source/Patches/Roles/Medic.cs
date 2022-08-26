@@ -10,7 +10,7 @@ namespace TownOfUs.Roles
         public Medic(PlayerControl player) : base(player)
         {
             Name = "Medic";
-            ImpostorText = () => "Create a shield to protect a crewmate";
+            ImpostorText = () => "Create A Shield To Protect A Crewmate";
             TaskText = () => "Protect a crewmate with a shield";
             Color = Patches.Colors.Medic;
             RoleType = RoleEnum.Medic;

@@ -19,8 +19,6 @@ namespace TownOfUs.CustomOption
                 (byte) CustomRPC.SyncCustomSettings, SendOption.Reliable);
             foreach (var option in options)
             {
-                // Split up option packets when they go over 1000 bytes
-                // The maximum size of an internet-routable packet is around 1472 bytes, but we stay way below this number for safety
                 if (writer.Position > 1000) {
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,

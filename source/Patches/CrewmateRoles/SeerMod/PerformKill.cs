@@ -55,12 +55,6 @@ namespace TownOfUs.CrewmateRoles.SeerMod
                 return false;
             }
 
-            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                (byte) CustomRPC.Investigate, SendOption.Reliable, -1);
-            writer.Write(PlayerControl.LocalPlayer.PlayerId);
-            writer.Write(playerId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
             role.Investigated.Add(role.ClosestPlayer.PlayerId);
             role.LastInvestigated = DateTime.UtcNow;
             return false;

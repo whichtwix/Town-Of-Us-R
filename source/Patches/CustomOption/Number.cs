@@ -5,17 +5,17 @@ namespace TownOfUs.CustomOption
 {
     public class CustomNumberOption : CustomOption
     {
-        protected internal CustomNumberOption(int id, string name, float value, float min, float max, float increment,
-            Func<object, string> format = null) : base(id, name, CustomOptionType.Number, value, format)
+        protected internal CustomNumberOption(int id, MultiMenu menu, string name, float value, float min, float max, float increment,
+            Func<object, string> format = null) : base(id, menu, name, CustomOptionType.Number, value, format)
         {
             Min = min;
             Max = max;
             Increment = increment;
         }
 
-        protected internal CustomNumberOption(bool indent, int id, string name, float value, float min, float max,
+        protected internal CustomNumberOption(bool indent, int id, MultiMenu menu, string name, float value, float min, float max,
             float increment,
-            Func<object, string> format = null) : this(id, name, value, min, max, increment, format)
+            Func<object, string> format = null) : this(id, menu, name, value, min, max, increment, format)
         {
             Indent = indent;
         }

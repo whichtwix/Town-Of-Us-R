@@ -2,7 +2,6 @@ using System.Linq;
 using HarmonyLib;
 using Hazel;
 using TownOfUs.Roles;
-using Reactor;
 
 namespace TownOfUs.NeutralRoles.PhantomMod
 {
@@ -24,7 +23,7 @@ namespace TownOfUs.NeutralRoles.PhantomMod
                 if (AmongUsClient.Instance.AmHost)
                 {
                     var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                        (byte) CustomRPC.PhantomWin, SendOption.Reliable, -1);
+                        (byte)CustomRPC.PhantomWin, SendOption.Reliable, -1);
                     writer.Write(role.Player.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     Utils.EndGame();

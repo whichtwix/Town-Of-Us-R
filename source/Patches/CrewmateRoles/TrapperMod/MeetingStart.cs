@@ -13,7 +13,6 @@ namespace TownOfUs.CrewmateRoles.TrapperMod
             if (PlayerControl.LocalPlayer.Data.IsDead) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Trapper)) return;
             var trapperRole = Role.GetRole<Trapper>(PlayerControl.LocalPlayer);
-            if (trapperRole.trappedPlayers.Contains(RoleEnum.Trapper)) trapperRole.trappedPlayers.Remove(RoleEnum.Trapper);
             if (trapperRole.trappedPlayers.Count == 0)
             { 
                 DestroyableSingleton<HudManager>.Instance.Chat.AddChat(PlayerControl.LocalPlayer, "No players entered any of your traps");

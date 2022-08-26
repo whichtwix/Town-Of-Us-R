@@ -71,7 +71,8 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 # Releases
 | Among Us - Version| Mod Version | Link |
 |----------|-------------|-----------------|
-| 2022.6.21s & 2022.6.21e | v3.2.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.2.0/ToU.v3.2.0.zip) |
+| 2022.8.24s & 2022.8.24e | v3.3.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.0/ToU.v3.3.0.zip) |
+| 2022.6.21s & 2022.6.21e & 2022.7.12s & 2022.7.12e | v3.2.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.2.0/ToU.v3.2.0.zip) |
 | 2022.3.29s & 2022.3.29e & 2022.4.19e | v3.1.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.1.0/ToU.v3.1.0.zip) |
 | 2022.3.29s & 2022.3.29e & 2022.4.19e | v3.0.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.0.1/ToU.v3.0.1.zip) |
 | 2022.3.29s & 2022.3.29e & 2022.4.19e | v3.0.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.0.0/ToU.v3.0.0.zip) |
@@ -118,6 +119,23 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 
 <details>
   <summary> Changelog </summary>
+  <details>
+  <summary> v3.3.0 </summary>
+  <ul> <li>New Game Mode: All Any</li> </ul>
+  <ul> <li>New Game Mode: Killers Only</li> </ul>
+  <ul> <li>New Settings for Random Maps</li> </ul>
+  <ul> <li>New Settings for Automatically adjusting settings depending on the map</li> </ul>
+  <ul> <li>New Settings for Better Polus (and some adjustments were added as well)</li> </ul>
+  <ul> <li>Split Settings Menu into 5 different menus (however settings are still loaded from the main one)</li> </ul>
+  <ul> <li>Added 2 more Settings slots (bringing the total to 5)</li> </ul>
+  <ul> <li>Bug Fix: Sheriff can no longer get the report button through walls</li> </ul>
+  <ul> <li>Bug Fix: Starting Impostor Kill Cooldown is now always set to the right amount</li> </ul>
+  <ul> <li>Bug Fix: Amnesiac remembering Traitor no longer makes another Traitor spawn</li> </ul>
+  <ul> <li>Bug Fix: Underdog now gets the correct cooldown when there is more then 1 Impostor</li> </ul>
+  <ul> <li>Bug Fix: An Impostor killing a Diseased player will now get the correct cooldown</li> </ul>
+  <ul> <li>Bug Fix: The only person who will know they have a GA is the GA target (if target knows they have a GA)</li> </ul>
+  <ul> <li>Bug Fix: Revived players from Poisoner kills no longer instantly die at the start of the next meeting</li> </ul>
+  </details>
   <details>
   <summary> v3.2.0 </summary>
   <ul> <li>Compatability with the new Among Us version thanks to MyDragonBreath</li> </ul>
@@ -1312,7 +1330,7 @@ The Flash travels at twice the speed of a normal player.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Flash | The percentage probability of the Flash appearing | Percentage | 0% |
-| Speed | How fast the Flash moves in comparison to normal | Time | 1.25x |
+| Speed | How fast the Flash moves in comparison to normal | Factor | 1.25x |
 
 -----------------------
 ## Giant
@@ -1322,7 +1340,7 @@ The Giant is a gigantic Crewmate, that has a decreased walk speed.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Giant | The percentage probability of the Giant appearing | Percentage | 0% |
-| Speed | How fast the Giant moves in comparison to normal | Time | 0.75x |
+| Speed | How fast the Giant moves in comparison to normal | Factor | 0.75x |
 
 -----------------------
 ## Lovers
@@ -1364,6 +1382,65 @@ If the Tiebreaker is the Mayor, it applies to the Mayor's __first__ vote.
 | Tiebreaker | The percentage probability of the Tiebreaker appearing | Percentage | 0% |
 
 -----------------------
+# Game Mode Settings
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Game Mode | What game mode the next game will be | Classic / All Any / Killing Only | Classic |
+
+-----------------------
+# Classic Game Mode Settings
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Min Neutral Non-Killing Roles | The minimum number of Neutral non-killing roles a game can have | Number | 1 |
+| Max Neutral Non-Killing Roles | The maximum number of Neutral non-killing roles a game can have | Number | 1 |
+| Min Neutral Killing Roles | The minimum number of Neutral killing roles a game can have | Number | 1 |
+| Max Neutral Killing Roles | The maximum number of Neutral killing roles a game can have | Number | 1 |
+
+-----------------------
+# All Any Settings
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Random Number of Impostors | Whether there are a random number of Impostors | Toggle | True |
+
+-----------------------
+# Killing Only Settings
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Neutral Roles | How many neutrals roles will spawn | Number | 1 |
+| Veteran Count | How many Veterans will spawn | Number | 1 |
+| Vigilante Count | How many Vigilantes will spawn | Number | 1 |
+| Add Arsonist | Whether Arsonist will be added to the role list | Toggle | True |
+| Add Plaguebearer | Whether Plaguebearer will be added to the role list | Toggle | True |
+
+-----------------------
+# Map Settings
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Choose Random Map | Whether the Map is randomly picked at the start of the game | Toggle | False |
+| Skeld Chance | The percentage probability of the Skeld map being chosen | Percentage | 0% |
+| Mira HQ Chance | The percentage probability of the Mira HQ map being chosen | Percentage | 0% |
+| Polus Chance | The percentage probability of the Polus map being chosen | Percentage | 0% |
+| Airship Chance | The percentage probability of the Airship map being chosen | Percentage | 0% |
+| Submerged Chance | The percentage probability of the Submerged map being chosen | Percentage | 0% |
+| Auto Adjust Settings | Whether the Settings of the game are auto adjusted depending on the map | Toggle | False |
+| Half Vision on Skeld/Mira HQ | Whether the Vision is automatically halved on Skeld/Mira HQ | Toggle | False |
+| Mira HQ Decreased Cooldowns | How much less time the cooldowns are set to for Mira HQ | Time | 0s |
+| Airship/Submerged Increased Cooldowns | How much more time the cooldowns are set to for Airship/Submerged | Time | 0s |
+| Skeld/Mira HQ Increased Short Tasks | How many extra short tasks when the map is Skeld/Mira HQ | Number | 0 |
+| Skeld/Mira HQ Increased Longt Tasks | How many extra long tasks when the map is Skeld/Mira HQ | Number | 0 |
+| Airship/Submerged Decreased Short Tasks | How many less short tasks when the map is Airship/Submerged | Number | 0 |
+| Airship/Submerged Decreased Longt Tasks | How many less long tasks when the map is Airship/Submerged | Number | 0 |
+
+-----------------------
+# Better Polus Settings
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Better Polus Vent Layout | Optimises Vent Layout on Polus | Toggle | False |
+| Vitals Moved to Lab | Whether the Vitals panel is moved into the Laboratory | Toggle | False |
+| Cole Temp Moved to Death Valley | Whether the cold temperaure task is moved to death valley | Toggle | False |
+| Reboot Wifi and Chart Course Swapped | Whether the Reboot Wifi and Chart Course swap locations | Toggle | False |
+
+-----------------------
 # Custom Game Options
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
@@ -1371,20 +1448,11 @@ If the Tiebreaker is the Mayor, it applies to the Mayor's __first__ vote.
 | Impostors can see the roles of their team | Whether Impostors are able to see which Impostor roles their teammates have | Toggle | False |
 | Dead can see everyone's roles and Votes | Whether dead players are able to see the roles and votes of everyone else | Toggle | False |
 | Probability of a completely vanilla game | The percentage probability of a vanilla Among Us game happening | Percentage | 0% |
-| Game Start Cooldowns | The cooldown for all roles at the start of the game (excluding Impostor's Kill Cooldown) | Time | 10s |
+| Game Start Cooldowns | The cooldown for all roles at the start of the game | Time | 10s |
 | Parallel Medbay Scans | Whether players have to wait for others to scan | Toggle | False |
 | Disable Meeting Skip Button | Whether the meeting button is disabled | No / Emergency / Always | No |
 | Disable Level Icons | Whether all level icons are removed in meetings | Toggle | False |
 | Disable Player Nameplates | Whether all decorative nameplates are disabled in meetings | Toggle | False |
-
------------------------
-# Role Count Settings
-| Name | Description | Type | Default |
-|----------|:-------------:|:------:|:------:|
-| Min Neutral Non-Killing Roles | The minimum number of Neutral non-killing roles a game can have | Number | 1 |
-| Max Neutral Non-Killing Roles | The maximum number of Neutral non-killing roles a game can have | Number | 1 |
-| Min Neutral Killing Roles | The minimum number of Neutral killing roles a game can have | Number | 1 |
-| Max Neutral Killing Roles | The maximum number of Neutral killing roles a game can have | Number | 1 |
 
 -----------------------
 # Task Tracking Settings
@@ -1449,7 +1517,8 @@ If you have any bugs or any need to contact me, join the [Discord Server](https:
 [MyDragonBreath](https://github.com/MyDragonBreath) - For Submerged Compatibility, the Trapper role and support for the new Among Us version (v2022.6.21).\
 [ItsTheNumberH](https://github.com/itsTheNumberH/Town-Of-H) - For the code used for Blind, Bait, Poisoner and partially for Tracker, as well as other bug fixes.\
 [Ruiner](https://github.com/ruiner189/Town-Of-Us-Redux) - For lovers changed into a modifier and Task Tracking.\
-[Term](https://www.twitch.tv/termboii) - For creating Transporter, Medium, Blackmailer, Plaguebearer, Sleuth, and porting v2.5.0 to the new Among Us version (v2021.12.15).
+[Term](https://www.twitch.tv/termboii) - For creating Transporter, Medium, Blackmailer, Plaguebearer, Sleuth, and porting v2.5.0 to the new Among Us version (v2021.12.15).\
+[BryBry16](https://github.com/Brybry16/BetterPolus) - For the code used for Better Polus.
 
 [Essentials](https://github.com/DorCoMaNdO/Reactor-Essentials) - For created custom game options.\
 v1.0.3 uses [Essentials](https://github.com/DorCoMaNdO/Reactor-Essentials) directly.\

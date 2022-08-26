@@ -25,7 +25,7 @@ namespace TownOfUs.Roles
         public Trapper(PlayerControl player) : base(player)
         {
             Name = "Trapper";
-            ImpostorText = () => "Catch killers in the act";
+            ImpostorText = () => "Catch Killers In The Act";
             TaskText = () => "Place traps around the map";
             Color = Patches.Colors.Trapper;
             RoleType = RoleEnum.Trapper;

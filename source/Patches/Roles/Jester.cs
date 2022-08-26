@@ -12,7 +12,7 @@ namespace TownOfUs.Roles
         public Jester(PlayerControl player) : base(player)
         {
             Name = "Jester";
-            ImpostorText = () => "Get voted out";
+            ImpostorText = () => "Get Voted Out";
             TaskText = () => "Get voted out!\nFake Tasks:";
             Color = Patches.Colors.Jester;
             RoleType = RoleEnum.Jester;

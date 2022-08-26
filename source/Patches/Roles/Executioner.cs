@@ -13,11 +13,11 @@ namespace TownOfUs.Roles
         {
             Name = "Executioner";
             ImpostorText = () =>
-                target == null ? "You don't have a target for some reason... weird..." : $"Vote {target.name} out";
+                target == null ? "You don't have a target for some reason... weird..." : $"Vote {target.name} Out";
             TaskText = () =>
                 target == null
                     ? "You don't have a target for some reason... weird..."
-                    : $"Vote {target.name} out\nFake Tasks:";
+                    : $"Vote {target.name} out!\nFake Tasks:";
             Color = Patches.Colors.Executioner;
             RoleType = RoleEnum.Executioner;
             AddToRoleHistory(RoleType);

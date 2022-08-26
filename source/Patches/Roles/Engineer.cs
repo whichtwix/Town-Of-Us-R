@@ -7,8 +7,8 @@ namespace TownOfUs.Roles
         public Engineer(PlayerControl player) : base(player)
         {
             Name = "Engineer";
-            ImpostorText = () => "Maintain important systems on the ship";
-            TaskText = () => "Vent and fix a sabotage from anywhere!";
+            ImpostorText = () => "Maintain Important Systems On The Ship";
+            TaskText = () => "Vent around and fix sabotages";
             Color = Patches.Colors.Engineer;
             RoleType = RoleEnum.Engineer;
             AddToRoleHistory(RoleType);

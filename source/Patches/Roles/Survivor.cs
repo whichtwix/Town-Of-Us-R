@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using TMPro;
-using System.Linq;
 
 namespace TownOfUs.Roles
 {
@@ -20,7 +19,7 @@ namespace TownOfUs.Roles
         public Survivor(PlayerControl player) : base(player)
         {
             Name = "Survivor";
-            ImpostorText = () => "Do whatever it takes to live";
+            ImpostorText = () => "Do Whatever It Takes To Live";
             TaskText = () => "Stay alive to win";
             Color = Patches.Colors.Survivor;
             LastVested = DateTime.UtcNow;

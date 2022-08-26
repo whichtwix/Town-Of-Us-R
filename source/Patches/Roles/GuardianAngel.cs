@@ -22,7 +22,7 @@ namespace TownOfUs.Roles
         {
             Name = "Guardian Angel";
             ImpostorText = () =>
-                target == null ? "You don't have a target for some reason... weird..." : $"Protect {target.name} with your life!";
+                target == null ? "You don't have a target for some reason... weird..." : $"Protect {target.name} With Your Life!";
             TaskText = () =>
                 target == null
                     ? "You don't have a target for some reason... weird..."

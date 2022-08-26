@@ -18,7 +18,7 @@ namespace TownOfUs.Roles
         public Veteran(PlayerControl player) : base(player)
         {
             Name = "Veteran";
-            ImpostorText = () => "Alert to kill anyone who interacts with you";
+            ImpostorText = () => "Alert To Kill Anyone Who Interacts With You";
             TaskText = () => "Alert to kill whoever interacts with you";
             Color = Patches.Colors.Veteran;
             LastAlerted = DateTime.UtcNow;

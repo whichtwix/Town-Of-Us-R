@@ -7,15 +7,17 @@ namespace TownOfUs.CustomOption
     {
         public static List<CustomOption> AllOptions = new List<CustomOption>();
         public readonly int ID;
+        public readonly MultiMenu Menu;
 
         public Func<object, string> Format;
         public string Name;
 
 
-        protected internal CustomOption(int id, string name, CustomOptionType type, object defaultValue,
+        protected internal CustomOption(int id, MultiMenu menu, string name, CustomOptionType type, object defaultValue,
             Func<object, string> format = null)
         {
             ID = id;
+            Menu = menu;
             Name = name;
             Type = type;
             DefaultValue = Value = defaultValue;

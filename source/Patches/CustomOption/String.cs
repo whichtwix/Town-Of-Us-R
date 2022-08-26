@@ -4,7 +4,7 @@ namespace TownOfUs.CustomOption
 {
     public class CustomStringOption : CustomOption
     {
-        protected internal CustomStringOption(int id, string name, string[] values) : base(id, name,
+        protected internal CustomStringOption(int id, MultiMenu menu, string name, string[] values) : base(id, menu, name,
             CustomOptionType.String,
             0)
         {

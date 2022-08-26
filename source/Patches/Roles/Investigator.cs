@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TownOfUs.CrewmateRoles.InvestigatorMod;
-using UnityEngine;
 
 namespace TownOfUs.Roles
 {
@@ -12,8 +11,8 @@ namespace TownOfUs.Roles
         public Investigator(PlayerControl player) : base(player)
         {
             Name = "Investigator";
-            ImpostorText = () => "Find all impostors by examining footprints";
-            TaskText = () => "You can see everyone's footprints.";
+            ImpostorText = () => "Find All Impostors By Examining Footprints";
+            TaskText = () => "You can see everyone's footprints";
             Color = Patches.Colors.Investigator;
             RoleType = RoleEnum.Investigator;
             AddToRoleHistory(RoleType);

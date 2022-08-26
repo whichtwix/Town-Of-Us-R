@@ -8,7 +8,7 @@ namespace TownOfUs.CustomOption
     {
         public List<CustomOption> InternalOptions = new List<CustomOption>();
         private int Index { get; set; }
-        protected internal CustomTabOption(int id, string name) : base(id, name)
+        protected internal CustomTabOption(int id, MultiMenu menu, string name) : base(id, menu, name)
         {
             Index = -1;
         }

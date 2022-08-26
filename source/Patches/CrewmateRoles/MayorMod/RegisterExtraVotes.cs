@@ -99,22 +99,25 @@ namespace TownOfUs.CrewmateRoles.MayorMod
         public static void Prefix(
             MeetingHud __instance, [HarmonyArgument(0)] PlayerControl player)
         {
-            if (AmongUsClient.Instance.AmHost)
+            if (AmongUsClient.Instance.AmHost && MeetingHud.Instance)
             {
                 foreach (var role in Role.GetRoles(RoleEnum.Mayor))
                 {
                     if (role is Mayor mayor)
                     {
-                        var votesRegained = mayor.ExtraVotes.RemoveAll(x => x == player.PlayerId);
+                        if (mayor.VotedOnce)
+                        {
+                            var votesRegained = mayor.ExtraVotes.RemoveAll(x => x == player.PlayerId);
 
-                        if (mayor.Player == PlayerControl.LocalPlayer)
-                            mayor.VoteBank += votesRegained;
+                            if (mayor.Player == PlayerControl.LocalPlayer)
+                                mayor.VoteBank += votesRegained;
 
-                        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                            (byte)CustomRPC.AddMayorVoteBank, SendOption.Reliable, -1);
-                        writer.Write(mayor.Player.PlayerId);
-                        writer.Write(mayor.VoteBank);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                                (byte)CustomRPC.AddMayorVoteBank, SendOption.Reliable, -1);
+                            writer.Write(mayor.Player.PlayerId);
+                            writer.Write(mayor.VoteBank);
+                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        }
                     }
                 }
             }

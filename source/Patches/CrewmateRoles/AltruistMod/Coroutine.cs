@@ -26,7 +26,6 @@ namespace TownOfUs.CrewmateRoles.AltruistMod
 
             var revived = new List<PlayerControl>();
 
-
             if (AmongUsClient.Instance.AmHost) Utils.RpcMurderPlayer(role.Player, role.Player);
 
             if (CustomGameOptions.AltruistTargetBody)
@@ -57,8 +56,11 @@ namespace TownOfUs.CrewmateRoles.AltruistMod
 
             var player = Utils.PlayerById(parentId);
 
-            // if (player == null || AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started)
-            //     yield break;
+            foreach (var poisoner in Role.GetRoles(RoleEnum.Poisoner))
+            {
+                var poisonerRole = (Poisoner)poisoner;
+                if (poisonerRole.PoisonedPlayer == player) poisonerRole.PoisonedPlayer = poisonerRole.Player;
+            }
 
             player.Revive();
             Murder.KilledPlayers.Remove(

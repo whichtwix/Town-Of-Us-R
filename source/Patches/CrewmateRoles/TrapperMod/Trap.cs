@@ -37,17 +37,17 @@ namespace TownOfUs.CrewmateRoles.TrapperMod
                     if (players.ContainsKey(player.PlayerId)) players.Remove(player.PlayerId);
                 }
 
-                var entry = player.PlayerId;
-                if (players.ContainsKey(entry))
+                var entry = player;
+                if (players.ContainsKey(entry.PlayerId))
                 {
-                    players[entry] += Time.deltaTime;
+                    players[entry.PlayerId] += Time.deltaTime;
                     //PluginSingleton<TownOfUs>.Instance.Log.LogMessage($"player with byte {entry} is logged with time {players[entry]}");
-                    if (players[entry] > CustomGameOptions.MinAmountOfTimeInTrap)
+                    if (players[entry.PlayerId] > CustomGameOptions.MinAmountOfTimeInTrap)
                     {
                         foreach (Trapper t in Role.GetRoles(RoleEnum.Trapper))
                         {
-                            RoleEnum playerrole = Role.GetRole(Utils.PlayerById(entry)).RoleType;
-                            if (!t.trappedPlayers.Contains(playerrole)) t.trappedPlayers.Add(playerrole);
+                            RoleEnum playerrole = Role.GetRole(Utils.PlayerById(entry.PlayerId)).RoleType;
+                            if (!t.trappedPlayers.Contains(playerrole) && entry != t.Player) t.trappedPlayers.Add(playerrole);
                         }
                     }
                 }

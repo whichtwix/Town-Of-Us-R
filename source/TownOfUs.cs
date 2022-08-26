@@ -26,7 +26,7 @@ namespace TownOfUs
     public class TownOfUs : BasePlugin
     {
         public const string Id = "com.slushiegoose.townofus";
-        public const string VersionString = "3.2.0";
+        public const string VersionString = "3.3.0";
         public static System.Version Version = System.Version.Parse(VersionString);
         
         public static Sprite JanitorClean;
@@ -71,8 +71,15 @@ namespace TownOfUs
         public static Sprite RampageSprite;
         public static Sprite TrapSprite;
         public static Sprite ExamineSprite;
+        public static Sprite HackSprite;
+        public static Sprite MimicSprite;
+        public static Sprite LockSprite;
 
         public static Sprite SettingsButtonSprite;
+        public static Sprite CrewSettingsButtonSprite;
+        public static Sprite NeutralSettingsButtonSprite;
+        public static Sprite ImposterSettingsButtonSprite;
+        public static Sprite ModifierSettingsButtonSprite;
         public static Sprite ToUBanner;
         public static Sprite UpdateTOUButton;
         public static Sprite UpdateSubmergedButton;
@@ -140,8 +147,15 @@ namespace TownOfUs
             RampageSprite = CreateSprite("TownOfUs.Resources.Rampage.png");
             TrapSprite = CreateSprite("TownOfUs.Resources.Trap.png");
             ExamineSprite = CreateSprite("TownOfUs.Resources.Examine.png");
+            HackSprite = CreateSprite("TownOfUs.Resources.Hack.png");
+            MimicSprite = CreateSprite("TownOfUs.Resources.Mimic.png");
+            LockSprite = CreateSprite("TownOfUs.Resources.Lock.png");
 
             SettingsButtonSprite = CreateSprite("TownOfUs.Resources.SettingsButton.png");
+            CrewSettingsButtonSprite = CreateSprite("TownOfUs.Resources.Crewmate.png");
+            NeutralSettingsButtonSprite = CreateSprite("TownOfUs.Resources.Neutral.png");
+            ImposterSettingsButtonSprite = CreateSprite("TownOfUs.Resources.Impostor.png");
+            ModifierSettingsButtonSprite = CreateSprite("TownOfUs.Resources.Modifiers.png");
             ToUBanner = CreateSprite("TownOfUs.Resources.TownOfUsBanner.png");
             UpdateTOUButton = CreateSprite("TownOfUs.Resources.UpdateToUButton.png");
             UpdateSubmergedButton = CreateSprite("TownOfUs.Resources.UpdateSubmergedButton.png");

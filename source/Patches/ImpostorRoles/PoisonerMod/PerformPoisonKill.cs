@@ -33,6 +33,27 @@ namespace TownOfUs.ImpostorRoles.PoisonerMod
             }
             if (role.ClosestPlayer.Is(RoleEnum.Pestilence))
             {
+                if (role.Player.IsShielded())
+                {
+                    var medic = role.Player.GetMedic().Player.PlayerId;
+                    var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                        (byte)CustomRPC.AttemptSound, SendOption.Reliable, -1);
+                    writer.Write(medic);
+                    writer.Write(role.Player.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                    if (CustomGameOptions.ShieldBreaks) role.LastPoisoned = DateTime.UtcNow;
+                    role.PoisonButton.SetCoolDown(0.01f, 1f);
+
+                    StopKill.BreakShield(medic, role.Player.PlayerId,
+                        CustomGameOptions.ShieldBreaks);
+                }
+                if (role.Player.IsProtected())
+                {
+                    role.LastPoisoned.AddSeconds(CustomGameOptions.ProtectKCReset);
+                    role.PoisonButton.SetCoolDown(0.01f, 1f);
+                    return false;
+                }
                 Utils.RpcMurderPlayer(role.ClosestPlayer, PlayerControl.LocalPlayer);
                 return false;
             }
