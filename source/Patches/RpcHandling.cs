@@ -1168,6 +1168,19 @@ namespace TownOfUs
                         PlayerControl.GameOptions.RoleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
                         if (CustomGameOptions.AutoAdjustSettings) RandomMap.AdjustSettings(readByte);
                         break;
+                    case CustomRPC.Revive:
+                        var killedself = reader.ReadByte();
+                        foreach (PlayerControl p in PlayerControl.AllPlayerControls)
+                        {
+                            if (p.PlayerId == killedself)
+                            {
+                                p.Revive();
+                                p.moveable = true;
+                                p.gameObject.GetComponent<CustomNetworkTransform>().enabled = true;
+                            }
+                        }
+                        break;
+
                 }
             }
         }
