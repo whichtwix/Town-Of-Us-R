@@ -1158,6 +1158,7 @@ namespace TownOfUs
                     case CustomRPC.SetPos:
                         var setplayer = Utils.PlayerById(reader.ReadByte());
                         setplayer.transform.position = new Vector3(reader.ReadSingle(), reader.ReadSingle(), setplayer.transform.position.z);
+                        break;
                     case CustomRPC.SetSettings:
                         readByte = reader.ReadByte();
                         PlayerControl.GameOptions.MapId = readByte == byte.MaxValue ? (byte)0 : readByte;
@@ -1173,6 +1174,7 @@ namespace TownOfUs
                         {
                             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(PlayerControl.LocalPlayer, report);
                         }
+                        break;
                 }
             }
         }

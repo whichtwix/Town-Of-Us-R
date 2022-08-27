@@ -100,11 +100,11 @@ namespace TownOfUs.CustomOption
         public static CustomToggleOption DeadSeeRoles;
         public static CustomToggleOption DisableLevels;
         public static CustomToggleOption WhiteNameplates;
-        public static CustomToggleOption Locationreports;
         public static CustomNumberOption VanillaGame;
         public static CustomNumberOption InitialCooldowns;
         public static CustomToggleOption ParallelMedScans;
         public static CustomStringOption SkipButtonDisable;
+        public static CustomToggleOption Locationreports;
 
         public static CustomHeaderOption BetterPolusSettings;
         public static CustomToggleOption VentImprovements;
@@ -522,33 +522,12 @@ namespace TownOfUs.CustomOption
             TiebreakerOn = new CustomNumberOption(true, num++, MultiMenu.modifiers, "<color=#99E699FF>Tiebreaker</color>", 0f, 0f, 100f, 10f,
                 PercentFormat);
 
-
-            CustomGameSettings =
-                new CustomHeaderOption(num++, "Custom Game Settings");
-            ColourblindComms = new CustomToggleOption(num++, "Camouflaged Comms", false);
-            ImpostorSeeRoles = new CustomToggleOption(num++, "Impostors Can See The Roles Of Their Team", false);
-            DeadSeeRoles =
-                new CustomToggleOption(num++, "Dead Can See Everyone's Roles/Votes", false);
-            VanillaGame = new CustomNumberOption(num++, "Probability Of A Completely Vanilla Game", 0f, 0f, 100f, 5f,
-                PercentFormat);
-            InitialCooldowns =
-                new CustomNumberOption(num++, "Game Start Cooldowns", 10, 10, 30, 2.5f, CooldownFormat);
-            ParallelMedScans = new CustomToggleOption(num++, "Parallel Medbay Scans", false);
-            SkipButtonDisable = new CustomStringOption(num++, "Disable Meeting Skip Button", new[] { "No", "Emergency", "Always" });
-            DisableLevels = new CustomToggleOption(num++, "Disable Level Icons", false);
-            WhiteNameplates = new CustomToggleOption(num++, "Disable Player Nameplates", false)
-            Locationreports = new CustomToggleOption(num++, "locations of body reports are displayed at the start of a meeting", false);
-            
-            RoleCountSettings =
-                new CustomHeaderOption(num++, "Role Count Settings");
-
             GameModeSettings =
                 new CustomHeaderOption(num++, MultiMenu.main, "Game Mode Settings");
             GameMode = new CustomStringOption(num++, MultiMenu.main, "Game Mode", new[] {"Classic", "All Any", "Killing Only"});
 
             ClassicSettings =
                 new CustomHeaderOption(num++, MultiMenu.main, "Classic Game Mode Settings");
-
             MinNeutralNonKillingRoles =
                 new CustomNumberOption(num++, MultiMenu.main, "Min Neutral Non-Killing Roles", 1f, 0f, 5f, 1f);
             MaxNeutralNonKillingRoles =
@@ -617,6 +596,8 @@ namespace TownOfUs.CustomOption
             SkipButtonDisable = new CustomStringOption(num++, MultiMenu.main, "Disable Meeting Skip Button", new[] { "No", "Emergency", "Always" });
             DisableLevels = new CustomToggleOption(num++, MultiMenu.main, "Disable Level Icons", false);
             WhiteNameplates = new CustomToggleOption(num++, MultiMenu.main, "Disable Player Nameplates", false);
+            Locationreports = new CustomToggleOption(num++, MultiMenu.main, "Locations of body reports are displayed in chat", false);
+
 
             TaskTrackingSettings =
                 new CustomHeaderOption(num++, MultiMenu.main, "Task Tracking Settings");
