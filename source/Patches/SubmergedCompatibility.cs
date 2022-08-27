@@ -9,7 +9,6 @@ using HarmonyLib;
 using UnhollowerRuntimeLib;
 using UnityEngine;
 using Reactor;
-using UnhollowerBaseLib;
 using TownOfUs.Roles;
 using Hazel;
 
@@ -26,7 +25,6 @@ namespace TownOfUs.Patches
             }
         }
     }
-
 
 
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
