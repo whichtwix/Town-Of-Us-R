@@ -147,6 +147,17 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
                 else
                 {
                     new Survivor(other);
+                    if (role == RoleEnum.Arsonist || role == RoleEnum.Glitch || role == RoleEnum.Plaguebearer ||
+                            role == RoleEnum.Pestilence || role == RoleEnum.Werewolf || role == RoleEnum.Juggernaut)
+                    {
+                        if (CustomGameOptions.AmneTurnNeutAssassin)
+                        {
+                            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                                (byte)CustomRPC.SetAssassin, SendOption.Reliable, -1);
+                            writer.Write(amnesiac.PlayerId);
+                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        }
+                    }
                 }
             }
             else if (rememberImp == true)
@@ -162,7 +173,7 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
                         player.nameText().color = Patches.Colors.Impostor;
                     }
                 }
-                if (CustomGameOptions.AmneTurnAssassin)
+                if (CustomGameOptions.AmneTurnImpAssassin)
                 {
                     var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                         (byte)CustomRPC.SetAssassin, SendOption.Reliable, -1);
@@ -415,7 +426,7 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
                 DestroyableSingleton<HudManager>.Instance.KillButton.gameObject.SetActive(false);
             }
 
-            if (amnesiac.Is(Faction.Impostors))
+            if (amnesiac.Is(Faction.Impostors) && (!amnesiac.Is(RoleEnum.Traitor) || CustomGameOptions.SnitchSeesTraitor))
             {
                 foreach (var snitch in Role.GetRoles(RoleEnum.Snitch))
                 {
@@ -450,9 +461,9 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
                 var role2 = Role.GetRole<Crewmate>(other);
                 role2.RegenTask();
             }
-            else if (other.Is(RoleEnum.Jester))
+            else if (other.Is(RoleEnum.Survivor))
             {
-                var role2 = Role.GetRole<Jester>(other);
+                var role2 = Role.GetRole<Survivor>(other);
                 role2.RegenTask();
             }
             else

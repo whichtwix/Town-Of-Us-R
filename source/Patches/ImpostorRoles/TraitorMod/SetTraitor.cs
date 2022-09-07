@@ -86,6 +86,12 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
                     medRole.MediatedPlayers.Clear();
                 }
 
+                if (PlayerControl.LocalPlayer.Is(RoleEnum.Trapper))
+                {
+                    var trapperRole = Role.GetRole<Trapper>(PlayerControl.LocalPlayer);
+                    Object.Destroy(trapperRole.UsesText);
+                }
+
                 var oldRole = Role.GetRole(PlayerControl.LocalPlayer).RoleType;
                 Role.RoleDictionary.Remove(PlayerControl.LocalPlayer.PlayerId);
                 var role = new Traitor(PlayerControl.LocalPlayer);
@@ -133,7 +139,7 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
             foreach (var snitch in Role.GetRoles(RoleEnum.Snitch))
             {
                 var snitchRole = (Snitch)snitch;
-                if (snitchRole.TasksDone && PlayerControl.LocalPlayer.Is(RoleEnum.Snitch))
+                if (snitchRole.TasksDone && PlayerControl.LocalPlayer.Is(RoleEnum.Snitch) && CustomGameOptions.SnitchSeesTraitor)
                 {
                     var gameObj = new GameObject();
                     var arrow = gameObj.AddComponent<ArrowBehaviour>();
@@ -144,7 +150,7 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
                     gameObj.layer = 5;
                     snitchRole.SnitchArrows.Add(player.PlayerId, arrow);
                 }
-                else if (snitchRole.Revealed && PlayerControl.LocalPlayer.Is(RoleEnum.Traitor))
+                else if (snitchRole.Revealed && PlayerControl.LocalPlayer.Is(RoleEnum.Traitor) && CustomGameOptions.SnitchSeesTraitor)
                 {
                     var gameObj = new GameObject();
                     var arrow = gameObj.AddComponent<ArrowBehaviour>();
