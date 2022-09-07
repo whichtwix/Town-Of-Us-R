@@ -71,6 +71,7 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 # Releases
 | Among Us - Version| Mod Version | Link |
 |----------|-------------|-----------------|
+| 2022.8.24s & 2022.8.24e | v3.3.2 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.2/ToU.v3.3.2.zip) |
 | 2022.8.24s & 2022.8.24e | v3.3.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.1/ToU.v3.3.1.zip) |
 | 2022.8.24s & 2022.8.24e | v3.3.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.0/ToU.v3.3.0.zip) |
 | 2022.6.21s & 2022.6.21e & 2022.7.12s & 2022.7.12e | v3.2.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.2.0/ToU.v3.2.0.zip) |
@@ -120,6 +121,12 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 
 <details>
   <summary> Changelog </summary>
+  <details>
+  <summary> v3.3.2 </summary>
+  <ul> <li>New Setting: Snitch doesn't see Traitor</li> </ul>
+  <ul> <li>New Settings: Neutral Killing Roles can assassinate</li> </ul>
+  <ul> <li>Bug Fix: People no longer show as Phantom/Haunter when they're not</li> </ul>
+  </details>
   <details>
   <summary> v3.3.1 </summary>
   <ul> <li>Bug Fix: The game no longer occasionally freezes after a meeting</li> </ul>
@@ -717,6 +724,7 @@ However, when they only have a single task left, the Impostors get an arrow poin
 | Snitch Sees Neutral Roles | Whether the Snitch also Reveals Neutral Roles | Toggle | False |
 | Tasks Remaining When Revealed | The number of tasks remaining when the Snitch is revealed to Impostors | Number | 1 |
 | Snitch Sees Impostors in Meetings | Whether the Snitch sees the Impostor's names red in Meetings | Toggle | True |
+| Snitch Sees Traitor | Whether the Snitch sees the Traitor | Toggle | True |
 
 -----------------------
 ## Spy
@@ -1471,15 +1479,17 @@ If the Tiebreaker is the Mayor, it applies to the Mayor's __first__ vote.
 ## Assassin Ability
 ### **Team: Impostors**
 
-The Assassin Ability is given to a certain number of Impostors.\
-This ability gives the Impostors a chance to kill during meetings by guessing the role of non-Impostors.\
-If they guessed wrong, they die instead.
+The Assassin Ability is given to a certain number of Impostors or Neutral Killers.\
+This ability gives the Impostor or Neutral Killer a chance to kill during meetings by guessing the roles or modifiers of others.\
+If they guess wrong, they die instead.
 
 ### Game Options
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
-| Number of Assassins | How many Impostors can Assassinate | Number | 1 |
+| Number of Impostor Assassins | How many Impostors can Assassinate | Number | 1 |
+| Number of Neutral Killing Assassins | How many Neutral Killers can Assassinate | Number | 1 |
 | Amnesiac Turned Impostor Can Assassinate | Whether former Amnesiacs now Impostor can Assassinate | Toggle | False |
+| Amnesiac Turned Neutral Killing Can Assassinate | Whether former Amnesiacs now Neutral Killers can Assassinate | Toggle | False |
 | Traitor Can Assassinate | If someone turns into a Traitor they can Assassinate | Toggle | False |
 | Assassin Kill | The number of kill the Assassin can do with his ability | Number | 1 |
 | Assassin Guess Crewmate | Whether the Assassin can Guess "Crewmate" | Toggle | False |
@@ -1488,6 +1498,7 @@ If they guessed wrong, they die instead.
 | Assassin Guess Neutral Benign  | Whether the Assassin can Guess Neutral Benign roles | Toggle | False |
 | Assassin Guess Neutral Evil  | Whether the Assassin can Guess Neutral Evil roles | Toggle | False |
 | Assassin Guess Neutral Killing  | Whether the Assassin can Guess Neutral Killing roles | Toggle | False |
+| Assassin Guess Impostors  | Whether the Assassin can Guess Impostor roles | Toggle | False |
 | Assassin Guess Crewmate Modifiers  | Whether the Assassin can Guess Crewmate Modifiers | Toggle | False |
 | Assassin Can Guess Lovers  | Whether the Assassin can Guess Lovers | Toggle | False |
 | Assassin Can Guess After Voting  | Whether the Assassin can Guess after voting | Toggle | False |
@@ -1495,7 +1506,7 @@ If they guessed wrong, they die instead.
 -----------------------
 # Extras
 ## New Colors!
-New colors are added for crewmates to pick from: watermelon, chocolate, sky blue, beige, hot pink, turquoise and lilac.
+New colors are added for crewmates to pick from.
 ## Rainbow Color!
 A rainbow color has also been added. Anyone who equips this color will constantly switch between the colors of the rainbow.
 ## Custom Hats!
@@ -1523,7 +1534,8 @@ If you have any bugs or any need to contact me, join the [Discord Server](https:
 [ItsTheNumberH](https://github.com/itsTheNumberH/Town-Of-H) - For the code used for Blind, Bait, Poisoner and partially for Tracker, as well as other bug fixes.\
 [Ruiner](https://github.com/ruiner189/Town-Of-Us-Redux) - For lovers changed into a modifier and Task Tracking.\
 [Term](https://www.twitch.tv/termboii) - For creating Transporter, Medium, Blackmailer, Plaguebearer, Sleuth, and porting v2.5.0 to the new Among Us version (v2021.12.15).\
-[BryBry16](https://github.com/Brybry16/BetterPolus) - For the code used for Better Polus.
+[BryBry16](https://github.com/Brybry16/BetterPolus) - For the code used for Better Polus.\
+[Alexejhero](https://github.com/SubmergedAmongUs/Submerged) - For the Submerged map.
 
 [Essentials](https://github.com/DorCoMaNdO/Reactor-Essentials) - For created custom game options.\
 v1.0.3 uses [Essentials](https://github.com/DorCoMaNdO/Reactor-Essentials) directly.\

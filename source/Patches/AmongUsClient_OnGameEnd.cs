@@ -80,7 +80,12 @@ namespace TownOfUs
                         return;
                     }
                 }
-                else if (type == RoleEnum.Glitch)
+            }
+            foreach (var role in Role.AllRoles)
+            {
+                var type = role.RoleType;
+
+                if (type == RoleEnum.Glitch)
                 {
                     var glitch = (Glitch)role;
                     if (glitch.GlitchWins)
