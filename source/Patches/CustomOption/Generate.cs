@@ -222,6 +222,7 @@ namespace TownOfUs.CustomOption
         public static CustomToggleOption SnitchSeesNeutrals;
         public static CustomNumberOption SnitchTasksRemaining;
         public static CustomToggleOption SnitchSeesImpInMeeting;
+        public static CustomToggleOption SnitchSeesTraitor;
 
         public static CustomHeaderOption Altruist;
         public static CustomNumberOption ReviveDuration;
@@ -245,8 +246,10 @@ namespace TownOfUs.CustomOption
         public static CustomToggleOption UndertakerVentWithBody;
 
         public static CustomHeaderOption Assassin;
-        public static CustomNumberOption NumberOfAssassins;
-        public static CustomToggleOption AmneTurnAssassin;
+        public static CustomNumberOption NumberOfImpostorAssassins;
+        public static CustomNumberOption NumberOfNeutralAssassins;
+        public static CustomToggleOption AmneTurnImpAssassin;
+        public static CustomToggleOption AmneTurnNeutAssassin;
         public static CustomToggleOption TraitorCanAssassin;
         public static CustomNumberOption AssassinKills;
         public static CustomToggleOption AssassinMultiKill;
@@ -255,6 +258,7 @@ namespace TownOfUs.CustomOption
         public static CustomToggleOption AssassinGuessNeutralBenign;
         public static CustomToggleOption AssassinGuessNeutralEvil;
         public static CustomToggleOption AssassinGuessNeutralKilling;
+        public static CustomToggleOption AssassinGuessImpostors;
         public static CustomToggleOption AssassinGuessModifiers;
         public static CustomToggleOption AssassinGuessLovers;
         public static CustomToggleOption AssassinateAfterVoting;
@@ -603,8 +607,10 @@ namespace TownOfUs.CustomOption
             SeeTasksWhenDead = new CustomToggleOption(num++, MultiMenu.main, "See Tasks When Dead", true);
 
             Assassin = new CustomHeaderOption(num++, MultiMenu.imposter, "<color=#FF0000FF>Assassin Ability</color>");
-            NumberOfAssassins = new CustomNumberOption(num++, MultiMenu.imposter, "Number Of Assassins", 1, 0, 4, 1);
-            AmneTurnAssassin = new CustomToggleOption(num++, MultiMenu.imposter, "Amnesiac Turned Impostor Gets Ability", false);
+            NumberOfImpostorAssassins = new CustomNumberOption(num++, MultiMenu.imposter, "Number Of Impostor Assassins", 1, 0, 4, 1);
+            NumberOfNeutralAssassins = new CustomNumberOption(num++, MultiMenu.imposter, "Number Of Neutral Assassins", 1, 0, 5, 1);
+            AmneTurnImpAssassin = new CustomToggleOption(num++, MultiMenu.imposter, "Amnesiac Turned Impostor Gets Ability", false);
+            AmneTurnNeutAssassin = new CustomToggleOption(num++, MultiMenu.imposter, "Amnesiac Turned Neutral Killing Gets Ability", false);
             TraitorCanAssassin = new CustomToggleOption(num++, MultiMenu.imposter, "Traitor Gets Ability", false);
             AssassinKills = new CustomNumberOption(num++, MultiMenu.imposter, "Number Of Assassin Kills", 1, 1, 15, 1);
             AssassinMultiKill = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Kill More Than Once Per Meeting", false);
@@ -613,6 +619,7 @@ namespace TownOfUs.CustomOption
             AssassinGuessNeutralBenign = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Guess Neutral Benign Roles", false);
             AssassinGuessNeutralEvil = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Guess Neutral Evil Roles", false);
             AssassinGuessNeutralKilling = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Guess Neutral Killing Roles", false);
+            AssassinGuessImpostors = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Guess Impostor Roles", false);
             AssassinGuessModifiers = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Guess Crewmate Modifiers", false);
             AssassinGuessLovers = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Guess Lovers", false);
             AssassinateAfterVoting = new CustomToggleOption(num++, MultiMenu.imposter, "Assassin Can Guess After Voting", false);
@@ -678,6 +685,7 @@ namespace TownOfUs.CustomOption
             SnitchTasksRemaining =
                  new CustomNumberOption(num++, MultiMenu.crewmate, "Tasks Remaining When Revealed", 1, 1, 5, 1);
             SnitchSeesImpInMeeting = new CustomToggleOption(num++, MultiMenu.crewmate, "Snitch Sees Impostors In Meetings", true);
+            SnitchSeesTraitor = new CustomToggleOption(num++, MultiMenu.crewmate, "Snitch Sees Traitor", true);
 
             Tracker =
                 new CustomHeaderOption(num++, MultiMenu.crewmate, "<color=#009900FF>Tracker</color>");

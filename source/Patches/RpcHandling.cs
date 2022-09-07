@@ -236,10 +236,15 @@ namespace TownOfUs
 
             var canHaveModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
             var canHaveAbility = PlayerControl.AllPlayerControls.ToArray().ToList();
+            var canHaveAbility2 = PlayerControl.AllPlayerControls.ToArray().ToList();
             canHaveModifier.Shuffle();
             canHaveAbility.RemoveAll(player => !player.Is(Faction.Impostors));
             canHaveAbility.Shuffle();
-            var assassins = CustomGameOptions.NumberOfAssassins;
+            canHaveAbility2.RemoveAll(player => !player.Is(Faction.Neutral) || player.Is(RoleEnum.Amnesiac) || player.Is(RoleEnum.GuardianAngel)
+            || player.Is(RoleEnum.Survivor) || player.Is(RoleEnum.Executioner) || player.Is(RoleEnum.Jester));
+            canHaveAbility2.Shuffle();
+            var impAssassins = CustomGameOptions.NumberOfImpostorAssassins;
+            var neutAssassins = CustomGameOptions.NumberOfNeutralAssassins;
 
             foreach (var (type, rpc, _) in GlobalModifiers)
             {
@@ -263,7 +268,8 @@ namespace TownOfUs
                 Role.Gen<Modifier>(type, canHaveModifier, rpc);
             }
 
-            canHaveModifier.RemoveAll(player => player.Is(RoleEnum.Juggernaut) || player.Is(RoleEnum.Werewolf) || player.Is(RoleEnum.Plaguebearer) || player.Is(RoleEnum.Arsonist) || player.Is(Faction.Impostors));
+            canHaveModifier.RemoveAll(player => player.Is(RoleEnum.Juggernaut) || player.Is(RoleEnum.Werewolf)
+            || player.Is(RoleEnum.Plaguebearer) || player.Is(RoleEnum.Arsonist) || player.Is(Faction.Impostors));
             canHaveModifier.Shuffle();
 
             while (canHaveModifier.Count > 0 && CrewmateModifiers.Count > 0)
@@ -272,11 +278,18 @@ namespace TownOfUs
                 Role.Gen<Modifier>(type, canHaveModifier.TakeFirst(), rpc);
             }
 
-            while (canHaveAbility.Count > 0 && assassins > 0)
+            while (canHaveAbility.Count > 0 && impAssassins > 0)
             {
                 var (type, rpc, _) = AssassinModifier.Ability();
                 Role.Gen<Ability>(type, canHaveAbility.TakeFirst(), rpc);
-                assassins = assassins - 1;
+                impAssassins -= 1;
+            }
+
+            while (canHaveAbility2.Count > 0 && neutAssassins > 0)
+            {
+                var (type, rpc, _) = AssassinModifier.Ability();
+                Role.Gen<Ability>(type, canHaveAbility2.TakeFirst(), rpc);
+                neutAssassins -= 1;
             }
 
             var toChooseFromCrew = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Crewmates) && !x.Is(ModifierEnum.Lover)).ToList();
@@ -1080,7 +1093,7 @@ namespace TownOfUs
                         SetPhantom.WillBePhantom = readByte == byte.MaxValue ? null : Utils.PlayerById(readByte);
                         break;
                     case CustomRPC.PhantomDied:
-                        var phantom = SetPhantom.WillBePhantom;
+                        var phantom = Utils.PlayerById(reader.ReadByte());
                         Role.RoleDictionary.Remove(phantom.PlayerId);
                         var phantomRole = new Phantom(phantom);
                         phantomRole.RegenTask();
@@ -1105,7 +1118,7 @@ namespace TownOfUs
                         SetHaunter.WillBeHaunter = readByte == byte.MaxValue ? null : Utils.PlayerById(readByte);
                         break;
                     case CustomRPC.HaunterDied:
-                        var haunter = SetHaunter.WillBeHaunter;
+                        var haunter = Utils.PlayerById(reader.ReadByte());
                         Role.RoleDictionary.Remove(haunter.PlayerId);
                         var haunterRole = new Haunter(haunter);
                         haunterRole.RegenTask();
