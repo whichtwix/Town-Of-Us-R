@@ -14,8 +14,6 @@ using TownOfUs.Patches;
 using TownOfUs.RainbowMod;
 using TownOfUs.Roles;
 using TownOfUs.Roles.Modifiers;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 using InnerNet;
 using TMPro;
 using Il2CppInterop.Runtime;
