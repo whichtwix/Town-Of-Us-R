@@ -9,9 +9,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
 using Twitch;
-using Reactor;
+using Reactor.Utilities;
 using System.Text.Json.Serialization;
-using System.Collections.Generic;
 
 namespace TownOfUs {
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]

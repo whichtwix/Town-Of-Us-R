@@ -53,8 +53,10 @@ namespace TownOfUs.Patches
         public readonly static Color Flash = new Color(1f, 0.5f, 0.5f, 1f);
         public readonly static Color Giant = new Color(1f, 0.7f, 0.3f, 1f);
         public readonly static Color Lovers = new Color(1f, 0.4f, 0.8f, 1f);
-        public readonly static Color Sleuth = new Color(0.5f, 0.2f, 0.2f);
-        public readonly static Color Tiebreaker = new Color(0.6f, 0.9f, 0.6f);
+        public readonly static Color Sleuth = new Color(0.5f, 0.2f, 0.2f, 1f);
+        public readonly static Color Tiebreaker = new Color(0.6f, 0.9f, 0.6f, 1f);
+        public readonly static Color Radar = new Color(1f, 0f, 0.5f, 1f);
+        public readonly static Color Multitasker = new Color(1f, 0.5f, 0.3f, 1f);
 
     }
 }

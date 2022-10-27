@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using Reactor.Extensions;
-using UnhollowerBaseLib;
+using Reactor.Utilities.Extensions;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 
 namespace TownOfUs.CustomOption

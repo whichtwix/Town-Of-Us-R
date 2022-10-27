@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.Data;
 using HarmonyLib;
-using Reactor;
-using Reactor.Extensions;
+using Reactor.Utilities.Extensions;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -16,7 +16,7 @@ namespace TownOfUs.Patches.CustomHats
     {
         public static bool Prefix(HatsTab __instance)
         {
-            __instance.currentHat = DestroyableSingleton<HatManager>.Instance.GetHatById(SaveManager.LastHat);
+            __instance.currentHat = DestroyableSingleton<HatManager>.Instance.GetHatById(DataManager.Player.Customization.Hat);
             var allHats = DestroyableSingleton<HatManager>.Instance.GetUnlockedHats();
             var hatGroups = new SortedList<string, List<HatData>>(
                 new PaddedComparer<string>("Vanilla", "")
@@ -57,7 +57,7 @@ namespace TownOfUs.Patches.CustomHats
                     ColorChip colorChip = Object.Instantiate(__instance.ColorTabPrefab, __instance.scroller.Inner);
                     colorChip.transform.localPosition = new Vector3(num, num2, -1f);
                     colorChip.Button.OnClick.AddListener((Action)(() => __instance.SelectHat(hat)));
-                    colorChip.Inner.SetHat(hat, __instance.HasLocalPlayer() ? PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId : (int)SaveManager.BodyColor);
+                    colorChip.Inner.SetHat(hat, __instance.HasLocalPlayer() ? PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId : (int)DataManager.Player.Customization.Color);
                     colorChip.Inner.transform.localPosition = hat.ChipOffset + new Vector2(0f, -0.3f);
                     if (SubmergedCompatibility.Loaded)
                     {

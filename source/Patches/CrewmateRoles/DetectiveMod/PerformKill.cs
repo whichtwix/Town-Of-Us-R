@@ -4,7 +4,7 @@ using Hazel;
 using TownOfUs.Roles;
 using UnityEngine;
 using TownOfUs.CrewmateRoles.MedicMod;
-using Reactor;
+using Reactor.Utilities;
 
 namespace TownOfUs.CrewmateRoles.DetectiveMod
 {

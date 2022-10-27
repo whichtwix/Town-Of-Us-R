@@ -1,7 +1,7 @@
 using HarmonyLib;
 using Object = UnityEngine.Object;
 using Hazel;
-using Reactor.Extensions;
+using Reactor.Utilities.Extensions;
 
 namespace TownOfUs
 {

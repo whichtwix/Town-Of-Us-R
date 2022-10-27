@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hazel;
-using Reactor.Extensions;
+using Reactor.Utilities.Extensions;
 using TownOfUs.Extensions;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace TownOfUs.Roles.Modifiers
 {
@@ -90,6 +88,11 @@ namespace TownOfUs.Roles.Modifiers
         {
             return (from entry in ModifierDictionary where entry.Key == player.PlayerId select entry.Value)
                 .FirstOrDefault();
+        }
+
+        public static IEnumerable<Modifier> GetModifiers(ModifierEnum modifiertype)
+        {
+            return AllModifiers.Where(x => x.ModifierType == modifiertype);
         }
 
         public virtual List<PlayerControl> GetTeammates()

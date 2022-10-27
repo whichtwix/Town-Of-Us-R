@@ -4,11 +4,11 @@ using System.Linq;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using Reactor;
+using Reactor.Utilities;
 using TownOfUs.Extensions;
 using TownOfUs.Roles;
 using TownOfUs.Roles.Modifiers;
-using UnhollowerBaseLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

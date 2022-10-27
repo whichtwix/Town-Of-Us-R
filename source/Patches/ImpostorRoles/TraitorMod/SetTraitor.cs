@@ -6,7 +6,7 @@ using TownOfUs.CrewmateRoles.InvestigatorMod;
 using TownOfUs.CrewmateRoles.SnitchMod;
 using TownOfUs.Extensions;
 using UnityEngine;
-using Reactor;
+using Reactor.Utilities;
 
 namespace TownOfUs.ImpostorRoles.TraitorMod
 {

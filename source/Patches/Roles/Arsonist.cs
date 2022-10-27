@@ -14,6 +14,7 @@ namespace TownOfUs.Roles
         public PlayerControl ClosestPlayerIgnite;
         public List<byte> DousedPlayers = new List<byte>();
         public DateTime LastDoused;
+        public bool LastKiller = false;
 
         public int DousedAlive => DousedPlayers.Count(x => Utils.PlayerById(x) != null && Utils.PlayerById(x).Data != null && !Utils.PlayerById(x).Data.IsDead);
 

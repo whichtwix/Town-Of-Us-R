@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using HarmonyLib;
-using Reactor.Extensions;
+using Reactor.Utilities.Extensions;
 using TownOfUs.CustomOption;
 
 namespace TownOfUs
