@@ -11,7 +11,7 @@ namespace TownOfUs
             __instance.transform.Find("Text_TMP").gameObject.SetActive(false);
         }
     }
-    
+
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public class KillButtonSprite
     {
@@ -30,7 +30,7 @@ namespace TownOfUs
         private static Sprite Infect => TownOfUs.InfectSprite;
         private static Sprite Trap => TownOfUs.TrapSprite;
         private static Sprite Examine => TownOfUs.ExamineSprite;
-        private static Sprite Button => TownOfUs.ButtonSprite;
+
         private static Sprite Kill;
 
 

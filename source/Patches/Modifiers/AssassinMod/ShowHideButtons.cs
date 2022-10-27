@@ -27,13 +27,15 @@ namespace TownOfUs.Modifiers.AssassinMod
         public static void HideSingle(
             Assassin role,
             byte targetId,
-            bool killedSelf
+            bool killedSelf,
+            bool doubleshot = false
         )
         {
             if (
-                killedSelf ||
+                (killedSelf ||
                 role.RemainingKills == 0 ||
-                !CustomGameOptions.AssassinMultiKill
+                !CustomGameOptions.AssassinMultiKill)
+                && doubleshot == false
             )
             {
                 HideButtons(role);

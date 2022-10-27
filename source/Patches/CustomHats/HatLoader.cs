@@ -5,9 +5,10 @@ using System.Reflection;
 using System.Text;
 using BepInEx.Logging;
 using System.Text.Json;
-using Reactor;
-using Reactor.Extensions;
+using Reactor.Utilities;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
+using System.Linq;
 
 namespace TownOfUs.Patches.CustomHats
 {
@@ -32,22 +33,23 @@ namespace TownOfUs.Patches.CustomHats
 
         internal static IEnumerator LoadHats()
         {
-          
             try
             {
                 var hatJson = LoadJson();
                 var hatBehaviours = DiscoverHatBehaviours(hatJson);
 
-                DestroyableSingleton<HatManager>.Instance.allHats.ForEach(
-                    (Action<HatData>)(x => x.StoreName = "Vanilla")
-                );
-                var originalCount = DestroyableSingleton<HatManager>.Instance.allHats.Count;
+                var hatData = new List<HatData>();
+                hatData.AddRange(DestroyableSingleton<HatManager>.Instance.allHats);
+                hatData.ForEach((Action<HatData>)(x => x.StoreName = "Vanilla"));
+
+                var originalCount = DestroyableSingleton<HatManager>.Instance.allHats.ToList().Count;
+                hatBehaviours.Reverse();
                 for (var i = 0; i < hatBehaviours.Count; i++)
                 {
                     hatBehaviours[i].displayOrder = originalCount + i;
-                    HatManager.Instance.allHats.Add(hatBehaviours[i]);
+                    hatData.Add(hatBehaviours[i]);
                 }
-
+                DestroyableSingleton<HatManager>.Instance.allHats = hatData.ToArray();
             }
             catch (Exception e)
             {

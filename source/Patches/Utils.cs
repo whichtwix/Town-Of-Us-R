@@ -4,16 +4,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Reactor.Extensions;
+using Reactor.Utilities;
+using Reactor.Utilities.Extensions;
 using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.Extensions;
 using TownOfUs.Roles;
 using TownOfUs.Roles.Modifiers;
-using UnhollowerBaseLib;
+using Il2CppInterop.Runtime.InteropTypes;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using PerformKill = TownOfUs.ImpostorRoles.UnderdogMod.PerformKill;
-using Reactor;
+using PerformKill = TownOfUs.Modifiers.UnderdogMod.PerformKill;
 using Random = UnityEngine.Random;
 
 namespace TownOfUs
@@ -211,7 +212,7 @@ namespace TownOfUs
                 num = distBetweenPlayers;
                 result = player;
             }
-
+            
             return result;
         }
 
@@ -377,7 +378,7 @@ namespace TownOfUs
                     return;
                 }
 
-                if (target.Is(ModifierEnum.Diseased) && killer.Is(RoleEnum.Underdog))
+                if (target.Is(ModifierEnum.Diseased) && killer.Is(ModifierEnum.Underdog))
                 {
                     var lowerKC = (PlayerControl.GameOptions.KillCooldown - CustomGameOptions.UnderdogKillBonus) * CustomGameOptions.DiseasedMultiplier;
                     var normalKC = PlayerControl.GameOptions.KillCooldown * CustomGameOptions.DiseasedMultiplier;
@@ -398,7 +399,7 @@ namespace TownOfUs
                     return;
                 }
 
-                if (killer.Is(RoleEnum.Underdog))
+                if (killer.Is(ModifierEnum.Underdog))
                 {
                     var lowerKC = PlayerControl.GameOptions.KillCooldown - CustomGameOptions.UnderdogKillBonus;
                     var normalKC = PlayerControl.GameOptions.KillCooldown;
@@ -633,6 +634,10 @@ namespace TownOfUs
             }
             #endregion
             #region ImposterRoles
+            foreach (Escapist role in Role.GetRoles(RoleEnum.Escapist))
+            {
+                role.LastEscape = DateTime.UtcNow;
+            }
             foreach (Blackmailer role in Role.GetRoles(RoleEnum.Blackmailer))
             {
                 role.LastBlackmailed = DateTime.UtcNow;

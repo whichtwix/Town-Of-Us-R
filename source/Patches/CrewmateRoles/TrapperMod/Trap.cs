@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
-using Reactor;
-using System;
+using Reactor.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using TownOfUs.Roles;

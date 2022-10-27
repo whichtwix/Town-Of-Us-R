@@ -1,7 +1,6 @@
 using HarmonyLib;
 using TownOfUs.Roles;
 using System.Linq;
-using UnityEngine;
 
 namespace TownOfUs.ImpostorRoles.PoisonerMod
 {

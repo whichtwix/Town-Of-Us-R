@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using Reactor;
+using Reactor.Utilities;
 using System.Collections.Generic;
 
 namespace TownOfUs.Roles

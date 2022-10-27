@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Hazel;
-using Reactor;
 using TownOfUs.Roles;
 using UnityEngine;
 using UnityEngine.UI;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.CrewmateRoles.SwapperMod;
 using TownOfUs.CrewmateRoles.VigilanteMod;
@@ -71,14 +71,14 @@ namespace TownOfUs.Modifiers.AssassinMod
                     player.myTasks.Clear();
                     importantTextTask.Text = DestroyableSingleton<TranslationController>.Instance.GetString(
                         StringNames.GhostIgnoreTasks,
-                        new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0)
+                        new Il2CppReferenceArray<Il2CppSystem.Object>(0)
                     );
                 }
                 else
                 {
                     importantTextTask.Text = DestroyableSingleton<TranslationController>.Instance.GetString(
                         StringNames.GhostDoTasks,
-                        new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0));
+                        new Il2CppReferenceArray<Il2CppSystem.Object>(0));
                 }
 
                 player.myTasks.Insert(0, importantTextTask);

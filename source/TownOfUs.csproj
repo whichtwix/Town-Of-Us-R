@@ -1,22 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
-		<Version>3.3.2</Version>
+		<TargetFramework>net6.0</TargetFramework>
+		<Version>3.4.0</Version>
 		<DebugType>embedded</DebugType>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<GamePlatform Condition="'$(GamePlatform)' == ''">Steam</GamePlatform>
-		<GameVersion Condition="'$(GamePlatform)' == 'Steam'">2022.8.23</GameVersion>
-		<GameVersion Condition="'$(GamePlatform)' == 'Itch'">2022.8.23</GameVersion>
+		<GameVersion Condition="'$(GamePlatform)' == 'Steam'">2022.10.25</GameVersion>
+		<GameVersion Condition="'$(GamePlatform)' == 'Itch'">2022.10.25</GameVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Reactor" Version="1.2.5" />
-		<PackageReference Include="BepInEx.IL2CPP" Version="6.0.0-be.562" />
+		<PackageReference Include="Reactor" Version="2.0.0" />
+		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.662" />
 		<PackageReference Include="AmongUs.GameLibs.$(GamePlatform)" Version="$(GameVersion)" PrivateAssets="all" />
-		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="1.1.1" PrivateAssets="all" />
+		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" PrivateAssets="all" />
 		<PackageReference Include="System.Text.Json" Version="5.0.2" PrivateAssets="all" />
 	</ItemGroup>
 

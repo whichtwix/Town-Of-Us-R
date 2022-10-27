@@ -37,7 +37,7 @@ namespace TownOfUs.Roles
                 if (CustomGameOptions.MinerOn > 0) ColorMapping.Add("Miner", Colors.Impostor);
                 if (CustomGameOptions.SwooperOn > 0) ColorMapping.Add("Swooper", Colors.Impostor);
                 if (CustomGameOptions.UndertakerOn > 0) ColorMapping.Add("Undertaker", Colors.Impostor);
-                if (CustomGameOptions.UnderdogOn > 0) ColorMapping.Add("Underdog", Colors.Impostor);
+                if (CustomGameOptions.EscapistOn > 0) ColorMapping.Add("Escapist", Colors.Impostor);
                 if (CustomGameOptions.GrenadierOn > 0) ColorMapping.Add("Grenadier", Colors.Impostor);
                 if (CustomGameOptions.PoisonerOn > 0) ColorMapping.Add("Poisoner", Colors.Impostor);
                 if (CustomGameOptions.TraitorOn > 0) ColorMapping.Add("Traitor", Colors.Impostor);
@@ -72,7 +72,7 @@ namespace TownOfUs.Roles
                 ColorMapping.Add("Undertaker", Colors.Impostor);
                 ColorMapping.Add("Grenadier", Colors.Impostor);
                 ColorMapping.Add("Traitor", Colors.Impostor);
-                ColorMapping.Add("Blackmailer", Colors.Impostor);
+                ColorMapping.Add("Escapist", Colors.Impostor);
 
                 if (CustomGameOptions.VigilanteGuessNeutralKilling)
                 {

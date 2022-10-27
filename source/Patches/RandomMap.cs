@@ -53,14 +53,17 @@ namespace TownOfUs
             {
                 if (CustomGameOptions.AutoAdjustSettings)
                 {
-                    if (CustomGameOptions.SmallMapHalfVision) PlayerControl.GameOptions.CrewLightMod = vision;
+                    if (CustomGameOptions.SmallMapHalfVision && vision != 0) PlayerControl.GameOptions.CrewLightMod = vision;
                     if (PlayerControl.GameOptions.MapId == 1) AdjustCooldowns(CustomGameOptions.SmallMapDecreasedCooldown);
                     if (PlayerControl.GameOptions.MapId >= 4) AdjustCooldowns(-CustomGameOptions.LargeMapIncreasedCooldown);
                 }
                 if (CustomGameOptions.RandomMapEnabled) PlayerControl.GameOptions.MapId = previousMap;
-                PlayerControl.GameOptions.NumCommonTasks = commonTasks;
-                PlayerControl.GameOptions.NumShortTasks = shortTasks;
-                PlayerControl.GameOptions.NumLongTasks = longTasks;
+                if (!(commonTasks == 0 && shortTasks == 0 && longTasks == 0))
+                {
+                    PlayerControl.GameOptions.NumCommonTasks = commonTasks;
+                    PlayerControl.GameOptions.NumShortTasks = shortTasks;
+                    PlayerControl.GameOptions.NumLongTasks = longTasks;
+                }
             }
         }
 

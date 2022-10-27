@@ -1,7 +1,7 @@
 using System.Linq;
 using HarmonyLib;
 using TownOfUs.Roles;
-using Reactor;
+using Reactor.Utilities;
 using UnityEngine;
 using TownOfUs.Extensions;
 

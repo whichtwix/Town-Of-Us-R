@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TownOfUs.Roles;
 using TownOfUs.Roles.Modifiers;
 using UnityEngine;
+using System;
 
 namespace TownOfUs.Extensions
 {
@@ -120,6 +121,10 @@ namespace TownOfUs.Extensions
             if (obj is UnityEngine.Object) return (obj as UnityEngine.Object) == null;
 
             return false;
+        }
+        public static Texture2D CreateEmptyTexture(int width = 0, int height = 0)
+        {
+            return new Texture2D(width, height, TextureFormat.RGBA32, Texture.GenerateAllMips, false, IntPtr.Zero);
         }
 
         public static TMPro.TextMeshPro nameText(this PlayerControl p) => p.cosmetics.nameText;

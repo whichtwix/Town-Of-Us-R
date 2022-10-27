@@ -366,6 +366,12 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
                 morphlingRole.LastMorphed = DateTime.UtcNow;
             }
 
+            else if (role == RoleEnum.Escapist)
+            {
+                var escapistRole = Role.GetRole<Escapist>(amnesiac);
+                escapistRole.LastEscape = DateTime.UtcNow;
+            }
+
             else if (role == RoleEnum.Swooper)
             {
                 var swooperRole = Role.GetRole<Swooper>(amnesiac);
