@@ -3,11 +3,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using AmongUs.Data;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Reactor;
+using Reactor.Utilities.ImGui;
 using Reactor.Utilities.Extensions;
 using TownOfUs.CustomOption;
 using TownOfUs.Patches;
@@ -18,6 +20,7 @@ using InnerNet;
 using TMPro;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
+using Il2CppInterop.Runtime.Attributes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -247,7 +250,7 @@ namespace TownOfUs
             {
                 TestWindow = new DragWindow(new Rect(20, 20, 0, 0), "Debugger", () =>
                 {
-                    GUILayout.Label("Name: " + SaveManager.PlayerName);
+                    GUILayout.Label("Name: " +  DataManager.Player.Customization.Name);
                     
                     if (TutorialManager.InstanceExists && PlayerControl.LocalPlayer)
                     {
@@ -434,11 +437,17 @@ namespace TownOfUs
                                 break;
                             case 23:
                                 GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
+                                var escapist = new Escapist(player);
+                                tasktext.Text = $"{escapist.ColorString}Role: Escapist\nmark a place on the map every round and teleport there when you want.\nFake Tasks:";
+                                player.myTasks.Insert(0, tasktext);
+                                break;
+                            case 24:
+                                GameObject.FindObjectOfType<KillButton>().gameObject.SetActive(false);
                                 tasktext.Text = "<#FFFF00>Resetting buttons for next loop, click again";
                                 player.myTasks.Insert(0, tasktext);
                                 break;
                             }
-                            increment(ref roleindex, 23);    
+                            increment(ref roleindex, 24);    
                         }
                         if (GUILayout.Button("Modifier"))
                         {
@@ -480,8 +489,18 @@ namespace TownOfUs
                                     tasktext.Text = $"{torch.ColorString}Modifier: Torch\n You can see when the lights are off\ntoggle imp and sab lights and revert to a crew to test";
                                     player.myTasks.Insert(1, tasktext);
                                     break;
+                                case 6:
+                                    var disperser = new Disperser(player);
+                                    tasktext.Text = $"{disperser.ColorString}Modifier: Disperser\n teleports all players to rndom vents on click";
+                                    player.myTasks.Insert(1, tasktext);
+                                    break;
+                                case 7:
+                                    var multitasker = new Multitasker(player);
+                                    tasktext.Text = $"{multitasker.ColorString}Modifier: Multitasker\n your tasks are transparent and you can see through while on it";
+                                    player.myTasks.Insert(1, tasktext);
+                                    break;
                             }
-                            increment(ref modifierindex, 5);
+                            increment(ref modifierindex, 7);
                         }
                     }  if (PlayerControl.LocalPlayer)
                        {
