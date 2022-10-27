@@ -1,5 +1,4 @@
-﻿
-using Reactor.Extensions;
+﻿using Reactor.Utilities.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

@@ -44,6 +44,7 @@ namespace TownOfUs
                 || player.Is(RoleEnum.Grenadier) && !CustomGameOptions.GrenadierVent
                 || player.Is(RoleEnum.Undertaker) && !CustomGameOptions.UndertakerVent
                 || player.Is(RoleEnum.Poisoner) && !CustomGameOptions.PoisonerVent
+                || player.Is(RoleEnum.Escapist) && !CustomGameOptions.EscapistVent
                 || (player.Is(RoleEnum.Undertaker) && Role.GetRole<Undertaker>(player).CurrentlyDragging != null && !CustomGameOptions.UndertakerVentWithBody))
                 return false;
 

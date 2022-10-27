@@ -4,7 +4,8 @@ using System.Linq;
 using HarmonyLib;
 using Hazel;
 using Reactor;
-using Reactor.Extensions;
+using Reactor.Utilities;
+using Reactor.Utilities.Extensions;
 using TownOfUs.CrewmateRoles.AltruistMod;
 using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.CrewmateRoles.SwapperMod;
@@ -26,6 +27,7 @@ using Coroutine = TownOfUs.ImpostorRoles.JanitorMod.Coroutine;
 using Object = UnityEngine.Object;
 using PerformKillButton = TownOfUs.NeutralRoles.AmnesiacMod.PerformKillButton;
 using Random = UnityEngine.Random; //using Il2CppSystem;
+using Reactor.Networking.Extensions;
 
 namespace TownOfUs
 {
@@ -37,8 +39,10 @@ namespace TownOfUs
         private static readonly List<(Type, CustomRPC, int, bool)> ImpostorRoles = new List<(Type, CustomRPC, int, bool)>();
         private static readonly List<(Type, CustomRPC, int)> CrewmateModifiers = new List<(Type, CustomRPC, int)>();
         private static readonly List<(Type, CustomRPC, int)> GlobalModifiers = new List<(Type, CustomRPC, int)>();
+        private static readonly List<(Type, CustomRPC, int)> ImpostorModifiers = new List<(Type, CustomRPC, int)>();
         private static readonly List<(Type, CustomRPC, int)> ButtonModifiers = new List<(Type, CustomRPC, int)>();
-        private static readonly List<(Type, CustomRPC, int)> AssassinModifier = new List<(Type, CustomRPC, int)>();
+        private static readonly List<(Type, CustomRPC, int)> AssassinModifiers = new List<(Type, CustomRPC, int)>();
+        private static readonly List<(Type, CustomRPC, int)> AssassinAbility = new List<(Type, CustomRPC, int)>();
         private static bool PhantomOn;
         private static bool HaunterOn;
         private static bool TraitorOn;
@@ -185,6 +189,7 @@ namespace TownOfUs
 
             SortModifiers(CrewmateModifiers, crewmates.Count);
             SortModifiers(GlobalModifiers, crewmates.Count + impostors.Count);
+            SortModifiers(ImpostorModifiers, impostors.Count);
             SortModifiers(ButtonModifiers, crewmates.Count + impostors.Count);
 
             if (Check(CustomGameOptions.VanillaGame))
@@ -194,8 +199,10 @@ namespace TownOfUs
                 NeutralKillingRoles.Clear();
                 CrewmateModifiers.Clear();
                 GlobalModifiers.Clear();
+                ImpostorModifiers.Clear();
                 ButtonModifiers.Clear();
-                AssassinModifier.Clear();
+                AssassinModifiers.Clear();
+                AssassinAbility.Clear();
                 ImpostorRoles.Clear();
                 crewAndNeutralRoles.Clear();
                 crewRoles.Clear();
@@ -235,6 +242,8 @@ namespace TownOfUs
                 Role.Gen<Role>(typeof(Impostor), impostor, CustomRPC.SetImpostor);
 
             var canHaveModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
+            var canHaveImpModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
+            canHaveImpModifier.RemoveAll(player => !player.Is(Faction.Impostors));
             var canHaveAbility = PlayerControl.AllPlayerControls.ToArray().ToList();
             var canHaveAbility2 = PlayerControl.AllPlayerControls.ToArray().ToList();
             canHaveModifier.Shuffle();
@@ -245,6 +254,39 @@ namespace TownOfUs
             canHaveAbility2.Shuffle();
             var impAssassins = CustomGameOptions.NumberOfImpostorAssassins;
             var neutAssassins = CustomGameOptions.NumberOfNeutralAssassins;
+
+            while (canHaveAbility.Count > 0 && impAssassins > 0)
+            {
+                var (type, rpc, _) = AssassinAbility.Ability();
+                Role.Gen<Ability>(type, canHaveAbility.TakeFirst(), rpc);
+                impAssassins -= 1;
+            }
+
+            while (canHaveAbility2.Count > 0 && neutAssassins > 0)
+            {
+                var (type, rpc, _) = AssassinAbility.Ability();
+                Role.Gen<Ability>(type, canHaveAbility2.TakeFirst(), rpc);
+                neutAssassins -= 1;
+            }
+
+            var canHaveAssassinModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
+            canHaveAssassinModifier.RemoveAll(player => !player.Is(Faction.Impostors) || !player.Is(AbilityEnum.Assassin));
+
+            foreach (var (type, rpc, _) in AssassinModifiers)
+            {
+                if (canHaveAssassinModifier.Count == 0) break;
+                Role.Gen<Modifier>(type, canHaveAssassinModifier, rpc);
+            }
+
+            canHaveImpModifier.RemoveAll(player => player.Is(ModifierEnum.DoubleShot));
+
+            foreach (var (type, rpc, _) in ImpostorModifiers)
+            {
+                if (canHaveImpModifier.Count == 0) break;
+                Role.Gen<Modifier>(type, canHaveImpModifier, rpc);
+            }
+
+            canHaveModifier.RemoveAll(player => player.Is(ModifierEnum.Disperser) || player.Is(ModifierEnum.DoubleShot) || player.Is(ModifierEnum.Underdog));
 
             foreach (var (type, rpc, _) in GlobalModifiers)
             {
@@ -276,20 +318,6 @@ namespace TownOfUs
             {
                 var (type, rpc, _) = CrewmateModifiers.TakeFirst();
                 Role.Gen<Modifier>(type, canHaveModifier.TakeFirst(), rpc);
-            }
-
-            while (canHaveAbility.Count > 0 && impAssassins > 0)
-            {
-                var (type, rpc, _) = AssassinModifier.Ability();
-                Role.Gen<Ability>(type, canHaveAbility.TakeFirst(), rpc);
-                impAssassins -= 1;
-            }
-
-            while (canHaveAbility2.Count > 0 && neutAssassins > 0)
-            {
-                var (type, rpc, _) = AssassinModifier.Ability();
-                Role.Gen<Ability>(type, canHaveAbility2.TakeFirst(), rpc);
-                neutAssassins -= 1;
             }
 
             var toChooseFromCrew = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Crewmates) && !x.Is(ModifierEnum.Lover)).ToList();
@@ -398,7 +426,7 @@ namespace TownOfUs
 
             ImpostorRoles.Add((typeof(Undertaker), CustomRPC.SetUndertaker, 10, true));
             ImpostorRoles.Add((typeof(Morphling), CustomRPC.SetMorphling, 10, false));
-            ImpostorRoles.Add((typeof(Blackmailer), CustomRPC.SetBlackmailer, 10, true));
+            ImpostorRoles.Add((typeof(Escapist), CustomRPC.SetEscapist, 10, false));
             ImpostorRoles.Add((typeof(Miner), CustomRPC.SetMiner, 10, true));
             ImpostorRoles.Add((typeof(Swooper), CustomRPC.SetSwooper, 10, false));
             ImpostorRoles.Add((typeof(Grenadier), CustomRPC.SetGrenadier, 10, true));
@@ -881,6 +909,18 @@ namespace TownOfUs
                     case CustomRPC.SetSleuth:
                         new Sleuth(Utils.PlayerById(reader.ReadByte()));
                         break;
+                    case CustomRPC.SetRadar:
+                        new Radar(Utils.PlayerById(reader.ReadByte()));
+                        break;
+                    case CustomRPC.SetMultitasker:
+                        new Multitasker(Utils.PlayerById(reader.ReadByte()));
+                        break;
+                    case CustomRPC.SetDisperser:
+                        new Disperser(Utils.PlayerById(reader.ReadByte()));
+                        break;
+                    case CustomRPC.SetDoubleShot:
+                        new DoubleShot(Utils.PlayerById(reader.ReadByte()));
+                        break;
                     case CustomRPC.SetArsonist:
                         new Arsonist(Utils.PlayerById(reader.ReadByte()));
                         break;
@@ -1030,6 +1070,17 @@ namespace TownOfUs
                             buttonBarry.RpcStartMeeting(null);
                         }
                         break;
+                    case CustomRPC.Disperse:
+                        byte teleports = reader.ReadByte();
+                        Dictionary<byte, Vector2> coordinates = new Dictionary<byte, Vector2>();
+                        for (int i = 0; i < teleports; i++)
+                        {
+                            byte playerId = reader.ReadByte();
+                            Vector2 location = reader.ReadVector2();
+                            coordinates.Add(playerId, location);
+                        }
+                        Disperser.DispersePlayersToCoordinates(coordinates);
+                        break;
                     case CustomRPC.BaitReport:
                         var baitKiller = Utils.PlayerById(reader.ReadByte());
                         var bait = Utils.PlayerById(reader.ReadByte());
@@ -1157,6 +1208,16 @@ namespace TownOfUs
                     case CustomRPC.SetTrapper:
                         new Trapper(Utils.PlayerById(reader.ReadByte()));
                         break;
+                    case CustomRPC.SetEscapist:
+                        new Escapist(Utils.PlayerById(reader.ReadByte()));
+                        break;
+                    case CustomRPC.Escape:
+                        var escapist = Utils.PlayerById(reader.ReadByte());
+                        var escapistRole = Role.GetRole<Escapist>(escapist);
+                        var escapePos = reader.ReadVector2();
+                        escapistRole.EscapePoint = escapePos;
+                        Escapist.Escape(escapist);
+                        break;
                     case CustomRPC.AddMayorVoteBank:
                         Role.GetRole<Mayor>(Utils.PlayerById(reader.ReadByte())).VoteBank += reader.ReadInt32();
                         break;
@@ -1202,8 +1263,10 @@ namespace TownOfUs
                 ImpostorRoles.Clear();
                 CrewmateModifiers.Clear();
                 GlobalModifiers.Clear();
+                ImpostorModifiers.Clear();
                 ButtonModifiers.Clear();
-                AssassinModifier.Clear();
+                AssassinModifiers.Clear();
+                AssassinAbility.Clear();
 
                 RecordRewind.points.Clear();
                 Murder.KilledPlayers.Clear();
@@ -1321,9 +1384,6 @@ namespace TownOfUs
                     if (CustomGameOptions.UndertakerOn > 0)
                         ImpostorRoles.Add((typeof(Undertaker), CustomRPC.SetUndertaker, CustomGameOptions.UndertakerOn, true));
 
-                    if (CustomGameOptions.UnderdogOn > 0)
-                        ImpostorRoles.Add((typeof(Underdog), CustomRPC.SetUnderdog, CustomGameOptions.UnderdogOn, false));
-
                     if (CustomGameOptions.MorphlingOn > 0)
                         ImpostorRoles.Add((typeof(Morphling), CustomRPC.SetMorphling, CustomGameOptions.MorphlingOn, false));
 
@@ -1344,6 +1404,9 @@ namespace TownOfUs
 
                     if (CustomGameOptions.PoisonerOn > 0 && CustomGameOptions.GameMode != GameMode.KillingOnly)
                         ImpostorRoles.Add((typeof(Poisoner), CustomRPC.SetPoisoner, CustomGameOptions.PoisonerOn, true));
+
+                    if (CustomGameOptions.EscapistOn > 0)
+                        ImpostorRoles.Add((typeof(Escapist), CustomRPC.SetEscapist, CustomGameOptions.EscapistOn, false));
                     #endregion
                     #region Crewmate Modifiers
                     if (Check(CustomGameOptions.TorchOn))
@@ -1354,6 +1417,12 @@ namespace TownOfUs
 
                     if (Check(CustomGameOptions.BaitOn))
                         CrewmateModifiers.Add((typeof(Bait), CustomRPC.SetBait, CustomGameOptions.BaitOn));
+
+                    if (Check(CustomGameOptions.BlindOn))
+                        CrewmateModifiers.Add((typeof(Blind), CustomRPC.SetBlind, CustomGameOptions.BlindOn));
+
+                    if (Check(CustomGameOptions.MultitaskerOn))
+                        CrewmateModifiers.Add((typeof(Multitasker), CustomRPC.SetMultitasker, CustomGameOptions.MultitaskerOn));
                     #endregion
                     #region Global Modifiers
                     if (Check(CustomGameOptions.TiebreakerOn))
@@ -1361,9 +1430,6 @@ namespace TownOfUs
 
                     if (Check(CustomGameOptions.FlashOn))
                         GlobalModifiers.Add((typeof(Flash), CustomRPC.SetFlash, CustomGameOptions.FlashOn));
-
-                    if (Check(CustomGameOptions.BlindOn))
-                        GlobalModifiers.Add((typeof(Blind), CustomRPC.SetBlind, CustomGameOptions.BlindOn));
 
                     if (Check(CustomGameOptions.GiantOn))
                         GlobalModifiers.Add((typeof(Giant), CustomRPC.SetGiant, CustomGameOptions.GiantOn));
@@ -1376,9 +1442,22 @@ namespace TownOfUs
 
                     if (Check(CustomGameOptions.SleuthOn))
                         GlobalModifiers.Add((typeof(Sleuth), CustomRPC.SetSleuth, CustomGameOptions.SleuthOn));
+
+                    if (Check(CustomGameOptions.RadarOn))
+                        GlobalModifiers.Add((typeof(Radar), CustomRPC.SetRadar, CustomGameOptions.RadarOn));
                     #endregion
-                    #region Assassin Modifier
-                    AssassinModifier.Add((typeof(Assassin), CustomRPC.SetAssassin, 100));
+                    #region Impostor Modifiers
+                    if (Check(CustomGameOptions.DisperserOn) && PlayerControl.GameOptions.MapId != 4 && PlayerControl.GameOptions.MapId != 5)
+                        ImpostorModifiers.Add((typeof(Disperser), CustomRPC.SetDisperser, CustomGameOptions.DisperserOn));
+
+                    if (Check(CustomGameOptions.DoubleShotOn))
+                        AssassinModifiers.Add((typeof(DoubleShot), CustomRPC.SetDoubleShot, CustomGameOptions.DoubleShotOn));
+
+                    if (CustomGameOptions.UnderdogOn > 0)
+                        ImpostorModifiers.Add((typeof(Underdog), CustomRPC.SetUnderdog, CustomGameOptions.UnderdogOn));
+                    #endregion
+                    #region Assassin Ability
+                    AssassinAbility.Add((typeof(Assassin), CustomRPC.SetAssassin, 100));
                     #endregion
                 }
 

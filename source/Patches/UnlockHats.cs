@@ -1,6 +1,6 @@
 using System.Linq;
 using HarmonyLib;
-using UnhollowerBaseLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace TownOfUs
 {
@@ -11,7 +11,7 @@ namespace TownOfUs
         {
             var array = (
                 from h in __instance.allHats.ToArray()
-                where h.Free || SaveManager.GetPurchase(h.ProductId, h.BundleId)
+                where h.Free || AmongUs.Data.DataManager.Player.Purchases.GetPurchase(h.ProductId, h.BundleId)
                 select h
                 into o
                 orderby o.displayOrder descending, o.name

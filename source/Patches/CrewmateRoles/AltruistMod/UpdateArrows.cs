@@ -1,5 +1,5 @@
 using HarmonyLib;
-using Reactor.Extensions;
+using Reactor.Utilities.Extensions;
 using TownOfUs.Extensions;
 
 namespace TownOfUs.CrewmateRoles.AltruistMod

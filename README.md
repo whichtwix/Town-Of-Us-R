@@ -42,12 +42,12 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 - [Werewolf](#werewolf)
 
 **Impostor Roles**
+- [Escapist](#escapist)
 - [Grenadier](#grenadier)
 - [Morphling](#morphling)
 - [Swooper](#swooper)
 - [Poisoner](#poisoner)
 - [Traitor](#traitor)
-- [Underdog](#underdog)
 - [Blackmailer](#blackmailer)
 - [Janitor](#janitor)
 - [Miner](#miner)
@@ -55,25 +55,29 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 
 **Modifiers**
 - [Bait](#bait)
-- [Diseased](#diseased)
-- [Torch](#torch)
 - [Blind](#blind)
+- [Diseased](#diseased)
+- [Multitasker](#multitasker)
+- [Torch](#torch)
 - [Button Barry](#button-barry)
 - [Flash](#flash)
 - [Giant](#giant)
+- [Radar](#radar)
 - [Lovers](#lovers)
 - [Sleuth](#sleuth)
 - [Tiebreaker](#tiebreaker)
-
-
+- [Disperser](#disperser)
+- [Double Shot](#double-shot)
+- [Underdog](#underdog)
 
 -----------------------
 # Releases
 | Among Us - Version| Mod Version | Link |
 |----------|-------------|-----------------|
-| 2022.8.24s & 2022.8.24e | v3.3.2 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.2/ToU.v3.3.2.zip) |
-| 2022.8.24s & 2022.8.24e | v3.3.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.1/ToU.v3.3.1.zip) |
-| 2022.8.24s & 2022.8.24e | v3.3.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.0/ToU.v3.3.0.zip) |
+| 2022.10.25s & 2022.10.25e | v3.4.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.4.0/ToU.v3.4.0.zip) |
+| 2022.8.24s & 2022.8.24e & 2022.9.20s & 2022.9.20e | v3.3.2 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.2/ToU.v3.3.2.zip) |
+| 2022.8.24s & 2022.8.24e & 2022.9.20s & 2022.9.20e | v3.3.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.1/ToU.v3.3.1.zip) |
+| 2022.8.24s & 2022.8.24e & 2022.9.20s & 2022.9.20e | v3.3.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.0/ToU.v3.3.0.zip) |
 | 2022.6.21s & 2022.6.21e & 2022.7.12s & 2022.7.12e | v3.2.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.2.0/ToU.v3.2.0.zip) |
 | 2022.3.29s & 2022.3.29e & 2022.4.19e | v3.1.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.1.0/ToU.v3.1.0.zip) |
 | 2022.3.29s & 2022.3.29e & 2022.4.19e | v3.0.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.0.1/ToU.v3.0.1.zip) |
@@ -121,6 +125,19 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 
 <details>
   <summary> Changelog </summary>
+  <details>
+  <summary> v3.4.0 </summary>
+  <ul> <li>New Role: Escapist</li> </ul>
+  <ul> <li>New Modifier: Radar</li> </ul>
+  <ul> <li>New Modifier: Disperser</li> </ul>
+  <ul> <li>New Modifier: Multitasker</li> </ul>
+  <ul> <li>New Modifier: Double Shot</li> </ul>
+  <ul> <li>New Settings: Arsonist/Jester has Impostor Vision</li> </ul>
+  <ul> <li>New Setting: Arsonist Ignite Cooldown removed when they're the final killer</li> </ul>
+  <ul> <li>Reporting bodies now spreads the Plaguebearer's infection</li> </ul>
+  <ul> <li>Changed Underdog from a role to a modifier</li> </ul>
+  <ul> <li>Changed Blind to a Crewmate Modifier</li> </ul>
+  </details>
   <details>
   <summary> v3.3.2 </summary>
   <ul> <li>New Setting: Snitch doesn't see Traitor</li> </ul>
@@ -1028,20 +1045,6 @@ However, if Lovers, or a Neutral Evil role wins the game, the survivor loses.
 | Max Uses | The amount of times the Vest ability can be used | Number | 5 |
 
 -----------------------
-## Jester
-### **Team: Neutral**
-The Jester is a Neutral role with its own win condition.\
-If they are voted out after a meeting, the game finishes and they win.\
-However, the Jester does not win if the Crewmates, Impostors or another Neutral role wins.
-
-### Game Options
-| Name | Description | Type | Default |
-|----------|:-------------:|:------:|:------:|
-| Jester | The percentage probability of the Jester appearing | Percentage | 0% |
-| Jester Can Button | Whether the Jester Can Press the Button | Toggle | True |
-| Jester Can Vent | Whether the Jester Can Vent | Toggle | False |
-
------------------------
 ## Executioner
 ### **Team: Neutral**
 
@@ -1054,6 +1057,21 @@ If that player gets voted out, they win the game.
 | Executioner | The percentage probability of the Executioner appearing | Percentage | 0% |
 | Executioner becomes on Target Dead | Which role the Executioner becomes when their target dies | Crewmate / Amnesiac / Survivor / Jester | Crewmate |
 | Executioner Can Button | Whether the Executioner Can Press the Button | Toggle | True |
+
+-----------------------
+## Jester
+### **Team: Neutral**
+The Jester is a Neutral role with its own win condition.\
+If they are voted out after a meeting, the game finishes and they win.\
+However, the Jester does not win if the Crewmates, Impostors or another Neutral role wins.
+
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Jester | The percentage probability of the Jester appearing | Percentage | 0% |
+| Jester Can Button | Whether the Jester Can Press the Button | Toggle | True |
+| Jester Can Vent | Whether the Jester Can Vent | Toggle | False |
+| Jester Has Impostor Vision | Whether the Jester Has Impostor Vision | Toggle | False |
 
 -----------------------
 ## Phantom
@@ -1081,6 +1099,8 @@ The Arsonist needs to be the last killer alive to win the game.
 | Arsonist | The percentage probability of the Arsonist appearing | Percentage | 0% |
 | Douse Cooldown | The cooldown of the Arsonist's Douse button | Time | 25s |
 | Maximum Alive Players Doused | The maximum amount of players that the Arsonist can have doused | Number | 5 |
+| Arsonist Has Impostor Vision | Whether the Arsonist Has Impostor Vision | Toggle | False |
+| Ignite Cooldown Removed When Arso Is Last Killer | Whether the Arsonist's Ignite Cooldown is removed when they're the final killer | Toggle | False |
 
 -----------------------
 ## Plaguebearer
@@ -1142,6 +1162,20 @@ The Werewolf needs to be the last killer alive to win the game.
 
 -----------------------
 # Impostor Roles
+## Escapist
+### **Team: Impostors**
+
+The Escapist is an Impostor that can teleport to a different location.\
+Once per round the Escapist can Mark a location which they can then escape to later in the round.
+
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Escapist | The percentage probability of the Escapist appearing | Percentage | 0% |
+| Recall Cooldown | The cooldown of the Escapist's Recall button | Time | 25s |
+| Escapist can Vent | Whether the Escapist can Vent | Toggle | False |
+
+-----------------------
 ## Grenadier
 ### **Team: Impostors**
 
@@ -1219,20 +1253,6 @@ Once this player has turned into the Traitor their alliance sits with the Impost
 | Traitor Won't Spawn if Neutral Killing are Alive | Whether the Traitor won't spawn if any Neutral Killing roles are alive | Toggle | False |
 
 -----------------------
-## Underdog
-### **Team: Impostors**
-
-The Underdog is an Impostor with a prolonged kill cooldown.\
-When they are the only remaining Impostor, they will have their kill cooldown shortened.
-
-### Game Options
-| Name | Description | Type | Default |
-|----------|:-------------:|:------:|:------:|
-| Underdog | The percentage probability of the Underdog appearing | Percentage | 0% |
-| Kill Cooldown Bonus | The amount of time added or removed from the Underdog's Kill Cooldown | Time | 5s |
-| Increased Kill Cooldown  | Whether the Underdog's Kill Cooldown is Increased when 2+ Imps are alive | Toggle | True |
-
------------------------
 ## Blackmailer
 ### **Team: Impostors**
 The Blackmailer is an Impostor that can silence people in meetings.\
@@ -1298,6 +1318,15 @@ Killing the Bait makes the killer auto self-report.
 | Bait Maximum Delay | The maximum time the killer of the Bait reports the body | Time | 1s |
 
 -----------------------
+## Blind
+### **Applied to: Crewmates**
+The Blind's report button does not light up.
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Blind | The percentage probability of the Blind appearing | Percentage | 0% |
+
+-----------------------
 ## Diseased
 ### **Applied to: Crewmates**
 Killing the Diseased triples the killer's Kill cooldown.
@@ -1308,6 +1337,15 @@ Killing the Diseased triples the killer's Kill cooldown.
 | Kill Multiplier | How much the Kill Cooldown of the Impostor is increased by | Factor | 3x |
 
 -----------------------
+## Multitasker
+### **Applied to: Crewmates**
+The Multitasker's tasks are transparent.
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Multitasker | The percentage probability of the Multitasker appearing | Percentage | 0% |
+
+-----------------------
 ## Torch
 ### **Applied to: Crewmates**
 The Torch's vision doesn't get reduced when the lights are sabotaged.
@@ -1315,15 +1353,6 @@ The Torch's vision doesn't get reduced when the lights are sabotaged.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Torch | The percentage probability of the Torch appearing | Percentage | 0% |
-
------------------------
-## Blind
-### **Applied to: All**
-The Blind's report button does not light up.
-### Game Options
-| Name | Description | Type | Default |
-|----------|:-------------:|:------:|:------:|
-| Blind | The percentage probability of the Blind appearing | Percentage | 0% |
 
 -----------------------
 ## Button Barry
@@ -1374,6 +1403,15 @@ However, they can also win with their respective team, hence why the Lovers do n
 | Neutral Roles Can Be Lovers | Whether a Lover can be a Neutral Role | Toggle | True |
 
 -----------------------
+## Radar
+### **Applied to: All**
+The Radar is a crewmate who knows where the closest player is to them.
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Radar | The percentage probability of the Radar appearing | Percentage | 0% |
+
+-----------------------
 ## Sleuth
 ### **Applied to: All**
 The Sleuth is a crewmate who gains knowledge from reporting dead bodies.\
@@ -1393,6 +1431,42 @@ If the Tiebreaker is the Mayor, it applies to the Mayor's __first__ vote.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Tiebreaker | The percentage probability of the Tiebreaker appearing | Percentage | 0% |
+
+-----------------------
+## Disperser
+### **Applied to: Impostors**
+The Disperser is an Impostor who has a 1 time use ability to send all players to a random vent.\
+This includes miner vents.\
+Does not appear on Airship or Submerged.
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Disperser | The percentage probability of the Disperser appearing | Percentage | 0% |
+
+-----------------------
+## Double Shot
+### **Applied to: Impostors**
+Double Shot is an Impostor who gets an extra life when assassinating.\
+Once they use their life they are indicated with a red flash\
+and can no longer geuss the person who they guessed wrong for the remainder of that meeting.
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Double Shot| The percentage probability of Double Shot appearing | Percentage | 0% |
+
+-----------------------
+## Underdog
+### **Applied to: Impostors**
+
+The Underdog is an Impostor with a prolonged kill cooldown.\
+When they are the only remaining Impostor, they will have their kill cooldown shortened.
+
+### Game Options
+| Name | Description | Type | Default |
+|----------|:-------------:|:------:|:------:|
+| Underdog | The percentage probability of the Underdog appearing | Percentage | 0% |
+| Kill Cooldown Bonus | The amount of time added or removed from the Underdog's Kill Cooldown | Time | 5s |
+| Increased Kill Cooldown  | Whether the Underdog's Kill Cooldown is Increased when 2+ Imps are alive | Toggle | True |
 
 -----------------------
 # Game Mode Settings
@@ -1533,7 +1607,7 @@ If you have any bugs or any need to contact me, join the [Discord Server](https:
 [MyDragonBreath](https://github.com/MyDragonBreath) - For Submerged Compatibility, the Trapper role and support for the new Among Us version (v2022.6.21).\
 [ItsTheNumberH](https://github.com/itsTheNumberH/Town-Of-H) - For the code used for Blind, Bait, Poisoner and partially for Tracker, as well as other bug fixes.\
 [Ruiner](https://github.com/ruiner189/Town-Of-Us-Redux) - For lovers changed into a modifier and Task Tracking.\
-[Term](https://www.twitch.tv/termboii) - For creating Transporter, Medium, Blackmailer, Plaguebearer, Sleuth, and porting v2.5.0 to the new Among Us version (v2021.12.15).\
+[Term](https://www.twitch.tv/termboii) - For creating Transporter, Medium, Blackmailer, Plaguebearer, Sleuth, Multitasker and porting v2.5.0 to the new Among Us version (v2021.12.15).\
 [BryBry16](https://github.com/Brybry16/BetterPolus) - For the code used for Better Polus.\
 [Alexejhero](https://github.com/SubmergedAmongUs/Submerged) - For the Submerged map.
 

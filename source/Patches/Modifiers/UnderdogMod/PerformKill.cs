@@ -1,19 +1,18 @@
 ﻿using System.Linq;
 using HarmonyLib;
 using TownOfUs.Extensions;
-using TownOfUs.Roles;
-using UnityEngine;
+using TownOfUs.Roles.Modifiers;
 
-namespace TownOfUs.ImpostorRoles.UnderdogMod
+namespace TownOfUs.Modifiers.UnderdogMod
 {
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
     public class PerformKill
     {
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
         {
-            var role = Role.GetRole(__instance);
-            if (role?.RoleType == RoleEnum.Underdog)
-                ((Underdog)role).SetKillTimer();
+            var modifier = Modifier.GetModifier(__instance);
+            if (modifier?.ModifierType == ModifierEnum.Underdog)
+                ((Underdog)modifier).SetKillTimer();
         }
 
         internal static bool LastImp()

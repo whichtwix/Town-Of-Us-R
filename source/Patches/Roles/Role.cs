@@ -3,10 +3,10 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Reactor.Extensions;
+using Reactor.Utilities.Extensions;
 using TMPro;
 using TownOfUs.Roles.Modifiers;
-using UnhollowerBaseLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -529,10 +529,10 @@ namespace TownOfUs.Roles
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__107), nameof(PlayerControl._CoSetTasks_d__107.MoveNext))]
+        [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__110), nameof(PlayerControl._CoSetTasks_d__110.MoveNext))]
         public static class PlayerControl_SetTasks
         {
-            public static void Postfix(PlayerControl._CoSetTasks_d__107 __instance)
+            public static void Postfix(PlayerControl._CoSetTasks_d__110 __instance)
             {
                 if (__instance == null) return;
                 var player = __instance.__4__this;

@@ -1,6 +1,5 @@
 using HarmonyLib;
-using Hazel;
-using Reactor;
+using Reactor.Utilities;
 using TownOfUs.Extensions;
 using TownOfUs.Roles;
 using UnityEngine;

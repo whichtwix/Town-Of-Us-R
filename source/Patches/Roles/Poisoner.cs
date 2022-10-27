@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using TownOfUs.Modifiers.UnderdogMod;
 
 namespace TownOfUs.Roles
 {
@@ -65,6 +66,11 @@ namespace TownOfUs.Roles
             var utcNow = DateTime.UtcNow;
             var timeSpan = utcNow - LastPoisoned;
             var num = CustomGameOptions.PoisonCd * 1000f;
+            if (Player.Is(ModifierEnum.Underdog))
+            {
+                num = PerformKill.LastImp() ? (CustomGameOptions.PoisonCd - CustomGameOptions.UnderdogKillBonus) * 1000f :
+                    (PerformKill.IncreasedKC() ? CustomGameOptions.PoisonCd * 1000 : (CustomGameOptions.PoisonCd + CustomGameOptions.UnderdogKillBonus) * 1000);
+            }
             var flag2 = num - (float)timeSpan.TotalMilliseconds < 0f;
             if (flag2) return 0;
             return (num - (float)timeSpan.TotalMilliseconds) / 1000f;
