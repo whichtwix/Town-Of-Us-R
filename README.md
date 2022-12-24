@@ -712,7 +712,7 @@ On top of this, the Mystic briefly gets an arrow pointing in the direction of th
 ## Seer
 ### **Team: Crewmates**
 The Seer is a Crewmate that can reveal the alliance of other players.\
-Based on settings, the Seer can find out whether a role is Good or Evil.\
+Based on settings, the Seer can find out whether a player is a Good or an Evil role.\
 A player's name will change color to their team.
 ### Game Options
 | Name | Description | Type | Default |
@@ -731,7 +731,7 @@ A player's name will change color to their team.
 
 The Snitch is a Crewmate that can get arrows pointing towards the Impostors, once all their tasks are finished.\
 The names of the Impostors will also show up as red on their screen.\
-Based on game settings, the Snitch may not know who they are until they have one task left.\
+Based on the game settings, the Snitch may not know who they are until they have one task left.\
 However, when they only have a single task left, the Impostors get an arrow pointing towards the Snitch.
 ### Game Options
 | Name | Description | Type | Default |
@@ -848,7 +848,7 @@ During meetings, the Vigilante can choose to kill someone by guessing their role
 
 The Altruist is a Crewmate that is capable of reviving dead players.\
 Upon finding a dead body, the Altruist can hit their revive button, risking sacrificing themselves for the revival of another player.\
-If enabled, the dead body disappears, so only they Altruist's body remains at the scene.\
+If enabled, the dead body disappears, so only the Altruist's body remains at the scene.\
 After a set period of time, the player will be resurrected, if the revival isn't interrupted.
 ### Game Options
 | Name | Description | Type | Default |
@@ -1032,7 +1032,7 @@ If their target loses, they lose.
 -----------------------
 ## Survivor
 ### **Team: Neutral**
-The Survivor is a Neutral role which can wins by simply surviving.\
+The Survivor is a Neutral role which can win by simply surviving.\
 However, if Lovers, or a Neutral Evil role wins the game, the survivor loses.
 
 ### Game Options
@@ -1091,7 +1091,7 @@ They become half-invisible when they die and has to complete all their tasks wit
 
 The Arsonist is a Neutral role with its own win condition.\
 They have two abilities, one is to douse other players with gasoline.\
-The other is to ingite all doused players.\
+The other is to ignite all doused players.\
 The Arsonist needs to be the last killer alive to win the game.
 ### Game Options
 | Name | Description | Type | Default |
@@ -1226,7 +1226,7 @@ The Swooper is an Impostor that can temporarily turn invisible.
 ## Poisoner
 ### **Team: Impostors**
 
-The Poisoner is an Impostor who has to poison another play instead of kill.\
+The Poisoner is an Impostor who has to poison another player instead of kill.\
 When they poison a player, the poisoned player dies either upon the start of the next meeting or after a set duration.
 
 ### Game Options
@@ -1391,7 +1391,7 @@ The Lovers are two players who are linked together.\
 These two players get picked randomly between Crewmates and Impostors.\
 They gain the primary objective to stay alive together.\
 If they are both among the last 3 players, they win.\
-In order to so, they gain access to a private chat, only visible by them in between meetings.\
+In order to do so, they gain access to a private chat, only visible by them in between meetings.\
 However, they can also win with their respective team, hence why the Lovers do not know the role of the other lover.
 
 ### Game Options
@@ -1448,7 +1448,7 @@ Does not appear on Airship or Submerged.
 ### **Applied to: Impostors**
 Double Shot is an Impostor who gets an extra life when assassinating.\
 Once they use their life they are indicated with a red flash\
-and can no longer geuss the person who they guessed wrong for the remainder of that meeting.
+and can no longer guess the person who they guessed wrong for the remainder of that meeting.
 ### Game Options
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
