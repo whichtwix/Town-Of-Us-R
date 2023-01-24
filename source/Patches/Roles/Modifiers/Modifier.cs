@@ -25,7 +25,6 @@ namespace TownOfUs.Roles.Modifiers
         protected internal string GetColoredSymbol()
         {
             if (SymbolName == null) return null;
-            if (Color == null) return SymbolName;
 
             return $"{ColorString}{SymbolName}</color>";
         }
@@ -52,7 +51,7 @@ namespace TownOfUs.Roles.Modifiers
             return Equals(Player, other.Player) && ModifierType == other.ModifierType;
         }
 
-        internal virtual bool EABBNOODFGL(ShipStatus __instance)
+        internal virtual bool EABBNOODFGL(LogicGameFlowNormal __instance)
         {
             return true;
         }

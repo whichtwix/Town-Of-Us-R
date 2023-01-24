@@ -3,45 +3,48 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Hazel;
-using Reactor;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
+using Reactor.Networking.Extensions;
 using TownOfUs.CrewmateRoles.AltruistMod;
 using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.CrewmateRoles.SwapperMod;
-using TownOfUs.CrewmateRoles.TimeLordMod;
 using TownOfUs.CrewmateRoles.VigilanteMod;
+using TownOfUs.CultistRoles.NecromancerMod;
 using TownOfUs.CustomOption;
 using TownOfUs.Extensions;
 using TownOfUs.Modifiers.AssassinMod;
-using TownOfUs.ImpostorRoles.MinerMod;
 using TownOfUs.NeutralRoles.ExecutionerMod;
 using TownOfUs.NeutralRoles.GuardianAngelMod;
-using TownOfUs.NeutralRoles.PhantomMod;
+using TownOfUs.ImpostorRoles.MinerMod;
 using TownOfUs.CrewmateRoles.HaunterMod;
+using TownOfUs.NeutralRoles.PhantomMod;
 using TownOfUs.ImpostorRoles.TraitorMod;
 using TownOfUs.Roles;
+using TownOfUs.Roles.Cultist;
 using TownOfUs.Roles.Modifiers;
 using UnityEngine;
 using Coroutine = TownOfUs.ImpostorRoles.JanitorMod.Coroutine;
 using Object = UnityEngine.Object;
 using PerformKillButton = TownOfUs.NeutralRoles.AmnesiacMod.PerformKillButton;
 using Random = UnityEngine.Random; //using Il2CppSystem;
-using Reactor.Networking.Extensions;
+using TownOfUs.Patches;
+using TownOfUs.CrewmateRoles.ImitatorMod;
+using AmongUs.GameOptions;
 
 namespace TownOfUs
 {
     public static class RpcHandling
     {
-        private static readonly List<(Type, CustomRPC, int, bool)> CrewmateRoles = new List<(Type, CustomRPC, int, bool)>();
-        private static readonly List<(Type, CustomRPC, int, bool)> NeutralNonKillingRoles = new List<(Type, CustomRPC, int, bool)>();
-        private static readonly List<(Type, CustomRPC, int, bool)> NeutralKillingRoles = new List<(Type, CustomRPC, int, bool)>();
-        private static readonly List<(Type, CustomRPC, int, bool)> ImpostorRoles = new List<(Type, CustomRPC, int, bool)>();
-        private static readonly List<(Type, CustomRPC, int)> CrewmateModifiers = new List<(Type, CustomRPC, int)>();
-        private static readonly List<(Type, CustomRPC, int)> GlobalModifiers = new List<(Type, CustomRPC, int)>();
-        private static readonly List<(Type, CustomRPC, int)> ImpostorModifiers = new List<(Type, CustomRPC, int)>();
-        private static readonly List<(Type, CustomRPC, int)> ButtonModifiers = new List<(Type, CustomRPC, int)>();
-        private static readonly List<(Type, CustomRPC, int)> AssassinModifiers = new List<(Type, CustomRPC, int)>();
+        private static readonly List<(Type, int, int, bool)> CrewmateRoles = new List<(Type, int, int, bool)>();
+        private static readonly List<(Type, int, int, bool)> NeutralNonKillingRoles = new List<(Type, int, int, bool)>();
+        private static readonly List<(Type, int, int, bool)> NeutralKillingRoles = new List<(Type, int, int, bool)>();
+        private static readonly List<(Type, int, int, bool)> ImpostorRoles = new List<(Type, int, int, bool)>();
+        private static readonly List<(Type, int, int)> CrewmateModifiers = new List<(Type, int, int)>();
+        private static readonly List<(Type, int, int)> GlobalModifiers = new List<(Type, int, int)>();
+        private static readonly List<(Type, int, int)> ImpostorModifiers = new List<(Type, int, int)>();
+        private static readonly List<(Type, int, int)> ButtonModifiers = new List<(Type, int, int)>();
+        private static readonly List<(Type, int, int)> AssassinModifiers = new List<(Type, int, int)>();
         private static readonly List<(Type, CustomRPC, int)> AssassinAbility = new List<(Type, CustomRPC, int)>();
         private static bool PhantomOn;
         private static bool HaunterOn;
@@ -60,7 +63,7 @@ namespace TownOfUs
             return num <= 10 * NeutralKillingRoles.Count;
         }
 
-        private static void SortRoles(List<(Type, CustomRPC, int, bool)> roles, int max, int min)
+        private static void SortRoles(List<(Type, int, int, bool)> roles, int max, int min)
         {
             roles.Shuffle();
             if (roles.Count < max) max = roles.Count;
@@ -100,7 +103,7 @@ namespace TownOfUs
             while (roles.Count > amount) roles.RemoveAt(roles.Count - 1);
         }
 
-        private static void SortModifiers(List<(Type, CustomRPC, int)> roles, int max)
+        private static void SortModifiers(List<(Type, int, int)> roles, int max)
         {
             roles.Shuffle();
             roles.Sort((a, b) =>
@@ -128,10 +131,10 @@ namespace TownOfUs
                     SortRoles(NeutralKillingRoles, CustomGameOptions.MaxNeutralKillingRoles, CustomGameOptions.MinNeutralKillingRoles);
                 else SortRoles(NeutralKillingRoles, crewmates.Count - NeutralNonKillingRoles.Count - 1, CustomGameOptions.MinNeutralKillingRoles);
 
-                if (CheckJugg() && NeutralKillingRoles.Count > 0)
+                if (CheckJugg() && NeutralKillingRoles.Count > 0 && CustomGameOptions.HiddenRoles)
                 {
                     NeutralKillingRoles.RemoveAt(NeutralKillingRoles.Count - 1);
-                    NeutralKillingRoles.Add((typeof(Juggernaut), CustomRPC.SetJuggernaut, 100, true));
+                    NeutralKillingRoles.Add((typeof(Juggernaut), 18, 100, true));
                     NeutralKillingRoles.Shuffle();
                 }
 
@@ -140,13 +143,13 @@ namespace TownOfUs
                 SortRoles(ImpostorRoles, impostors.Count, impostors.Count);
             }
 
-            var crewAndNeutralRoles = new List<(Type, CustomRPC, int, bool)>();
+            var crewAndNeutralRoles = new List<(Type, int, int, bool)>();
             if (CustomGameOptions.GameMode == GameMode.Classic) crewAndNeutralRoles.AddRange(CrewmateRoles);
             crewAndNeutralRoles.AddRange(NeutralNonKillingRoles);
             crewAndNeutralRoles.AddRange(NeutralKillingRoles);
 
-            var crewRoles = new List<(Type, CustomRPC, int, bool)>();
-            var impRoles = new List<(Type, CustomRPC, int, bool)>();
+            var crewRoles = new List<(Type, int, int, bool)>();
+            var impRoles = new List<(Type, int, int, bool)>();
 
             if (CustomGameOptions.GameMode == GameMode.AllAny)
             {
@@ -164,7 +167,7 @@ namespace TownOfUs
                 }
                 else
                 {
-                    crewRoles.Add((typeof(Crewmate), CustomRPC.SetCrewmate, 100, false));
+                    crewRoles.Add((typeof(Crewmate), 38, 100, false));
                 }
                 crewAndNeutralRoles.AddRange(CrewmateRoles);
                 while (crewRoles.Count < crewmates.Count && crewAndNeutralRoles.Count > 0)
@@ -214,32 +217,32 @@ namespace TownOfUs
 
             if (CustomGameOptions.GameMode == GameMode.AllAny)
             {
-                foreach (var (type, rpc, _, unique) in crewRoles)
+                foreach (var (type, id, _, unique) in crewRoles)
                 {
-                    Role.Gen<Role>(type, crewmates, rpc);
+                    Role.GenRole<Role>(type, crewmates, id);
                 }
-                foreach (var (type, rpc, _, unique) in impRoles)
+                foreach (var (type, id, _, unique) in impRoles)
                 {
-                    Role.Gen<Role>(type, impostors, rpc);
+                    Role.GenRole<Role>(type, impostors, id);
                 }
             }
             else
             {
-                foreach (var (type, rpc, _, unique) in crewAndNeutralRoles)
+                foreach (var (type, id, _, unique) in crewAndNeutralRoles)
                 {
-                    Role.Gen<Role>(type, crewmates, rpc);
+                    Role.GenRole<Role>(type, crewmates, id);
                 }
-                foreach (var (type, rpc, _, unique) in ImpostorRoles)
+                foreach (var (type, id, _, unique) in ImpostorRoles)
                 {
-                    Role.Gen<Role>(type, impostors, rpc);
+                    Role.GenRole<Role>(type, impostors, id);
                 }
             }
 
             foreach (var crewmate in crewmates)
-                Role.Gen<Role>(typeof(Crewmate), crewmate, CustomRPC.SetCrewmate);
+                Role.GenRole<Role>(typeof(Crewmate), crewmate, 38);
 
             foreach (var impostor in impostors)
-                Role.Gen<Role>(typeof(Impostor), impostor, CustomRPC.SetImpostor);
+                Role.GenRole<Role>(typeof(Impostor), impostor, 39);
 
             var canHaveModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
             var canHaveImpModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
@@ -272,52 +275,51 @@ namespace TownOfUs
             var canHaveAssassinModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
             canHaveAssassinModifier.RemoveAll(player => !player.Is(Faction.Impostors) || !player.Is(AbilityEnum.Assassin));
 
-            foreach (var (type, rpc, _) in AssassinModifiers)
+            foreach (var (type, id, _) in AssassinModifiers)
             {
                 if (canHaveAssassinModifier.Count == 0) break;
-                Role.Gen<Modifier>(type, canHaveAssassinModifier, rpc);
+                Role.GenModifier<Modifier>(type, canHaveAssassinModifier, id);
             }
 
             canHaveImpModifier.RemoveAll(player => player.Is(ModifierEnum.DoubleShot));
 
-            foreach (var (type, rpc, _) in ImpostorModifiers)
+            foreach (var (type, id, _) in ImpostorModifiers)
             {
                 if (canHaveImpModifier.Count == 0) break;
-                Role.Gen<Modifier>(type, canHaveImpModifier, rpc);
+                Role.GenModifier<Modifier>(type, canHaveImpModifier, id);
             }
 
             canHaveModifier.RemoveAll(player => player.Is(ModifierEnum.Disperser) || player.Is(ModifierEnum.DoubleShot) || player.Is(ModifierEnum.Underdog));
 
-            foreach (var (type, rpc, _) in GlobalModifiers)
+            foreach (var (type, id, _) in GlobalModifiers)
             {
                 if (canHaveModifier.Count == 0) break;
-                if(rpc == CustomRPC.SetCouple)
+                if(id == 0)
                 {
                     if (canHaveModifier.Count == 1) continue;
                         Lover.Gen(canHaveModifier);
                 }
                 else
                 {
-                    Role.Gen<Modifier>(type, canHaveModifier, rpc);
+                    Role.GenModifier<Modifier>(type, canHaveModifier, id);
                 }
             }
 
             canHaveModifier.RemoveAll(player => player.Is(RoleEnum.Glitch));
 
-            foreach (var (type, rpc, _) in ButtonModifiers)
+            foreach (var (type, id, _) in ButtonModifiers)
             {
                 if (canHaveModifier.Count == 0) break;
-                Role.Gen<Modifier>(type, canHaveModifier, rpc);
+                Role.GenModifier<Modifier>(type, canHaveModifier, id);
             }
 
-            canHaveModifier.RemoveAll(player => player.Is(RoleEnum.Juggernaut) || player.Is(RoleEnum.Werewolf)
-            || player.Is(RoleEnum.Plaguebearer) || player.Is(RoleEnum.Arsonist) || player.Is(Faction.Impostors));
+            canHaveModifier.RemoveAll(player => player.Is(Faction.Neutral) || player.Is(Faction.Impostors));
             canHaveModifier.Shuffle();
 
             while (canHaveModifier.Count > 0 && CrewmateModifiers.Count > 0)
             {
-                var (type, rpc, _) = CrewmateModifiers.TakeFirst();
-                Role.Gen<Modifier>(type, canHaveModifier.TakeFirst(), rpc);
+                var (type, id, _) = CrewmateModifiers.TakeFirst();
+                Role.GenModifier<Modifier>(type, canHaveModifier.TakeFirst(), id);
             }
 
             var toChooseFromCrew = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Crewmates) && !x.Is(ModifierEnum.Lover)).ToList();
@@ -341,6 +343,26 @@ namespace TownOfUs
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
 
+            if (HaunterOn && toChooseFromCrew.Count != 0)
+            {
+                var rand = Random.RandomRangeInt(0, toChooseFromCrew.Count);
+                var pc = toChooseFromCrew[rand];
+
+                SetHaunter.WillBeHaunter = pc;
+
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                    (byte)CustomRPC.SetHaunter, SendOption.Reliable, -1);
+                writer.Write(pc.PlayerId);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+            else
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                    (byte)CustomRPC.SetHaunter, SendOption.Reliable, -1);
+                writer.Write(byte.MaxValue);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+
             var toChooseFromNeut = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Neutral) && !x.Is(ModifierEnum.Lover)).ToList();
             if (PhantomOn && toChooseFromNeut.Count != 0)
             {
@@ -358,27 +380,6 @@ namespace TownOfUs
             {
                 var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                     (byte)CustomRPC.SetPhantom, SendOption.Reliable, -1);
-                writer.Write(byte.MaxValue);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-            }
-
-            toChooseFromCrew = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Crewmates) && !x.Is(ModifierEnum.Lover) && x != SetTraitor.WillBeTraitor).ToList();
-            if (HaunterOn && toChooseFromCrew.Count != 0)
-            {
-                var rand = Random.RandomRangeInt(0, toChooseFromCrew.Count);
-                var pc = toChooseFromCrew[rand];
-
-                SetHaunter.WillBeHaunter = pc;
-
-                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                    (byte)CustomRPC.SetHaunter, SendOption.Reliable, -1);
-                writer.Write(pc.PlayerId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-            }
-            else
-            {
-                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                    (byte)CustomRPC.SetHaunter, SendOption.Reliable, -1);
                 writer.Write(byte.MaxValue);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
@@ -424,22 +425,23 @@ namespace TownOfUs
             crewmates.Shuffle();
             impostors.Shuffle();
 
-            ImpostorRoles.Add((typeof(Undertaker), CustomRPC.SetUndertaker, 10, true));
-            ImpostorRoles.Add((typeof(Morphling), CustomRPC.SetMorphling, 10, false));
-            ImpostorRoles.Add((typeof(Escapist), CustomRPC.SetEscapist, 10, false));
-            ImpostorRoles.Add((typeof(Miner), CustomRPC.SetMiner, 10, true));
-            ImpostorRoles.Add((typeof(Swooper), CustomRPC.SetSwooper, 10, false));
-            ImpostorRoles.Add((typeof(Grenadier), CustomRPC.SetGrenadier, 10, true));
+            ImpostorRoles.Add((typeof(Undertaker), 33, 10, true));
+            ImpostorRoles.Add((typeof(Morphling), 31, 10, false));
+            ImpostorRoles.Add((typeof(Escapist), 37, 10, false));
+            ImpostorRoles.Add((typeof(Miner), 29, 10, true));
+            ImpostorRoles.Add((typeof(Swooper), 30, 10, false));
+            ImpostorRoles.Add((typeof(Grenadier), 34, 10, true));
 
             SortRoles(ImpostorRoles, impostors.Count, impostors.Count);
 
-            NeutralKillingRoles.Add((typeof(Glitch), CustomRPC.SetGlitch, 10, true));
-            NeutralKillingRoles.Add((typeof(Werewolf), CustomRPC.SetWerewolf, 10, true));
-            NeutralKillingRoles.Add((typeof(Juggernaut), CustomRPC.SetJuggernaut, 10, true));
+            NeutralKillingRoles.Add((typeof(Glitch), 11, 10, true));
+            NeutralKillingRoles.Add((typeof(Werewolf), 27, 10, true));
+            if (CustomGameOptions.HiddenRoles)
+                NeutralKillingRoles.Add((typeof(Juggernaut), 18, 10, true));
             if (CustomGameOptions.AddArsonist)
-                NeutralKillingRoles.Add((typeof(Arsonist), CustomRPC.SetArsonist, 10, true));
+                NeutralKillingRoles.Add((typeof(Arsonist), 13, 10, true));
             if (CustomGameOptions.AddPlaguebearer)
-                NeutralKillingRoles.Add((typeof(Plaguebearer), CustomRPC.SetPlaguebearer, 10, true));
+                NeutralKillingRoles.Add((typeof(Plaguebearer), 26, 10, true));
 
             var neutrals = 0;
             if (NeutralKillingRoles.Count < CustomGameOptions.NeutralRoles) neutrals = NeutralKillingRoles.Count;
@@ -451,13 +453,13 @@ namespace TownOfUs
             var veterans = CustomGameOptions.VeteranCount;
             while (veterans > 0)
             {
-                CrewmateRoles.Add((typeof(Veteran), CustomRPC.SetVeteran, 10, false));
+                CrewmateRoles.Add((typeof(Veteran), 16, 10, false));
                 veterans -= 1;
             }
             var vigilantes = CustomGameOptions.VigilanteCount;
             while (vigilantes > 0)
             {
-                CrewmateRoles.Add((typeof(Vigilante), CustomRPC.SetVigilante, 10, false));
+                CrewmateRoles.Add((typeof(Vigilante), 15, 10, false));
                 vigilantes -= 1;
             }
             if (CrewmateRoles.Count + NeutralKillingRoles.Count > crewmates.Count)
@@ -469,25 +471,107 @@ namespace TownOfUs
                 var sheriffs = crewmates.Count - NeutralKillingRoles.Count - CrewmateRoles.Count;
                 while (sheriffs > 0)
                 {
-                    CrewmateRoles.Add((typeof(Sheriff), CustomRPC.SetSheriff, 10, false));
+                    CrewmateRoles.Add((typeof(Sheriff), 0, 10, false));
                     sheriffs -= 1;
                 }
             }
 
-            var crewAndNeutralRoles = new List<(Type, CustomRPC, int, bool)>();
+            var crewAndNeutralRoles = new List<(Type, int, int, bool)>();
             crewAndNeutralRoles.AddRange(CrewmateRoles);
             crewAndNeutralRoles.AddRange(NeutralKillingRoles);
             crewAndNeutralRoles.Shuffle();
             ImpostorRoles.Shuffle();
 
-            foreach (var (type, rpc, _, unique) in ImpostorRoles)
+            foreach (var (type, id, _, unique) in crewAndNeutralRoles)
             {
-                Role.Gen<Role>(type, impostors, rpc);
+                Role.GenRole<Role>(type, crewmates, id);
             }
-            foreach (var (type, rpc, _, unique) in crewAndNeutralRoles)
+            foreach (var (type, id, _, unique) in ImpostorRoles)
             {
-                Role.Gen<Role>(type, crewmates, rpc);
+                Role.GenRole<Role>(type, impostors, id);
             }
+        }
+        private static void GenEachRoleCultist(List<GameData.PlayerInfo> infected)
+        {
+            var impostors = Utils.GetImpostors(infected);
+            var crewmates = Utils.GetCrewmates(impostors);
+            crewmates.Shuffle();
+            impostors.Shuffle();
+
+            var specialRoles = new List<(Type, int, int, bool)>();
+            var crewRoles = new List<(Type, int, int, bool)>();
+            var impRole = new List<(Type, int, int, bool)>();
+            if (CustomGameOptions.MayorCultistOn > 0) specialRoles.Add((typeof(Mayor), 3, CustomGameOptions.MayorCultistOn, true));
+            if (CustomGameOptions.SeerCultistOn > 0) specialRoles.Add((typeof(CultistSeer), 102, CustomGameOptions.SeerCultistOn, true));
+            if (CustomGameOptions.SheriffCultistOn > 0) specialRoles.Add((typeof(Sheriff), 0, CustomGameOptions.SheriffCultistOn, true));
+            if (CustomGameOptions.SurvivorCultistOn > 0) specialRoles.Add((typeof(Survivor), 23, CustomGameOptions.SurvivorCultistOn, true));
+            if (specialRoles.Count > CustomGameOptions.SpecialRoleCount) SortRoles(specialRoles, CustomGameOptions.SpecialRoleCount, CustomGameOptions.SpecialRoleCount);
+            if (specialRoles.Count > crewmates.Count) SortRoles(specialRoles, crewmates.Count, crewmates.Count);
+            if (specialRoles.Count < crewmates.Count)
+            {
+                var chameleons = CustomGameOptions.MaxChameleons;
+                var engineers = CustomGameOptions.MaxEngineers;
+                var investigators = CustomGameOptions.MaxInvestigators;
+                var mystics = CustomGameOptions.MaxMystics;
+                var spies = CustomGameOptions.MaxSpies;
+                var transporters = CustomGameOptions.MaxTransporters;
+                var vigilantes = CustomGameOptions.MaxVigilantes;
+                while (chameleons > 0)
+                {
+                    crewRoles.Add((typeof(Chameleon), 104, 10, false));
+                    chameleons--;
+                }
+                while (engineers > 0)
+                {
+                    crewRoles.Add((typeof(Engineer), 2, 10, false));
+                    engineers--;
+                }
+                while (investigators > 0)
+                {
+                    crewRoles.Add((typeof(Investigator), 5, 10, false));
+                    investigators--;
+                }
+                while (mystics > 0)
+                {
+                    crewRoles.Add((typeof(CultistMystic), 103, 10, false));
+                    mystics--;
+                }
+                while (spies > 0)
+                {
+                    crewRoles.Add((typeof(Spy), 10, 10, false));
+                    spies--;
+                }
+                while (transporters > 0)
+                {
+                    crewRoles.Add((typeof(Transporter), 20, 10, false));
+                    transporters--;
+                }
+                while (vigilantes > 0)
+                {
+                    crewRoles.Add((typeof(Vigilante), 15, 10, false));
+                    vigilantes--;
+                }
+                SortRoles(crewRoles, crewmates.Count - specialRoles.Count, crewmates.Count - specialRoles.Count);
+            }
+            impRole.Add((typeof(Necromancer), 100, 10, true));
+            impRole.Add((typeof(Whisperer), 101, 10, true));
+            SortRoles(impRole, 1, 1);
+
+            foreach (var (type, id, _, unique) in specialRoles)
+            {
+                Role.GenRole<Role>(type, crewmates, id);
+            }
+            foreach (var (type, id, _, unique) in crewRoles)
+            {
+                Role.GenRole<Role>(type, crewmates, id);
+            }
+            foreach (var (type, id, _, unique) in impRole)
+            {
+                Role.GenRole<Role>(type, impostors, id);
+            }
+
+            foreach (var crewmate in crewmates)
+                Role.GenRole<Role>(typeof(Crewmate), crewmate, 38);
         }
 
 
@@ -500,78 +584,196 @@ namespace TownOfUs
                 sbyte readSByte, readSByte2;
                 switch ((CustomRPC) callId)
                 {
-                    case CustomRPC.SetMayor:
-                        readByte = reader.ReadByte();
-                        new Mayor(Utils.PlayerById(readByte));
+                    case CustomRPC.SetRole:
+                        var player = Utils.PlayerById(reader.ReadByte());
+                        var roleID = reader.ReadInt32();
+                        switch (roleID)
+                        {
+                            case 0:
+                                new Sheriff(player);
+                                break;
+                            case 1:
+                                new Jester(player);
+                                break;
+                            case 2:
+                                new Engineer(player);
+                                break;
+                            case 3:
+                                new Mayor(player);
+                                break;
+                            case 4:
+                                new Swapper(player);
+                                break;
+                            case 5:
+                                new Investigator(player);
+                                break;
+                            case 7:
+                                new Medic(player);
+                                break;
+                            case 8:
+                                new Seer(player);
+                                break;
+                            case 9:
+                                new Executioner(player);
+                                break;
+                            case 10:
+                                new Spy(player);
+                                break;
+                            case 11:
+                                new Glitch(player);
+                                break;
+                            case 12:
+                                new Snitch(player);
+                                break;
+                            case 13:
+                                new Arsonist(player);
+                                break;
+                            case 14:
+                                new Altruist(player);
+                                break;
+                            case 15:
+                                new Vigilante(player);
+                                break;
+                            case 16:
+                                new Veteran(player);
+                                break;
+                            case 17:
+                                new Amnesiac(player);
+                                break;
+                            case 18:
+                                new Juggernaut(player);
+                                break;
+                            case 19:
+                                new Tracker(player);
+                                break;
+                            case 20:
+                                new Transporter(player);
+                                break;
+                            case 21:
+                                new Medium(player);
+                                break;
+                            case 22:
+                                new Trapper(player);
+                                break;
+                            case 23:
+                                new Survivor(player);
+                                break;
+                            case 24:
+                                new GuardianAngel(player);
+                                break;
+                            case 25:
+                                new Mystic(player);
+                                break;
+                            case 26:
+                                new Plaguebearer(player);
+                                break;
+                            case 27:
+                                new Werewolf(player);
+                                break;
+                            case 28:
+                                new Detective(player);
+                                break;
+                            case 29:
+                                new Miner(player);
+                                break;
+                            case 30:
+                                new Swooper(player);
+                                break;
+                            case 31:
+                                new Morphling(player);
+                                break;
+                            case 32:
+                                new Janitor(player);
+                                break;
+                            case 33:
+                                new Undertaker(player);
+                                break;
+                            case 34:
+                                new Grenadier(player);
+                                break;
+                            case 36:
+                                new Blackmailer(player);
+                                break;
+                            case 37:
+                                new Escapist(player);
+                                break;
+                            case 38:
+                                new Crewmate(player);
+                                break;
+                            case 39:
+                                new Impostor(player);
+                                break;
+                            case 40:
+                                new Imitator(player);
+                                break;
+                            case 41:
+                                new Bomber(player);
+                                break;
+                            case 100:
+                                new Necromancer(player);
+                                break;
+                            case 101:
+                                new Whisperer(player);
+                                break;
+                            case 102:
+                                new CultistSeer(player);
+                                break;
+                            case 103:
+                                new CultistMystic(player);
+                                break;
+                            case 104:
+                                new Chameleon(player);
+                                break;
+                        }
                         break;
-
-                    case CustomRPC.SetJester:
-                        readByte = reader.ReadByte();
-                        new Jester(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetSheriff:
-                        readByte = reader.ReadByte();
-                        new Sheriff(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetEngineer:
-                        readByte = reader.ReadByte();
-                        new Engineer(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetJanitor:
-                        new Janitor(Utils.PlayerById(reader.ReadByte()));
-                        break;
-
-                    case CustomRPC.SetSwapper:
-                        readByte = reader.ReadByte();
-                        new Swapper(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetAmnesiac:
-                        readByte = reader.ReadByte();
-                        new Amnesiac(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetInvestigator:
-                        readByte = reader.ReadByte();
-                        new Investigator(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetTimeLord:
-                        readByte = reader.ReadByte();
-                        new TimeLord(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetTorch:
-                        readByte = reader.ReadByte();
-                        new Torch(Utils.PlayerById(readByte));
-                        break;
-                    case CustomRPC.SetDiseased:
-                        readByte = reader.ReadByte();
-                        new Diseased(Utils.PlayerById(readByte));
-                        break;
-                    case CustomRPC.SetBait:
-                        readByte = reader.ReadByte();
-                        new Bait(Utils.PlayerById(readByte));
-                        break;
-                    case CustomRPC.SetFlash:
-                        readByte = reader.ReadByte();
-                        new Flash(Utils.PlayerById(readByte));
-                        break;
-
-                    case CustomRPC.SetMedic:
-                        readByte = reader.ReadByte();
-                        new Medic(Utils.PlayerById(readByte));
-                        break;
-                    case CustomRPC.SetMorphling:
-                        readByte = reader.ReadByte();
-                        new Morphling(Utils.PlayerById(readByte));
-                        break;
-                    case CustomRPC.SetPoisoner:
-                        readByte = reader.ReadByte();
-                        new Poisoner(Utils.PlayerById(readByte));
+                    case CustomRPC.SetModifier:
+                        var player2 = Utils.PlayerById(reader.ReadByte());
+                        var modifierID = reader.ReadInt32();
+                        switch (modifierID)
+                        {
+                            case 1:
+                                new Torch(player2);
+                                break;
+                            case 2:
+                                new Diseased(player2);
+                                break;
+                            case 3:
+                                new Flash(player2);
+                                break;
+                            case 4:
+                                new Tiebreaker(player2);
+                                break;
+                            case 5:
+                                new Giant(player2);
+                                break;
+                            case 6:
+                                new ButtonBarry(player2);
+                                break;
+                            case 7:
+                                new Bait(player2);
+                                break;
+                            case 8:
+                                new Sleuth(player2);
+                                break;
+                            case 9:
+                                new Blind(player2);
+                                break;
+                            case 10:
+                                new Radar(player2);
+                                break;
+                            case 11:
+                                new Disperser(player2);
+                                break;
+                            case 12:
+                                new Multitasker(player2);
+                                break;
+                            case 13:
+                                new DoubleShot(player2);
+                                break;
+                            case 14:
+                                new Underdog(player2);
+                                break;
+                        }
                         break;
 
                     case CustomRPC.LoveWin:
@@ -644,8 +846,11 @@ namespace TownOfUs
                         Murder.KilledPlayers.Clear();
                         Role.NobodyWins = false;
                         Role.SurvOnlyWins = false;
-                        RecordRewind.points.Clear();
+                        ExileControllerPatch.lastExiled = null;
+                        PatchKillTimer.GameStarted = false;
+                        StartImitate.ImitatingPlayer = null;
                         KillButtonTarget.DontRevive = byte.MaxValue;
+                        ReviveHudManagerUpdate.DontRevive = byte.MaxValue;
                         break;
 
                     case CustomRPC.JanitorClean:
@@ -689,18 +894,25 @@ namespace TownOfUs
                         PluginSingleton<TownOfUs>.Instance.Log.LogMessage("Bytes received - " + readSByte + " - " +
                                                                           readSByte2);
                         break;
+
+                    case CustomRPC.Imitate:
+                        var imitator = Utils.PlayerById(reader.ReadByte());
+                        var imitatorRole = Role.GetRole<Imitator>(imitator);
+                        var imitateTarget = Utils.PlayerById(reader.ReadByte());
+                        imitatorRole.ImitatePlayer = imitateTarget;
+                        break;
+                    case CustomRPC.StartImitate:
+                        var imitator2 = Utils.PlayerById(reader.ReadByte());
+                        if (imitator2.Is(RoleEnum.Traitor)) break;
+                        var imitatorRole2 = Role.GetRole<Imitator>(imitator2);
+                        StartImitate.Imitate(imitatorRole2);
+                        break;
                     case CustomRPC.Remember:
                         readByte1 = reader.ReadByte();
                         readByte2 = reader.ReadByte();
                         var amnesiac = Utils.PlayerById(readByte1);
                         var other = Utils.PlayerById(readByte2);
                         PerformKillButton.Remember(Role.GetRole<Amnesiac>(amnesiac), other);
-                        break;
-                    case CustomRPC.Rewind:
-                        readByte = reader.ReadByte();
-                        var TimeLordPlayer = Utils.PlayerById(readByte);
-                        var TimeLordRole = Role.GetRole<TimeLord>(TimeLordPlayer);
-                        StartStop.StartRewind(TimeLordRole);
                         break;
                     case CustomRPC.Protect:
                         readByte1 = reader.ReadByte();
@@ -711,24 +923,10 @@ namespace TownOfUs
                         Role.GetRole<Medic>(medic).ShieldedPlayer = shield;
                         Role.GetRole<Medic>(medic).UsedAbility = true;
                         break;
-                    case CustomRPC.RewindRevive:
-                        readByte = reader.ReadByte();
-                        RecordRewind.ReviveBody(Utils.PlayerById(readByte));
-                        break;
                     case CustomRPC.AttemptSound:
                         var medicId = reader.ReadByte();
                         readByte = reader.ReadByte();
                         StopKill.BreakShield(medicId, readByte, CustomGameOptions.ShieldBreaks);
-                        break;
-                    case CustomRPC.SetGlitch:
-                        var GlitchId = reader.ReadByte();
-                        var GlitchPlayer = Utils.PlayerById(GlitchId);
-                        new Glitch(GlitchPlayer);
-                        break;
-                    case CustomRPC.SetJuggernaut:
-                        var JuggernautId = reader.ReadByte();
-                        var JuggernautPlayer = Utils.PlayerById(JuggernautId);
-                        new Juggernaut(JuggernautPlayer);
                         break;
                     case CustomRPC.BypassKill:
                         var killer = Utils.PlayerById(reader.ReadByte());
@@ -738,11 +936,15 @@ namespace TownOfUs
                         break;
                     case CustomRPC.AssassinKill:
                         var toDie = Utils.PlayerById(reader.ReadByte());
+                        var assassin = Utils.PlayerById(reader.ReadByte());
                         AssassinKill.MurderPlayer(toDie);
+                        AssassinKill.AssassinKillCount(toDie, assassin);
                         break;
                     case CustomRPC.VigilanteKill:
                         var toDie2 = Utils.PlayerById(reader.ReadByte());
+                        var vigi = Utils.PlayerById(reader.ReadByte());
                         VigilanteKill.MurderPlayer(toDie2);
+                        VigilanteKill.VigiKillCount(toDie2, vigi);
                         break;
                     case CustomRPC.SetMimic:
                         var glitchPlayer = Utils.PlayerById(reader.ReadByte());
@@ -776,27 +978,12 @@ namespace TownOfUs
                         }
 
                         break;
-                    case CustomRPC.SetSeer:
-                        new Seer(Utils.PlayerById(reader.ReadByte()));
-                        break;
                     case CustomRPC.Morph:
                         var morphling = Utils.PlayerById(reader.ReadByte());
                         var morphTarget = Utils.PlayerById(reader.ReadByte());
                         var morphRole = Role.GetRole<Morphling>(morphling);
                         morphRole.TimeRemaining = CustomGameOptions.MorphlingDuration;
                         morphRole.MorphedPlayer = morphTarget;
-                        break;
-                    case CustomRPC.Poison:
-                        var poisoner = Utils.PlayerById(reader.ReadByte());
-                        var poisoned = Utils.PlayerById(reader.ReadByte());
-                        var poisonerRole = Role.GetRole<Poisoner>(poisoner);
-                        poisonerRole.PoisonedPlayer = poisoned;
-                        break;
-                    case CustomRPC.SetExecutioner:
-                        new Executioner(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetGuardianAngel:
-                        new GuardianAngel(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.SetTarget:
                         var exe = Utils.PlayerById(reader.ReadByte());
@@ -810,36 +997,15 @@ namespace TownOfUs
                         var gaRole = Role.GetRole<GuardianAngel>(ga);
                         gaRole.target = gaTarget;
                         break;
-                    case CustomRPC.SetBlackmailer:
-                        new Blackmailer(Utils.PlayerById(reader.ReadByte()));
-                        break;
                     case CustomRPC.Blackmail:
                         var blackmailer = Role.GetRole<Blackmailer>(Utils.PlayerById(reader.ReadByte()));
                         blackmailer.Blackmailed = Utils.PlayerById(reader.ReadByte());
-                        break;
-                    case CustomRPC.SetSpy:
-                        new Spy(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.ExecutionerToJester:
                         TargetColor.ExeToJes(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.GAToSurv:
                         GATargetColor.GAToSurv(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetSnitch:
-                        new Snitch(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetTracker:
-                        new Tracker(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetDetective:
-                        new Detective(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetSurvivor:
-                        new Survivor(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetMiner:
-                        new Miner(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.Mine:
                         var ventId = reader.ReadInt32();
@@ -849,14 +1015,17 @@ namespace TownOfUs
                         var zAxis = reader.ReadSingle();
                         PerformKill.SpawnVent(ventId, minerRole, pos, zAxis);
                         break;
-                    case CustomRPC.SetSwooper:
-                        new Swooper(Utils.PlayerById(reader.ReadByte()));
-                        break;
                     case CustomRPC.Swoop:
                         var swooper = Utils.PlayerById(reader.ReadByte());
                         var swooperRole = Role.GetRole<Swooper>(swooper);
                         swooperRole.TimeRemaining = CustomGameOptions.SwoopDuration;
                         swooperRole.Swoop();
+                        break;
+                    case CustomRPC.ChameleonSwoop:
+                        var chameleon = Utils.PlayerById(reader.ReadByte());
+                        var chameleonRole = Role.GetRole<Chameleon>(chameleon);
+                        chameleonRole.TimeRemaining = CustomGameOptions.SwoopDuration;
+                        chameleonRole.Swoop();
                         break;
                     case CustomRPC.Alert:
                         var veteran = Utils.PlayerById(reader.ReadByte());
@@ -891,41 +1060,11 @@ namespace TownOfUs
                         if (PlayerControl.LocalPlayer.PlayerId != mediatedPlayer.PlayerId) break;
                         medium.AddMediatePlayer(mediatedPlayer.PlayerId);
                         break;
-                    case CustomRPC.SetGrenadier:
-                        new Grenadier(Utils.PlayerById(reader.ReadByte()));
-                        break;
                     case CustomRPC.FlashGrenade:
                         var grenadier = Utils.PlayerById(reader.ReadByte());
                         var grenadierRole = Role.GetRole<Grenadier>(grenadier);
                         grenadierRole.TimeRemaining = CustomGameOptions.GrenadeDuration;
                         grenadierRole.Flash();
-                        break;
-                    case CustomRPC.SetTiebreaker:
-                        new Tiebreaker(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetBlind:
-                        new Blind(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetSleuth:
-                        new Sleuth(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetRadar:
-                        new Radar(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetMultitasker:
-                        new Multitasker(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetDisperser:
-                        new Disperser(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetDoubleShot:
-                        new DoubleShot(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetArsonist:
-                        new Arsonist(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetWerewolf:
-                        new Werewolf(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.Douse:
                         var arsonist = Utils.PlayerById(reader.ReadByte());
@@ -1011,20 +1150,8 @@ namespace TownOfUs
                             if (role.RoleType == RoleEnum.Pestilence)
                                 ((Pestilence)role).Loses();
                         break;
-                    case CustomRPC.SetImpostor:
-                        new Impostor(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetCrewmate:
-                        new Crewmate(Utils.PlayerById(reader.ReadByte()));
-                        break;
                     case CustomRPC.SyncCustomSettings:
                         Rpc.ReceiveRpc(reader);
-                        break;
-                    case CustomRPC.SetAltruist:
-                        new Altruist(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetGiant:
-                        new Giant(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.AltruistRevive:
                         readByte1 = reader.ReadByte();
@@ -1046,14 +1173,11 @@ namespace TownOfUs
 
                         break;
                     case CustomRPC.FixAnimation:
-                        var player = Utils.PlayerById(reader.ReadByte());
-                        player.MyPhysics.ResetMoveState();
-                        player.Collider.enabled = true;
-                        player.moveable = true;
-                        player.NetTransform.enabled = true;
-                        break;
-                    case CustomRPC.SetButtonBarry:
-                        new ButtonBarry(Utils.PlayerById(reader.ReadByte()));
+                        var player3 = Utils.PlayerById(reader.ReadByte());
+                        player3.MyPhysics.ResetMoveState();
+                        player3.Collider.enabled = true;
+                        player3.moveable = true;
+                        player3.NetTransform.enabled = true;
                         break;
                     case CustomRPC.BarryButton:
                         var buttonBarry = Utils.PlayerById(reader.ReadByte());
@@ -1064,7 +1188,7 @@ namespace TownOfUs
                             MeetingRoomManager.Instance.target = null;
                             AmongUsClient.Instance.DisconnectHandlers.AddUnique(MeetingRoomManager.Instance
                                 .Cast<IDisconnectHandler>());
-                            if (ShipStatus.Instance.CheckTaskCompletion()) return;
+                            if (GameManager.Instance.CheckTaskCompletion()) return;
 
                             DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(buttonBarry);
                             buttonBarry.RpcStartMeeting(null);
@@ -1091,9 +1215,6 @@ namespace TownOfUs
                         var murderTarget = Utils.PlayerById(reader.ReadByte());
                         murderKiller.CheckMurder(murderTarget);
                         break;
-                    case CustomRPC.SetUndertaker:
-                        new Undertaker(Utils.PlayerById(reader.ReadByte()));
-                        break;
                     case CustomRPC.Drag:
                         readByte1 = reader.ReadByte();
                         var dienerPlayer = Utils.PlayerById(readByte1);
@@ -1116,28 +1237,9 @@ namespace TownOfUs
 
                         body2.transform.position = new Vector3(v2.x, v2.y, v2z);
 
-
                         break;
                     case CustomRPC.SetAssassin:
                         new Assassin(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetVigilante:
-                        new Vigilante(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetVeteran:
-                        new Veteran(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetTransporter:
-                        new Transporter(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetMedium:
-                        new Medium(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetMystic:
-                        new Mystic(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetUnderdog:
-                        new Underdog(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.SetPhantom:
                         readByte = reader.ReadByte();
@@ -1145,12 +1247,18 @@ namespace TownOfUs
                         break;
                     case CustomRPC.PhantomDied:
                         var phantom = Utils.PlayerById(reader.ReadByte());
+                        var phantomOldRole = Role.GetRole(phantom);
+                        var killsList2 = (phantomOldRole.Kills, phantomOldRole.CorrectKills, phantomOldRole.IncorrectKills, phantomOldRole.CorrectAssassinKills, phantomOldRole.IncorrectAssassinKills);
                         Role.RoleDictionary.Remove(phantom.PlayerId);
                         var phantomRole = new Phantom(phantom);
+                        phantomRole.Kills = killsList2.Kills;
+                        phantomRole.CorrectKills = killsList2.CorrectKills;
+                        phantomRole.IncorrectKills = killsList2.IncorrectKills;
+                        phantomRole.CorrectAssassinKills = killsList2.CorrectAssassinKills;
+                        phantomRole.IncorrectAssassinKills = killsList2.IncorrectAssassinKills;
                         phantomRole.RegenTask();
                         phantom.gameObject.layer = LayerMask.NameToLayer("Players");
                         SetPhantom.RemoveTasks(phantom);
-                        SetPhantom.AddCollider(phantomRole);
                         if (!PlayerControl.LocalPlayer.Is(RoleEnum.Haunter))
                         {
                             PlayerControl.LocalPlayer.MyPhysics.ResetMoveState();
@@ -1160,6 +1268,7 @@ namespace TownOfUs
                     case CustomRPC.CatchPhantom:
                         var phantomPlayer = Utils.PlayerById(reader.ReadByte());
                         Role.GetRole<Phantom>(phantomPlayer).Caught = true;
+                        if (PlayerControl.LocalPlayer == phantomPlayer) HudManager.Instance.AbilityButton.gameObject.SetActive(true);
                         break;
                     case CustomRPC.PhantomWin:
                         Role.GetRole<Phantom>(Utils.PlayerById(reader.ReadByte())).CompletedTasks = true;
@@ -1170,12 +1279,18 @@ namespace TownOfUs
                         break;
                     case CustomRPC.HaunterDied:
                         var haunter = Utils.PlayerById(reader.ReadByte());
+                        var originalRole = Role.GetRole(haunter);
+                        var killsList3 = (originalRole.CorrectKills, originalRole.IncorrectKills, originalRole.CorrectAssassinKills, originalRole.IncorrectAssassinKills);
                         Role.RoleDictionary.Remove(haunter.PlayerId);
                         var haunterRole = new Haunter(haunter);
+                        haunterRole.formerRole = originalRole.RoleType;
+                        haunterRole.CorrectKills = killsList3.CorrectKills;
+                        haunterRole.IncorrectKills = killsList3.IncorrectKills;
+                        haunterRole.CorrectAssassinKills = killsList3.CorrectAssassinKills;
+                        haunterRole.IncorrectAssassinKills = killsList3.IncorrectAssassinKills;
                         haunterRole.RegenTask();
                         haunter.gameObject.layer = LayerMask.NameToLayer("Players");
                         SetHaunter.RemoveTasks(haunter);
-                        SetHaunter.AddCollider(haunterRole);
                         if (!PlayerControl.LocalPlayer.Is(RoleEnum.Phantom))
                         {
                             PlayerControl.LocalPlayer.MyPhysics.ResetMoveState();
@@ -1185,6 +1300,7 @@ namespace TownOfUs
                     case CustomRPC.CatchHaunter:
                         var haunterPlayer = Utils.PlayerById(reader.ReadByte());
                         Role.GetRole<Haunter>(haunterPlayer).Caught = true;
+                        if (PlayerControl.LocalPlayer == haunterPlayer) HudManager.Instance.AbilityButton.gameObject.SetActive(true);
                         break;
                     case CustomRPC.HaunterFinished:
                         HighlightImpostors.UpdateMeeting(MeetingHud.Instance);
@@ -1195,21 +1311,18 @@ namespace TownOfUs
                         break;
                     case CustomRPC.TraitorSpawn:
                         var traitor = SetTraitor.WillBeTraitor;
-                        var oldRole = Role.GetRole(traitor).RoleType;
+                        if (traitor == StartImitate.ImitatingPlayer) StartImitate.ImitatingPlayer = null;
+                        var oldRole = Role.GetRole(traitor);
+                        var killsList = (oldRole.CorrectKills, oldRole.IncorrectKills, oldRole.CorrectAssassinKills, oldRole.IncorrectAssassinKills);
                         Role.RoleDictionary.Remove(traitor.PlayerId);
                         var traitorRole = new Traitor(traitor);
-                        traitorRole.formerRole = oldRole;
+                        traitorRole.formerRole = oldRole.RoleType;
+                        traitorRole.CorrectKills = killsList.CorrectKills;
+                        traitorRole.IncorrectKills = killsList.IncorrectKills;
+                        traitorRole.CorrectAssassinKills = killsList.CorrectAssassinKills;
+                        traitorRole.IncorrectAssassinKills = killsList.IncorrectAssassinKills;
                         traitorRole.RegenTask();
                         SetTraitor.TurnImp(traitor);
-                        break;
-                    case CustomRPC.SetPlaguebearer:
-                        new Plaguebearer(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetTrapper:
-                        new Trapper(Utils.PlayerById(reader.ReadByte()));
-                        break;
-                    case CustomRPC.SetEscapist:
-                        new Escapist(Utils.PlayerById(reader.ReadByte()));
                         break;
                     case CustomRPC.Escape:
                         var escapist = Utils.PlayerById(reader.ReadByte());
@@ -1217,6 +1330,26 @@ namespace TownOfUs
                         var escapePos = reader.ReadVector2();
                         escapistRole.EscapePoint = escapePos;
                         Escapist.Escape(escapist);
+                        break;
+                    case CustomRPC.Detonate:
+                        var playerToDie = Utils.PlayerById(reader.ReadByte());
+                        var bomber = Utils.PlayerById(reader.ReadByte());
+                        Bomber.DetonateKillEnd(playerToDie, bomber);
+                        break;
+                    case CustomRPC.Revive:
+                        var necromancer = Utils.PlayerById(reader.ReadByte());
+                        var necromancerRole = Role.GetRole<Necromancer>(necromancer);
+                        var revived = reader.ReadByte();
+                        var theDeadBodies2 = Object.FindObjectsOfType<DeadBody>();
+                        foreach (var body in theDeadBodies2)
+                            if (body.ParentId == revived)
+                            {
+                                PerformRevive.Revive(body, necromancerRole);
+                            }
+                        break;
+                    case CustomRPC.Convert:
+                        var convertedPlayer = Utils.PlayerById(reader.ReadByte());
+                        Utils.Convert(convertedPlayer);
                         break;
                     case CustomRPC.AddMayorVoteBank:
                         Role.GetRole<Mayor>(Utils.PlayerById(reader.ReadByte())).VoteBank += reader.ReadInt32();
@@ -1231,15 +1364,15 @@ namespace TownOfUs
                         break;
                     case CustomRPC.SetPos:
                         var setplayer = Utils.PlayerById(reader.ReadByte());
-                        setplayer.transform.position = new Vector3(reader.ReadSingle(), reader.ReadSingle(), setplayer.transform.position.z);
+                        setplayer.transform.position = new Vector2(reader.ReadSingle(), reader.ReadSingle());
                         break;
                     case CustomRPC.SetSettings:
                         readByte = reader.ReadByte();
-                        PlayerControl.GameOptions.MapId = readByte == byte.MaxValue ? (byte)0 : readByte;
-                        PlayerControl.GameOptions.RoleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-                        PlayerControl.GameOptions.RoleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-                        PlayerControl.GameOptions.RoleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-                        PlayerControl.GameOptions.RoleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                        GameOptionsManager.Instance.currentNormalGameOptions.MapId = readByte == byte.MaxValue ? (byte)0 : readByte;
+                        GameOptionsManager.Instance.currentNormalGameOptions.RoleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
+                        GameOptionsManager.Instance.currentNormalGameOptions.RoleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
+                        GameOptionsManager.Instance.currentNormalGameOptions.RoleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
+                        GameOptionsManager.Instance.currentNormalGameOptions.RoleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
                         if (CustomGameOptions.AutoAdjustSettings) RandomMap.AdjustSettings(readByte);
                         break;
                     case CustomRPC.Sendchat:
@@ -1264,6 +1397,9 @@ namespace TownOfUs
                 Utils.ShowDeadBodies = false;
                 Role.NobodyWins = false;
                 Role.SurvOnlyWins = false;
+                ExileControllerPatch.lastExiled = null;
+                PatchKillTimer.GameStarted = false;
+                StartImitate.ImitatingPlayer = null;
                 CrewmateRoles.Clear();
                 NeutralNonKillingRoles.Clear();
                 NeutralKillingRoles.Clear();
@@ -1275,15 +1411,17 @@ namespace TownOfUs
                 AssassinModifiers.Clear();
                 AssassinAbility.Clear();
 
-                RecordRewind.points.Clear();
                 Murder.KilledPlayers.Clear();
                 KillButtonTarget.DontRevive = byte.MaxValue;
+                ReviveHudManagerUpdate.DontRevive = byte.MaxValue;
 
                 var startWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                     (byte) CustomRPC.Start, SendOption.Reliable, -1);
                 AmongUsClient.Instance.FinishRpcImmediately(startWriter);
 
-                if (CustomGameOptions.GameMode != GameMode.KillingOnly)
+                if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return;
+
+                if (CustomGameOptions.GameMode == GameMode.Classic || CustomGameOptions.GameMode == GameMode.AllAny)
                 {
                     PhantomOn = Check(CustomGameOptions.PhantomOn);
                     HaunterOn = Check(CustomGameOptions.HaunterOn);
@@ -1293,175 +1431,175 @@ namespace TownOfUs
                 {
                     PhantomOn = false;
                     HaunterOn = false;
-                    TraitorOn = true;
+                    TraitorOn = false;
                 }
 
-                if (CustomGameOptions.GameMode != GameMode.KillingOnly)
+                if (CustomGameOptions.GameMode == GameMode.Classic || CustomGameOptions.GameMode == GameMode.AllAny)
                 {
                     #region Crewmate Roles
                     if (CustomGameOptions.MayorOn > 0)
-                        CrewmateRoles.Add((typeof(Mayor), CustomRPC.SetMayor, CustomGameOptions.MayorOn, true));
+                        CrewmateRoles.Add((typeof(Mayor), 3, CustomGameOptions.MayorOn, true));
 
                     if (CustomGameOptions.SheriffOn > 0)
-                        CrewmateRoles.Add((typeof(Sheriff), CustomRPC.SetSheriff, CustomGameOptions.SheriffOn, false));
+                        CrewmateRoles.Add((typeof(Sheriff), 0, CustomGameOptions.SheriffOn, false));
 
                     if (CustomGameOptions.EngineerOn > 0)
-                        CrewmateRoles.Add((typeof(Engineer), CustomRPC.SetEngineer, CustomGameOptions.EngineerOn, false));
+                        CrewmateRoles.Add((typeof(Engineer), 2, CustomGameOptions.EngineerOn, false));
 
                     if (CustomGameOptions.SwapperOn > 0)
-                        CrewmateRoles.Add((typeof(Swapper), CustomRPC.SetSwapper, CustomGameOptions.SwapperOn, true));
+                        CrewmateRoles.Add((typeof(Swapper), 4, CustomGameOptions.SwapperOn, true));
 
                     if (CustomGameOptions.InvestigatorOn > 0)
-                        CrewmateRoles.Add((typeof(Investigator), CustomRPC.SetInvestigator, CustomGameOptions.InvestigatorOn, false));
-
-                    if (CustomGameOptions.TimeLordOn > 0)
-                        CrewmateRoles.Add((typeof(TimeLord), CustomRPC.SetTimeLord, CustomGameOptions.TimeLordOn, true));
+                        CrewmateRoles.Add((typeof(Investigator), 5, CustomGameOptions.InvestigatorOn, false));
 
                     if (CustomGameOptions.MedicOn > 0)
-                        CrewmateRoles.Add((typeof(Medic), CustomRPC.SetMedic, CustomGameOptions.MedicOn, true));
+                        CrewmateRoles.Add((typeof(Medic), 7, CustomGameOptions.MedicOn, true));
 
                     if (CustomGameOptions.SeerOn > 0)
-                        CrewmateRoles.Add((typeof(Seer), CustomRPC.SetSeer, CustomGameOptions.SeerOn, false));
+                        CrewmateRoles.Add((typeof(Seer), 8, CustomGameOptions.SeerOn, false));
 
                     if (CustomGameOptions.SpyOn > 0)
-                        CrewmateRoles.Add((typeof(Spy), CustomRPC.SetSpy, CustomGameOptions.SpyOn, false));
+                        CrewmateRoles.Add((typeof(Spy), 10, CustomGameOptions.SpyOn, false));
 
                     if (CustomGameOptions.SnitchOn > 0)
-                        CrewmateRoles.Add((typeof(Snitch), CustomRPC.SetSnitch, CustomGameOptions.SnitchOn, true));
+                        CrewmateRoles.Add((typeof(Snitch), 12, CustomGameOptions.SnitchOn, true));
 
                     if (CustomGameOptions.AltruistOn > 0)
-                        CrewmateRoles.Add((typeof(Altruist), CustomRPC.SetAltruist, CustomGameOptions.AltruistOn, true));
+                        CrewmateRoles.Add((typeof(Altruist), 14, CustomGameOptions.AltruistOn, true));
 
                     if (CustomGameOptions.VigilanteOn > 0)
-                        CrewmateRoles.Add((typeof(Vigilante), CustomRPC.SetVigilante, CustomGameOptions.VigilanteOn, false));
+                        CrewmateRoles.Add((typeof(Vigilante), 15, CustomGameOptions.VigilanteOn, false));
 
                     if (CustomGameOptions.VeteranOn > 0)
-                        CrewmateRoles.Add((typeof(Veteran), CustomRPC.SetVeteran, CustomGameOptions.VeteranOn, false));
+                        CrewmateRoles.Add((typeof(Veteran), 16, CustomGameOptions.VeteranOn, false));
 
                     if (CustomGameOptions.TrackerOn > 0)
-                        CrewmateRoles.Add((typeof(Tracker), CustomRPC.SetTracker, CustomGameOptions.TrackerOn, false));
+                        CrewmateRoles.Add((typeof(Tracker), 19, CustomGameOptions.TrackerOn, false));
 
                     if (CustomGameOptions.TransporterOn > 0)
-                        CrewmateRoles.Add((typeof(Transporter), CustomRPC.SetTransporter, CustomGameOptions.TransporterOn, false));
+                        CrewmateRoles.Add((typeof(Transporter), 20, CustomGameOptions.TransporterOn, false));
 
                     if (CustomGameOptions.MediumOn > 0)
-                        CrewmateRoles.Add((typeof(Medium), CustomRPC.SetMedium, CustomGameOptions.MediumOn, false));
+                        CrewmateRoles.Add((typeof(Medium), 21, CustomGameOptions.MediumOn, false));
 
                     if (CustomGameOptions.MysticOn > 0)
-                        CrewmateRoles.Add((typeof(Mystic), CustomRPC.SetMystic, CustomGameOptions.MysticOn, false));
+                        CrewmateRoles.Add((typeof(Mystic), 25, CustomGameOptions.MysticOn, false));
 
                     if (CustomGameOptions.TrapperOn > 0)
-                        CrewmateRoles.Add((typeof(Trapper), CustomRPC.SetTrapper, CustomGameOptions.TrapperOn, false));
+                        CrewmateRoles.Add((typeof(Trapper), 22, CustomGameOptions.TrapperOn, false));
 
                     if (CustomGameOptions.DetectiveOn > 0)
-                        CrewmateRoles.Add((typeof(Detective), CustomRPC.SetDetective, CustomGameOptions.DetectiveOn, false));
+                        CrewmateRoles.Add((typeof(Detective), 28, CustomGameOptions.DetectiveOn, false));
+
+                    if (CustomGameOptions.ImitatorOn > 0)
+                        CrewmateRoles.Add((typeof(Imitator), 40, CustomGameOptions.ImitatorOn, true));
                     #endregion
                     #region Neutral Roles
                     if (CustomGameOptions.JesterOn > 0)
-                        NeutralNonKillingRoles.Add((typeof(Jester), CustomRPC.SetJester, CustomGameOptions.JesterOn, false));
+                        NeutralNonKillingRoles.Add((typeof(Jester), 1, CustomGameOptions.JesterOn, false));
 
                     if (CustomGameOptions.AmnesiacOn > 0)
-                        NeutralNonKillingRoles.Add((typeof(Amnesiac), CustomRPC.SetAmnesiac, CustomGameOptions.AmnesiacOn, false));
+                        NeutralNonKillingRoles.Add((typeof(Amnesiac), 17, CustomGameOptions.AmnesiacOn, false));
 
                     if (CustomGameOptions.ExecutionerOn > 0)
-                        NeutralNonKillingRoles.Add((typeof(Executioner), CustomRPC.SetExecutioner, CustomGameOptions.ExecutionerOn, false));
+                        NeutralNonKillingRoles.Add((typeof(Executioner), 9, CustomGameOptions.ExecutionerOn, false));
 
                     if (CustomGameOptions.SurvivorOn > 0)
-                        NeutralNonKillingRoles.Add((typeof(Survivor), CustomRPC.SetSurvivor, CustomGameOptions.SurvivorOn, false));
+                        NeutralNonKillingRoles.Add((typeof(Survivor), 23, CustomGameOptions.SurvivorOn, false));
 
                     if (CustomGameOptions.GuardianAngelOn > 0)
-                        NeutralNonKillingRoles.Add((typeof(GuardianAngel), CustomRPC.SetGuardianAngel, CustomGameOptions.GuardianAngelOn, false));
+                        NeutralNonKillingRoles.Add((typeof(GuardianAngel), 24, CustomGameOptions.GuardianAngelOn, false));
 
                     if (CustomGameOptions.GlitchOn > 0)
-                        NeutralKillingRoles.Add((typeof(Glitch), CustomRPC.SetGlitch, CustomGameOptions.GlitchOn, true));
+                        NeutralKillingRoles.Add((typeof(Glitch), 11, CustomGameOptions.GlitchOn, true));
 
                     if (CustomGameOptions.ArsonistOn > 0)
-                        NeutralKillingRoles.Add((typeof(Arsonist), CustomRPC.SetArsonist, CustomGameOptions.ArsonistOn, true));
+                        NeutralKillingRoles.Add((typeof(Arsonist), 13, CustomGameOptions.ArsonistOn, true));
 
                     if (CustomGameOptions.PlaguebearerOn > 0)
-                        NeutralKillingRoles.Add((typeof(Plaguebearer), CustomRPC.SetPlaguebearer, CustomGameOptions.PlaguebearerOn, true));
+                        NeutralKillingRoles.Add((typeof(Plaguebearer), 26, CustomGameOptions.PlaguebearerOn, true));
 
                     if (CustomGameOptions.WerewolfOn > 0)
-                        NeutralKillingRoles.Add((typeof(Werewolf), CustomRPC.SetWerewolf, CustomGameOptions.WerewolfOn, true));
+                        NeutralKillingRoles.Add((typeof(Werewolf), 27, CustomGameOptions.WerewolfOn, true));
 
-                    if (CustomGameOptions.GameMode == GameMode.AllAny)
-                        NeutralKillingRoles.Add((typeof(Juggernaut), CustomRPC.SetJuggernaut, 10, true));
+                    if (CustomGameOptions.GameMode == GameMode.AllAny && CustomGameOptions.HiddenRoles)
+                        NeutralKillingRoles.Add((typeof(Juggernaut), 18, 10, true));
                     #endregion
                     #region Impostor Roles
                     if (CustomGameOptions.UndertakerOn > 0)
-                        ImpostorRoles.Add((typeof(Undertaker), CustomRPC.SetUndertaker, CustomGameOptions.UndertakerOn, true));
+                        ImpostorRoles.Add((typeof(Undertaker), 33, CustomGameOptions.UndertakerOn, true));
 
                     if (CustomGameOptions.MorphlingOn > 0)
-                        ImpostorRoles.Add((typeof(Morphling), CustomRPC.SetMorphling, CustomGameOptions.MorphlingOn, false));
+                        ImpostorRoles.Add((typeof(Morphling), 31, CustomGameOptions.MorphlingOn, false));
 
                     if (CustomGameOptions.BlackmailerOn > 0)
-                        ImpostorRoles.Add((typeof(Blackmailer), CustomRPC.SetBlackmailer, CustomGameOptions.BlackmailerOn, true));
+                        ImpostorRoles.Add((typeof(Blackmailer), 36, CustomGameOptions.BlackmailerOn, true));
 
                     if (CustomGameOptions.MinerOn > 0)
-                        ImpostorRoles.Add((typeof(Miner), CustomRPC.SetMiner, CustomGameOptions.MinerOn, true));
+                        ImpostorRoles.Add((typeof(Miner), 29, CustomGameOptions.MinerOn, true));
 
                     if (CustomGameOptions.SwooperOn > 0)
-                        ImpostorRoles.Add((typeof(Swooper), CustomRPC.SetSwooper, CustomGameOptions.SwooperOn, false));
+                        ImpostorRoles.Add((typeof(Swooper), 30, CustomGameOptions.SwooperOn, false));
 
                     if (CustomGameOptions.JanitorOn > 0)
-                        ImpostorRoles.Add((typeof(Janitor), CustomRPC.SetJanitor, CustomGameOptions.JanitorOn, false));
+                        ImpostorRoles.Add((typeof(Janitor), 32, CustomGameOptions.JanitorOn, false));
 
                     if (CustomGameOptions.GrenadierOn > 0)
-                        ImpostorRoles.Add((typeof(Grenadier), CustomRPC.SetGrenadier, CustomGameOptions.GrenadierOn, true));
-
-                    if (CustomGameOptions.PoisonerOn > 0 && CustomGameOptions.GameMode != GameMode.KillingOnly)
-                        ImpostorRoles.Add((typeof(Poisoner), CustomRPC.SetPoisoner, CustomGameOptions.PoisonerOn, true));
+                        ImpostorRoles.Add((typeof(Grenadier), 34, CustomGameOptions.GrenadierOn, true));
 
                     if (CustomGameOptions.EscapistOn > 0)
-                        ImpostorRoles.Add((typeof(Escapist), CustomRPC.SetEscapist, CustomGameOptions.EscapistOn, false));
+                        ImpostorRoles.Add((typeof(Escapist), 37, CustomGameOptions.EscapistOn, false));
+
+                    if (CustomGameOptions.BomberOn > 0)
+                        ImpostorRoles.Add((typeof(Bomber), 41, CustomGameOptions.BomberOn, true));
                     #endregion
                     #region Crewmate Modifiers
                     if (Check(CustomGameOptions.TorchOn))
-                        CrewmateModifiers.Add((typeof(Torch), CustomRPC.SetTorch, CustomGameOptions.TorchOn));
+                        CrewmateModifiers.Add((typeof(Torch), 1, CustomGameOptions.TorchOn));
 
                     if (Check(CustomGameOptions.DiseasedOn))
-                        CrewmateModifiers.Add((typeof(Diseased), CustomRPC.SetDiseased, CustomGameOptions.DiseasedOn));
+                        CrewmateModifiers.Add((typeof(Diseased), 2, CustomGameOptions.DiseasedOn));
 
                     if (Check(CustomGameOptions.BaitOn))
-                        CrewmateModifiers.Add((typeof(Bait), CustomRPC.SetBait, CustomGameOptions.BaitOn));
+                        CrewmateModifiers.Add((typeof(Bait), 7, CustomGameOptions.BaitOn));
 
                     if (Check(CustomGameOptions.BlindOn))
-                        CrewmateModifiers.Add((typeof(Blind), CustomRPC.SetBlind, CustomGameOptions.BlindOn));
+                        CrewmateModifiers.Add((typeof(Blind), 9, CustomGameOptions.BlindOn));
 
                     if (Check(CustomGameOptions.MultitaskerOn))
-                        CrewmateModifiers.Add((typeof(Multitasker), CustomRPC.SetMultitasker, CustomGameOptions.MultitaskerOn));
+                        CrewmateModifiers.Add((typeof(Multitasker), 12, CustomGameOptions.MultitaskerOn));
                     #endregion
                     #region Global Modifiers
                     if (Check(CustomGameOptions.TiebreakerOn))
-                        GlobalModifiers.Add((typeof(Tiebreaker), CustomRPC.SetTiebreaker, CustomGameOptions.TiebreakerOn));
+                        GlobalModifiers.Add((typeof(Tiebreaker), 4, CustomGameOptions.TiebreakerOn));
 
                     if (Check(CustomGameOptions.FlashOn))
-                        GlobalModifiers.Add((typeof(Flash), CustomRPC.SetFlash, CustomGameOptions.FlashOn));
+                        GlobalModifiers.Add((typeof(Flash), 3, CustomGameOptions.FlashOn));
 
                     if (Check(CustomGameOptions.GiantOn))
-                        GlobalModifiers.Add((typeof(Giant), CustomRPC.SetGiant, CustomGameOptions.GiantOn));
+                        GlobalModifiers.Add((typeof(Giant), 5, CustomGameOptions.GiantOn));
 
                     if (Check(CustomGameOptions.ButtonBarryOn))
-                        ButtonModifiers.Add((typeof(ButtonBarry), CustomRPC.SetButtonBarry, CustomGameOptions.ButtonBarryOn));
+                        ButtonModifiers.Add((typeof(ButtonBarry), 6, CustomGameOptions.ButtonBarryOn));
 
                     if (Check(CustomGameOptions.LoversOn))
-                        GlobalModifiers.Add((typeof(Lover), CustomRPC.SetCouple, CustomGameOptions.LoversOn));
+                        GlobalModifiers.Add((typeof(Lover), 0, CustomGameOptions.LoversOn));
 
                     if (Check(CustomGameOptions.SleuthOn))
-                        GlobalModifiers.Add((typeof(Sleuth), CustomRPC.SetSleuth, CustomGameOptions.SleuthOn));
+                        GlobalModifiers.Add((typeof(Sleuth), 8, CustomGameOptions.SleuthOn));
 
                     if (Check(CustomGameOptions.RadarOn))
-                        GlobalModifiers.Add((typeof(Radar), CustomRPC.SetRadar, CustomGameOptions.RadarOn));
+                        GlobalModifiers.Add((typeof(Radar), 10, CustomGameOptions.RadarOn));
                     #endregion
                     #region Impostor Modifiers
-                    if (Check(CustomGameOptions.DisperserOn) && PlayerControl.GameOptions.MapId != 4 && PlayerControl.GameOptions.MapId != 5)
-                        ImpostorModifiers.Add((typeof(Disperser), CustomRPC.SetDisperser, CustomGameOptions.DisperserOn));
+                    if (Check(CustomGameOptions.DisperserOn) && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 4 && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 5)
+                        ImpostorModifiers.Add((typeof(Disperser), 11, CustomGameOptions.DisperserOn));
 
                     if (Check(CustomGameOptions.DoubleShotOn))
-                        AssassinModifiers.Add((typeof(DoubleShot), CustomRPC.SetDoubleShot, CustomGameOptions.DoubleShotOn));
+                        AssassinModifiers.Add((typeof(DoubleShot), 13, CustomGameOptions.DoubleShotOn));
 
                     if (CustomGameOptions.UnderdogOn > 0)
-                        ImpostorModifiers.Add((typeof(Underdog), CustomRPC.SetUnderdog, CustomGameOptions.UnderdogOn));
+                        ImpostorModifiers.Add((typeof(Underdog), 14, CustomGameOptions.UnderdogOn));
                     #endregion
                     #region Assassin Ability
                     AssassinAbility.Add((typeof(Assassin), CustomRPC.SetAssassin, 100));
@@ -1469,6 +1607,7 @@ namespace TownOfUs
                 }
 
                 if (CustomGameOptions.GameMode == GameMode.KillingOnly) GenEachRoleKilling(infected.ToList());
+                else if (CustomGameOptions.GameMode == GameMode.Cultist) GenEachRoleCultist(infected.ToList());
                 else GenEachRole(infected.ToList());
             }
         }

@@ -4,6 +4,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using System.Linq;
 using TownOfUs.CrewmateRoles.MedicMod;
+using AmongUs.GameOptions;
 
 namespace TownOfUs.NeutralRoles.AmnesiacMod
 {
@@ -17,6 +18,7 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
             if (PlayerControl.LocalPlayer.Data == null) return;
+            if (PlayerControl.LocalPlayer.Data.IsDead) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Amnesiac)) return;
 
             var role = Role.GetRole<Amnesiac>(PlayerControl.LocalPlayer);
@@ -24,8 +26,8 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
             var data = PlayerControl.LocalPlayer.Data;
             var isDead = data.IsDead;
             var truePosition = PlayerControl.LocalPlayer.GetTruePosition();
-            var maxDistance = GameOptionsData.KillDistances[PlayerControl.GameOptions.KillDistance];
-            var flag = (PlayerControl.GameOptions.GhostsDoTasks || !data.IsDead) &&
+            var maxDistance = GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
+            var flag = (GameOptionsManager.Instance.currentNormalGameOptions.GhostsDoTasks || !data.IsDead) &&
                        (!AmongUsClient.Instance || !AmongUsClient.Instance.IsGameOver) &&
                        PlayerControl.LocalPlayer.CanMove;
 
@@ -81,18 +83,11 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
                 }
             }
 
-            if (isDead)
-            {
-                killButton.gameObject.SetActive(false);
-                // killButton.isActive = false;
-            }
-            else
-            {
-                killButton.gameObject.SetActive(!MeetingHud.Instance);
-                // killButton.isActive = !MeetingHud.Instance;
-                KillButtonTarget.SetTarget(killButton, closestBody, role);
-                __instance.KillButton.SetCoolDown(0f, 1f);
-            }
+            __instance.KillButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            KillButtonTarget.SetTarget(killButton, closestBody, role);
+            __instance.KillButton.SetCoolDown(0f, 1f);
         }
     }
 }

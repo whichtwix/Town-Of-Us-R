@@ -17,7 +17,7 @@ namespace TownOfUs.NeutralRoles.PlaguebearerMod
             if (PlayerControl.LocalPlayer.Data == null) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Plaguebearer)) return;
             var isDead = PlayerControl.LocalPlayer.Data.IsDead;
-            var infectButton = DestroyableSingleton<HudManager>.Instance.KillButton;
+            var infectButton = __instance.KillButton;
             var role = Role.GetRole<Plaguebearer>(PlayerControl.LocalPlayer);
 
             foreach (var playerId in role.InfectedPlayers)
@@ -31,21 +31,16 @@ namespace TownOfUs.NeutralRoles.PlaguebearerMod
                 player.nameText().color = Color.black;
             }
 
-            if (isDead)
-            {
-                infectButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                infectButton.gameObject.SetActive(!MeetingHud.Instance);
-                infectButton.SetCoolDown(role.InfectTimer(), CustomGameOptions.InfectCd);
+            infectButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            infectButton.SetCoolDown(role.InfectTimer(), CustomGameOptions.InfectCd);
 
-                var notInfected = PlayerControl.AllPlayerControls.ToArray().Where(
-                    player => !role.InfectedPlayers.Contains(player.PlayerId)
-                ).ToList();
+            var notInfected = PlayerControl.AllPlayerControls.ToArray().Where(
+                player => !role.InfectedPlayers.Contains(player.PlayerId)
+            ).ToList();
 
-                Utils.SetTarget(ref role.ClosestPlayer, __instance.KillButton, float.NaN, notInfected);
-            }
+            Utils.SetTarget(ref role.ClosestPlayer, __instance.KillButton, float.NaN, notInfected);
 
             if (role.CanTransform && (PlayerControl.AllPlayerControls.ToArray().Where(x => !x.Data.IsDead && !x.Data.Disconnected).ToList().Count > 1) && !isDead)
             {

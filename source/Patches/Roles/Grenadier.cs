@@ -58,7 +58,7 @@ namespace TownOfUs.Roles
         {
             if (Enabled != true)
             {
-                closestPlayers = FindClosestPlayers(Player);
+                closestPlayers = Utils.GetClosestPlayers(Player.GetTruePosition(), CustomGameOptions.FlashRadius);
                 flashedPlayers = closestPlayers;
             }
             Enabled = true;
@@ -185,29 +185,6 @@ namespace TownOfUs.Roles
             ((Renderer)DestroyableSingleton<HudManager>.Instance.FullScreen).enabled = true;
             DestroyableSingleton<HudManager>.Instance.FullScreen.color = normalVision;
             flashedPlayers.Clear();
-        }
-
-        public static Il2CppSystem.Collections.Generic.List<PlayerControl> FindClosestPlayers(PlayerControl player)
-        {
-            Il2CppSystem.Collections.Generic.List<PlayerControl> playerControlList = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            float flashRadius = CustomGameOptions.FlashRadius * 5;
-            Vector2 truePosition = player.GetTruePosition();
-            Il2CppSystem.Collections.Generic.List<GameData.PlayerInfo> allPlayers = GameData.Instance.AllPlayers;
-            for (int index = 0; index < allPlayers.Count; ++index)
-            {
-                GameData.PlayerInfo playerInfo = allPlayers[index];
-                if (!playerInfo.Disconnected)
-                {
-                    Vector2 vector2 = new Vector2(playerInfo.Object.GetTruePosition().x - truePosition.x, playerInfo.Object.GetTruePosition().y - truePosition.y);
-                    float magnitude = ((Vector2) vector2).magnitude;
-                    if (magnitude <= flashRadius)
-                    {
-                        PlayerControl playerControl = playerInfo.Object;
-                        playerControlList.Add(playerControl);
-                    }
-                }
-            }
-            return playerControlList;
         }
     }
 }

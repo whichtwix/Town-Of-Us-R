@@ -987,12 +987,12 @@
     },
     {
       "id": "hats0197",
-      "name": "Friday Night Funkin hat 1",
+      "name": "Friday Night Funkin hat ",
       "artist": "Ophidian"
     },
     {
       "id": "hats0198",
-      "name": "Friday Night Funkin hat 2",
+      "name": "Friday Night Funkin hat 2 ",
       "artist": "Ophidian"
     },
     {
@@ -1042,7 +1042,7 @@
     },
     {
       "id": "hats0208",
-      "name": "Kara hat 2",
+      "name": "Kara hat 2 ",
       "artist": "TheLastShaymin"
     },
     {
@@ -1287,7 +1287,7 @@
     },
     {
       "id": "hats0257",
-      "name": "Side Arms hat 2",
+      "name": "Side Arms hat 2 ",
       "artist": "Ghost_ejims"
     },
     {
@@ -1617,7 +1617,7 @@
     },
     {
       "id": "hats0323",
-      "name": "Side Arms hat 2 alt",
+      "name": "Side Arms hat 2 alt ",
       "artist": "Ghost_ejims"
     },
     {
@@ -1869,6 +1869,296 @@
       "id": "hats0373",
       "name": "Yey Billy hat ",
       "artist": "Rum"
+    },
+    {
+      "id": "hats0374",
+      "name": "Breakfast Boba hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0375",
+      "name": "Little Death hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0376",
+      "name": "Little Jester hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0377",
+      "name": "Little Mage hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0378",
+      "name": "Little Pirate hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0379",
+      "name": "G7erard hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0380",
+      "name": "COTC hat ",
+      "artist": "Rum"
+    },
+    {
+      "id": "hats0381",
+      "name": "Facehugger hat ",
+      "artist": "Rum"
+    },
+    {
+      "id": "hats0382",
+      "name": "Maks hat ",
+      "artist": "Rum"
+    },
+    {
+      "id": "hats0383",
+      "name": "Xenomorph Queen hat ",
+      "artist": "Rum"
+    },
+    {
+      "id": "hats0384",
+      "name": "Cruella hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0385",
+      "name": "Moth hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0386",
+      "name": "Necro hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0387",
+      "name": "Shaman hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0388",
+      "name": "Assassin hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0389",
+      "name": "Death hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0390",
+      "name": "bgcbigs hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0391",
+      "name": "Jshooa hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0392",
+      "name": "Lechonk hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0393",
+      "name": "PossibleBear hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0394",
+      "name": "Little Angel hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0395",
+      "name": "Little Demon hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0396",
+      "name": "Little Red Riding Hood hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0397",
+      "name": "Little Sheriff hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0398",
+      "name": "Little Chef hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0399",
+      "name": "Little Evil Queen hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0400",
+      "name": "SpicesPawmont hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0401",
+      "name": "Little Gnome hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0402",
+      "name": "Little Krampus hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0403",
+      "name": "Little Santa hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0404",
+      "name": "CandyCane hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0405",
+      "name": "GingerbreadMan hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0406",
+      "name": "Present hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0407",
+      "name": "Reindeer hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0408",
+      "name": "Santa hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0409",
+      "name": "Snowman hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0410",
+      "name": "GingerbreadHouse hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0411",
+      "name": "NohsAraquanio hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0412",
+      "name": "Bodybuilder hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0413",
+      "name": "Bosa hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0414",
+      "name": "Cluckers hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0415",
+      "name": "Manatee hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0416",
+      "name": "MikeDotTV hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0417",
+      "name": "Mr T hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0418",
+      "name": "Salmon hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0419",
+      "name": "Tatsugiri hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0420",
+      "name": "Wonton hat ",
+      "artist": "Sarinjin"
+    },
+    {
+      "id": "hats0421",
+      "name": "Heckinmoo hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0422",
+      "name": "JarrelBun hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0423",
+      "name": "Jessica hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0424",
+      "name": "MartiMoo hat 2 ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0425",
+      "name": "Oilers hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0426",
+      "name": "TechnicalMoon hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0427",
+      "name": "Giddawid hat",
+      "artist": "Sarinjin"
+    },
+    {
+      "id": "hats0428",
+      "name": "Kurtgi hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0429",
+      "name": "ThisIsFine hat ",
+      "artist": "Ophidian"
+    },
+    {
+      "id": "hats0430",
+      "name": "Platy Mayo hat",
+      "artist": "Pigoletto"
+    },
+    {
+      "id": "hats0431",
+      "name": "Princess Zeach hat",
+      "artist": "Pigoletto"
     },
     {
       "id": "misc0000",

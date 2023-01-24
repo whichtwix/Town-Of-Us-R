@@ -181,7 +181,7 @@ namespace TownOfUs.Modifiers.AssassinMod
                         }
                         else
                         {
-                            AssassinKill.RpcMurderPlayer(toDie);
+                            AssassinKill.RpcMurderPlayer(toDie, PlayerControl.LocalPlayer);
                             role.RemainingKills--;
                             ShowHideButtons.HideSingle(role, targetId, toDie == role.Player);
                             if (toDie.IsLover() && CustomGameOptions.BothLoversDie)
@@ -193,7 +193,7 @@ namespace TownOfUs.Modifiers.AssassinMod
                     }
                     else
                     {
-                        AssassinKill.RpcMurderPlayer(toDie);
+                        AssassinKill.RpcMurderPlayer(toDie, PlayerControl.LocalPlayer);
                         role.RemainingKills--;
                         ShowHideButtons.HideSingle(role, targetId, toDie == role.Player);
                         if (toDie.IsLover() && CustomGameOptions.BothLoversDie)

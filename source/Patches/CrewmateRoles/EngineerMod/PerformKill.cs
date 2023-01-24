@@ -10,6 +10,7 @@ namespace TownOfUs.CrewmateRoles.EngineerMod
     {
         public static bool Prefix(KillButton __instance)
         {
+            if (CustomGameOptions.GameMode == GameMode.Cultist) return false;
             if (__instance != DestroyableSingleton<HudManager>.Instance.KillButton) return true;
             var flag = PlayerControl.LocalPlayer.Is(RoleEnum.Engineer);
             if (!flag) return true;
@@ -19,13 +20,14 @@ namespace TownOfUs.CrewmateRoles.EngineerMod
             var role = Role.GetRole<Engineer>(PlayerControl.LocalPlayer);
             if (role.UsedThisRound) return false;
             var system = ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>();
+            if (system == null) return false;
             var specials = system.specials.ToArray();
             var dummyActive = system.dummy.IsActive;
             var sabActive = specials.Any(s => s.IsActive);
             if (!sabActive | dummyActive) return false;
             role.UsedThisRound = true;
 
-            switch (PlayerControl.GameOptions.MapId)
+            switch (GameOptionsManager.Instance.currentNormalGameOptions.MapId)
             {
                 case 0:
                 case 3:

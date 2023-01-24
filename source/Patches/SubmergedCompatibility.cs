@@ -15,10 +15,10 @@ using Hazel;
 
 namespace TownOfUs.Patches
 {
-    [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__24), nameof(IntroCutscene._ShowRole_d__24.MoveNext))]
+    [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__35), nameof(IntroCutscene._ShowRole_d__35.MoveNext))]
     public static class SubmergedStartPatch
     {
-        public static void Postfix(IntroCutscene._ShowRole_d__24 __instance)
+        public static void Postfix(IntroCutscene._ShowRole_d__35 __instance)
         {
             if (SubmergedCompatibility.isSubmerged())
             {
@@ -265,13 +265,8 @@ namespace TownOfUs.Patches
 
         public static void ExileRoleChangePostfix()
         {
-            NeutralRoles.PhantomMod.SetPhantom.ExileControllerPostfix(ExileController.Instance);
-            ImpostorRoles.TraitorMod.SetTraitor.ExileControllerPostfix(ExileController.Instance);
-            CrewmateRoles.HaunterMod.SetHaunter.ExileControllerPostfix(ExileController.Instance);
-
             Coroutines.Start(waitMeeting(resetTimers));
             Coroutines.Start(waitMeeting(GhostRoleBegin));
-            
         }
 
         public static IEnumerator waitStart(Action next)

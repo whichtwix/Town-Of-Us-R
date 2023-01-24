@@ -159,7 +159,7 @@ namespace TownOfUs.CrewmateRoles.MayorMod
                 if (playerVoteArea.AmDead)
                     return false;
 
-                if (PlayerControl.LocalPlayer.PlayerId == srcPlayerId || AmongUsClient.Instance.GameMode != GameModes.LocalGame)
+                if (PlayerControl.LocalPlayer.PlayerId == srcPlayerId || AmongUsClient.Instance.NetworkMode != NetworkModes.LocalGame)
                 {
                     SoundManager.Instance.PlaySound(__instance.VoteLockinSound, false, 1f);
                 }
@@ -248,8 +248,8 @@ namespace TownOfUs.CrewmateRoles.MayorMod
                     var mayor = (Mayor)role;
                     var playerInfo = GameData.Instance.GetPlayerById(role.Player.PlayerId);
 
-                    var anonVotesOption = PlayerControl.GameOptions.AnonymousVotes;
-                    PlayerControl.GameOptions.AnonymousVotes = true;
+                    var anonVotesOption = GameOptionsManager.Instance.currentNormalGameOptions.AnonymousVotes;
+                    GameOptionsManager.Instance.currentNormalGameOptions.AnonymousVotes = true;
 
                     foreach (var extraVote in mayor.ExtraVotes)
                     {
@@ -277,7 +277,7 @@ namespace TownOfUs.CrewmateRoles.MayorMod
                         }
                     }
 
-                    PlayerControl.GameOptions.AnonymousVotes = anonVotesOption;
+                    GameOptionsManager.Instance.currentNormalGameOptions.AnonymousVotes = anonVotesOption;
                 }
 
                 return false;

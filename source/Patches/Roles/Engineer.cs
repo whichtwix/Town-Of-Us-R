@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace TownOfUs.Roles
 {
     public class Engineer : Role
@@ -8,7 +6,7 @@ namespace TownOfUs.Roles
         {
             Name = "Engineer";
             ImpostorText = () => "Maintain Important Systems On The Ship";
-            TaskText = () => "Vent around and fix sabotages";
+            TaskText = () => CustomGameOptions.GameMode == GameMode.Cultist ? "Vent around" : "Vent around and fix sabotages";
             Color = Patches.Colors.Engineer;
             RoleType = RoleEnum.Engineer;
             AddToRoleHistory(RoleType);

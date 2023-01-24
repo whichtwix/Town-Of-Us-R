@@ -7,6 +7,9 @@ using TownOfUs.CrewmateRoles.SnitchMod;
 using TownOfUs.Extensions;
 using UnityEngine;
 using Reactor.Utilities;
+using TownOfUs.Patches;
+using AmongUs.GameOptions;
+using TownOfUs.CrewmateRoles.ImitatorMod;
 
 namespace TownOfUs.ImpostorRoles.TraitorMod
 {
@@ -53,12 +56,6 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
 
                 if (PlayerControl.LocalPlayer.Is(RoleEnum.Investigator)) Footprint.DestroyAll(Role.GetRole<Investigator>(PlayerControl.LocalPlayer));
 
-                if (PlayerControl.LocalPlayer.Is(RoleEnum.TimeLord))
-                {
-                    var timeLordRole = Role.GetRole<TimeLord>(PlayerControl.LocalPlayer);
-                    Object.Destroy(timeLordRole.UsesText);
-                }
-
                 if (PlayerControl.LocalPlayer.Is(RoleEnum.Tracker))
                 {
                     var trackerRole = Role.GetRole<Tracker>(PlayerControl.LocalPlayer);
@@ -92,10 +89,17 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
                     Object.Destroy(trapperRole.UsesText);
                 }
 
-                var oldRole = Role.GetRole(PlayerControl.LocalPlayer).RoleType;
+                if (PlayerControl.LocalPlayer == StartImitate.ImitatingPlayer) StartImitate.ImitatingPlayer = null;
+
+                var oldRole = Role.GetRole(PlayerControl.LocalPlayer);
+                var killsList = (oldRole.CorrectKills, oldRole.IncorrectKills, oldRole.CorrectAssassinKills, oldRole.IncorrectAssassinKills);
                 Role.RoleDictionary.Remove(PlayerControl.LocalPlayer.PlayerId);
                 var role = new Traitor(PlayerControl.LocalPlayer);
-                role.formerRole = oldRole;
+                role.formerRole = oldRole.RoleType;
+                role.CorrectKills = killsList.CorrectKills;
+                role.IncorrectKills = killsList.IncorrectKills;
+                role.CorrectAssassinKills = killsList.CorrectAssassinKills;
+                role.IncorrectAssassinKills = killsList.IncorrectAssassinKills;
                 role.RegenTask();
 
                 var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
@@ -110,7 +114,7 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
         {
             player.Data.Role.TeamType = RoleTeamTypes.Impostor;
             RoleManager.Instance.SetRole(player, RoleTypes.Impostor);
-            player.SetKillTimer(PlayerControl.GameOptions.KillCooldown);
+            player.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown);
 
             System.Console.WriteLine("PROOF I AM IMP VANILLA ROLE: "+player.Data.Role.IsImpostor);
 
@@ -183,5 +187,12 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
         }
 
         public static void Postfix(ExileController __instance) => ExileControllerPostfix(__instance);
+
+        [HarmonyPatch(typeof(Object), nameof(Object.Destroy), new System.Type[] { typeof(GameObject) })]
+        public static void Prefix(GameObject obj)
+        {
+            if (!SubmergedCompatibility.Loaded || GameOptionsManager.Instance.currentNormalGameOptions.MapId != 5) return;
+            if (obj.name.Contains("ExileCutscene")) ExileControllerPostfix(ExileControllerPatch.lastExiled);
+        }
     }
 }

@@ -1,15 +1,15 @@
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Random = UnityEngine.Random;
 
 namespace TownOfUs.Patches
 {
-
     [HarmonyPatch(typeof(ShipStatus))]
     public class ShipStatusPatch
     {
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.IsGameOverDueToDeath))]
-        public static void Postfix(ShipStatus __instance, ref bool __result)
+        [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.IsGameOverDueToDeath))]
+        public static void Postfix(LogicGameFlowNormal __instance, ref bool __result)
         {
             __result = false;
         }
@@ -21,18 +21,19 @@ namespace TownOfUs.Patches
             var commonTask = __instance.CommonTasks.Count;
             var normalTask = __instance.NormalTasks.Count;
             var longTask = __instance.LongTasks.Count;
-            if (PlayerControl.GameOptions.NumCommonTasks > commonTask) PlayerControl.GameOptions.NumCommonTasks = commonTask;
-            if (PlayerControl.GameOptions.NumShortTasks > normalTask) PlayerControl.GameOptions.NumShortTasks = normalTask;
-            if (PlayerControl.GameOptions.NumLongTasks > longTask) PlayerControl.GameOptions.NumLongTasks = longTask;
+            if (GameOptionsManager.Instance.currentNormalGameOptions.NumCommonTasks > commonTask) GameOptionsManager.Instance.currentNormalGameOptions.NumCommonTasks = commonTask;
+            if (GameOptionsManager.Instance.currentNormalGameOptions.NumShortTasks > normalTask) GameOptionsManager.Instance.currentNormalGameOptions.NumShortTasks = normalTask;
+            if (GameOptionsManager.Instance.currentNormalGameOptions.NumLongTasks > longTask) GameOptionsManager.Instance.currentNormalGameOptions.NumLongTasks = longTask;
             return true;
         }
     }
 
-    [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.GetAdjustedNumImpostors))]
+    [HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.GetAdjustedNumImpostors))]
     public class GetAdjustedImposters
     {
-        public static bool Prefix(GameOptionsData __instance, ref int __result)
+        public static bool Prefix(IGameOptions __instance, ref int __result)
         {
+            if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return true;
             if (CustomGameOptions.GameMode == GameMode.AllAny && CustomGameOptions.RandomNumberImps)
             {
                 var players = GameData.Instance.PlayerCount;

@@ -4,6 +4,7 @@ using System.Text;
 using HarmonyLib;
 using Reactor.Utilities.Extensions;
 using TownOfUs.CustomOption;
+using AmongUs.GameOptions;
 
 namespace TownOfUs
 {
@@ -12,7 +13,7 @@ namespace TownOfUs
     {
         public static bool AllOptions;
 
-        [HarmonyPatch]
+        [HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.ToHudString))]
         private static class GameOptionsDataPatch
         {
             public static IEnumerable<MethodBase> TargetMethods()
@@ -22,6 +23,8 @@ namespace TownOfUs
 
             private static void Postfix(ref string __result)
             {
+                if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return;
+
                 var builder = new StringBuilder(AllOptions ? __result : "");
 
                 foreach (var option in CustomOption.CustomOption.AllOptions)

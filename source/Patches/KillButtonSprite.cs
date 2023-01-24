@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
+using TownOfUs.Extensions;
+using TownOfUs.Roles;
 using UnityEngine;
 
 namespace TownOfUs
@@ -15,7 +18,7 @@ namespace TownOfUs
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public class KillButtonSprite
     {
-        private static Sprite Rewind => TownOfUs.Rewind;
+        private static Sprite Fix => TownOfUs.EngineerFix;
         private static Sprite Medic => TownOfUs.MedicSprite;
         private static Sprite Seer => TownOfUs.SeerSprite;
         private static Sprite Douse => TownOfUs.DouseSprite;
@@ -30,6 +33,7 @@ namespace TownOfUs
         private static Sprite Infect => TownOfUs.InfectSprite;
         private static Sprite Trap => TownOfUs.TrapSprite;
         private static Sprite Examine => TownOfUs.ExamineSprite;
+        private static Sprite Swoop => TownOfUs.SwoopSprite;
 
         private static Sprite Kill;
 
@@ -41,12 +45,7 @@ namespace TownOfUs
             if (!Kill) Kill = __instance.KillButton.graphic.sprite;
 
             var flag = false;
-            if (PlayerControl.LocalPlayer.Is(RoleEnum.TimeLord))
-            {
-                __instance.KillButton.graphic.sprite = Rewind;
-                flag = true;
-            }
-            else if (PlayerControl.LocalPlayer.Is(RoleEnum.Seer))
+            if (PlayerControl.LocalPlayer.Is(RoleEnum.Seer) || PlayerControl.LocalPlayer.Is(RoleEnum.CultistSeer))
             {
                 __instance.KillButton.graphic.sprite = Seer;
                 flag = true;
@@ -106,17 +105,24 @@ namespace TownOfUs
                 __instance.KillButton.graphic.sprite = Infect;
                 flag = true;
             }
-            else if (PlayerControl.LocalPlayer.Is(RoleEnum.Engineer))
+            else if (PlayerControl.LocalPlayer.Is(RoleEnum.Engineer) && CustomGameOptions.GameMode != GameMode.Cultist)
             {
+                __instance.KillButton.graphic.sprite = Fix;
                 flag = true;
             }
-            else if (PlayerControl.LocalPlayer.Is(RoleEnum.Trapper)) {
+            else if (PlayerControl.LocalPlayer.Is(RoleEnum.Trapper))
+            {
                 __instance.KillButton.graphic.sprite = Trap;
                 flag = true;
             }
             else if (PlayerControl.LocalPlayer.Is(RoleEnum.Detective))
             {
                 __instance.KillButton.graphic.sprite = Examine;
+                flag = true;
+            }
+            else if (PlayerControl.LocalPlayer.Is(RoleEnum.Chameleon))
+            {
+                __instance.KillButton.graphic.sprite = Swoop;
                 flag = true;
             }
             else
@@ -127,11 +133,55 @@ namespace TownOfUs
                 flag = PlayerControl.LocalPlayer.Is(RoleEnum.Sheriff) || PlayerControl.LocalPlayer.Is(RoleEnum.Pestilence) ||
                     PlayerControl.LocalPlayer.Is(RoleEnum.Werewolf) || PlayerControl.LocalPlayer.Is(RoleEnum.Juggernaut);
             }
+            if (!PlayerControl.LocalPlayer.Is(Faction.Impostors) &&
+                GameOptionsManager.Instance.CurrentGameOptions.GameMode != GameModes.HideNSeek)
+            {
+                __instance.KillButton.transform.localPosition = new Vector3(0f, 1f, 0f);
+            }
+            if (PlayerControl.LocalPlayer.Is(RoleEnum.Engineer) || PlayerControl.LocalPlayer.Is(RoleEnum.Glitch)
+                 || PlayerControl.LocalPlayer.Is(RoleEnum.Pestilence) || PlayerControl.LocalPlayer.Is(RoleEnum.Juggernaut))
+            {
+                __instance.ImpostorVentButton.transform.localPosition = new Vector3(-2f, 0f, 0f);
+            }
+            else if (PlayerControl.LocalPlayer.Is(RoleEnum.Werewolf))
+            {
+                __instance.ImpostorVentButton.transform.localPosition = new Vector3(-1f, 1f, 0f);
+            }
 
             var keyInt = Input.GetKeyInt(KeyCode.Q);
             var controller = ConsoleJoystick.player.GetButtonDown(8);
             if (keyInt | controller && __instance.KillButton != null && flag && !PlayerControl.LocalPlayer.Data.IsDead)
                 __instance.KillButton.DoClick();
+        }
+
+        [HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.Update))]
+        class AbilityButtonUpdatePatch
+        {
+            static void Postfix()
+            {
+                if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started)
+                {
+                    HudManager.Instance.AbilityButton.gameObject.SetActive(false);
+                    return;
+                }
+                else if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek)
+                {
+                    HudManager.Instance.AbilityButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsImpostor());
+                    return;
+                }
+                var ghostRole = false;
+                if (PlayerControl.LocalPlayer.Is(RoleEnum.Haunter))
+                {
+                    var haunter = Role.GetRole<Haunter>(PlayerControl.LocalPlayer);
+                    if (!haunter.Caught) ghostRole = true;
+                }
+                else if (PlayerControl.LocalPlayer.Is(RoleEnum.Phantom))
+                {
+                    var phantom = Role.GetRole<Phantom>(PlayerControl.LocalPlayer);
+                    if (!phantom.Caught) ghostRole = true;
+                }
+                HudManager.Instance.AbilityButton.gameObject.SetActive(!ghostRole && Utils.ShowDeadBodies && !MeetingHud.Instance);
+            }
         }
     }
 }

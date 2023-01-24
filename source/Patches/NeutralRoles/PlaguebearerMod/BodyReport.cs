@@ -14,7 +14,7 @@ namespace TownOfUs.NeutralRoles.PlaguebearerMod
 
             foreach (var player in PlayerControl.AllPlayerControls)
             {
-                if (player.PlayerId == info.PlayerId)
+                if (!info.Disconnected && player.PlayerId == info.PlayerId)
                 {
                     if (PlayerControl.LocalPlayer.IsInfected() || player.IsInfected())
                     {

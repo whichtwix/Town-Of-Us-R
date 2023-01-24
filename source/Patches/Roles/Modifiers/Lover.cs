@@ -86,7 +86,7 @@ namespace TownOfUs.Roles.Modifiers
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
 
-        internal override bool EABBNOODFGL(ShipStatus __instance)
+        internal override bool EABBNOODFGL(LogicGameFlowNormal __instance)
         {
             if (FourPeopleLeft()) return false;
 
