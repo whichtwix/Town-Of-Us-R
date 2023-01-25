@@ -456,7 +456,8 @@ namespace TownOfUs
                 if (killer == PlayerControl.LocalPlayer)
                     SoundManager.Instance.PlaySound(PlayerControl.LocalPlayer.KillSfx, false, 0.8f);
 
-                if (!killer.Is(Faction.Crewmates) && killer != target) Role.GetRole(killer).Kills += 1;
+                if (!killer.Is(Faction.Crewmates) && killer != target
+                    && GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal) Role.GetRole(killer).Kills += 1;
 
                 if (killer.Is(RoleEnum.Sheriff))
                 {

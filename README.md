@@ -75,6 +75,7 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 # Releases
 | Among Us - Version| Mod Version | Link |
 |----------|-------------|-----------------|
+| 2022.12.14s & 2022.12.14e | v4.0.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.1/ToU.v4.0.1.zip) |
 | 2022.12.14s & 2022.12.14e | v4.0.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.0/ToU.v4.0.0.zip) |
 | 2022.10.25s & 2022.10.25e | v3.4.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.4.0/ToU.v3.4.0.zip) |
 | 2022.8.24s & 2022.8.24e & 2022.9.20s & 2022.9.20e | v3.3.2 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.3.2/ToU.v3.3.2.zip) |
@@ -127,6 +128,10 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 
 <details>
   <summary> Changelog </summary>
+  <details>
+  <summary> v4.0.1 </summary>
+  <ul> <li>Fixed the Kill Button not working in Hide & Seek</li> </ul>
+  </details>
   <details>
   <summary> v4.0.0 </summary>
   <ul> <li>Compatibility with the new Among Us version v2022.12.14</li> </ul>
