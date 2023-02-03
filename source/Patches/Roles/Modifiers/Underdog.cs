@@ -7,12 +7,12 @@ namespace TownOfUs.Roles.Modifiers
         public Underdog(PlayerControl player) : base(player)
         {
             Name = "Underdog";
-            TaskText = () => PerformKill.LastImp() ? "You have a shortened kill cooldown!" : "You have a long kill cooldown until your teammate(s) die";
+            TaskText = () => "When you're alone your kill cooldown is shortened";
             Color = Patches.Colors.Impostor;
             ModifierType = ModifierEnum.Underdog;
         }
 
-        public float MaxTimer() => PerformKill.LastImp() ? PlayerControl.GameOptions.KillCooldown - CustomGameOptions.UnderdogKillBonus : (PerformKill.IncreasedKC() ? PlayerControl.GameOptions.KillCooldown : PlayerControl.GameOptions.KillCooldown + CustomGameOptions.UnderdogKillBonus);
+        public float MaxTimer() => PerformKill.LastImp() ? GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown - CustomGameOptions.UnderdogKillBonus : (PerformKill.IncreasedKC() ? GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown : GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown + CustomGameOptions.UnderdogKillBonus);
 
         public void SetKillTimer()
         {

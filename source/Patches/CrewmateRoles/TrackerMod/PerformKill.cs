@@ -1,10 +1,9 @@
 ﻿using System;
 using HarmonyLib;
-using Hazel;
 using TownOfUs.Roles;
 using UnityEngine;
-using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.Extensions;
+using AmongUs.GameOptions;
 
 namespace TownOfUs.CrewmateRoles.TrackerMod
 {
@@ -21,70 +20,51 @@ namespace TownOfUs.CrewmateRoles.TrackerMod
             var flag2 = role.TrackerTimer() == 0f;
             if (!flag2) return false;
             if (!__instance.enabled) return false;
-            var maxDistance = GameOptionsData.KillDistances[PlayerControl.GameOptions.KillDistance];
+            var maxDistance = GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
             if (Vector2.Distance(role.ClosestPlayer.GetTruePosition(),
                 PlayerControl.LocalPlayer.GetTruePosition()) > maxDistance) return false;
             if (role.ClosestPlayer == null) return false;
             var target = role.ClosestPlayer;
             if (!role.ButtonUsable) return false;
 
-            if (role.ClosestPlayer.IsInfected() || role.Player.IsInfected())
+            var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer);
+            if (interact[4] == true)
             {
-                foreach (var pb in Role.GetRoles(RoleEnum.Plaguebearer)) ((Plaguebearer)pb).RpcSpreadInfection(role.ClosestPlayer, role.Player);
-            }
-            if (role.ClosestPlayer.IsOnAlert() || role.ClosestPlayer.Is(RoleEnum.Pestilence))
-            {
-                if (role.Player.IsShielded())
+                var gameObj = new GameObject();
+                var arrow = gameObj.AddComponent<ArrowBehaviour>();
+                gameObj.transform.parent = PlayerControl.LocalPlayer.gameObject.transform;
+                var renderer = gameObj.AddComponent<SpriteRenderer>();
+                renderer.sprite = Sprite;
+                if (!CamouflageUnCamouflage.IsCamoed)
                 {
-                    var writer2 = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                        (byte)CustomRPC.AttemptSound, SendOption.Reliable, -1);
-                    writer2.Write(PlayerControl.LocalPlayer.GetMedic().Player.PlayerId);
-                    writer2.Write(PlayerControl.LocalPlayer.PlayerId);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer2);
+                    if (RainbowUtils.IsRainbow(target.GetDefaultOutfit().ColorId))
+                    {
+                        renderer.color = RainbowUtils.Rainbow;
+                    }
+                    else
+                    {
+                        renderer.color = Palette.PlayerColors[target.GetDefaultOutfit().ColorId];
+                    }
+                }
+                arrow.image = renderer;
+                gameObj.layer = 5;
+                arrow.target = target.transform.position;
 
-                    System.Console.WriteLine(CustomGameOptions.ShieldBreaks + "- shield break");
-                    if (CustomGameOptions.ShieldBreaks)
-                        role.LastTracked = DateTime.UtcNow;
-                    StopKill.BreakShield(PlayerControl.LocalPlayer.GetMedic().Player.PlayerId, PlayerControl.LocalPlayer.PlayerId, CustomGameOptions.ShieldBreaks);
-                    return false;
-                }
-                else if (!role.Player.IsProtected())
-                {
-                    Utils.RpcMurderPlayer(role.ClosestPlayer, PlayerControl.LocalPlayer);
-                    return false;
-                }
+                role.TrackerArrows.Add(target.PlayerId, arrow);
+                role.UsesLeft--;
+            }
+            if (interact[0] == true)
+            {
                 role.LastTracked = DateTime.UtcNow;
                 return false;
             }
-
-            var gameObj = new GameObject();
-            var arrow = gameObj.AddComponent<ArrowBehaviour>();
-            gameObj.transform.parent = PlayerControl.LocalPlayer.gameObject.transform;
-            var renderer = gameObj.AddComponent<SpriteRenderer>();
-            renderer.sprite = Sprite;
-            if (!CamouflageUnCamouflage.IsCamoed)
+            else if (interact[1] == true)
             {
-                if (RainbowUtils.IsRainbow(target.GetDefaultOutfit().ColorId))
-                {
-                    renderer.color = RainbowUtils.Rainbow;
-                }
-                else
-                {
-                    renderer.color = Palette.PlayerColors[target.GetDefaultOutfit().ColorId];
-                }
+                role.LastTracked = DateTime.UtcNow;
+                role.LastTracked = role.LastTracked.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.SeerCd);
+                return false;
             }
-            else
-            {
-                renderer.color = Color.gray;
-            }
-            arrow.image = renderer;
-            gameObj.layer = 5;
-            arrow.target = target.transform.position;
-
-            role.TrackerArrows.Add(target.PlayerId, arrow);
-            role.UsesLeft--;
-            role.LastTracked = DateTime.UtcNow;
-
+            else if (interact[3] == true) return false;
             return false;
         }
     }

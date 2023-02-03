@@ -4,18 +4,18 @@ using UnityEngine;
 using System.Linq;
 using System;
 using TownOfUs.Extensions;
-using Object = UnityEngine.Object;
 
 namespace TownOfUs.CrewmateRoles.MediumMod
 {
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
+    [HarmonyPatch(typeof(HudManager))]
     public class HUDMediate
     {
-        public static void Postfix(PlayerControl __instance)
+        [HarmonyPatch(nameof(HudManager.Update))]
+        public static void Postfix(HudManager __instance)
         {
             UpdateButton(__instance);
         }
-        public static void UpdateButton(PlayerControl __instance)
+        public static void UpdateButton(HudManager __instance)
         {
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
@@ -24,10 +24,12 @@ namespace TownOfUs.CrewmateRoles.MediumMod
 
             if (PlayerControl.LocalPlayer.Is(RoleEnum.Medium))
             {
-                var mediateButton = DestroyableSingleton<HudManager>.Instance.KillButton;
+                var mediateButton = __instance.KillButton;
 
                 var role = Role.GetRole<Medium>(PlayerControl.LocalPlayer);
-                mediateButton.gameObject.SetActive(!MeetingHud.Instance && !data.IsDead);
+                mediateButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
                 if (data.IsDead) return;
 
                 foreach (var player in PlayerControl.AllPlayerControls)
@@ -46,8 +48,6 @@ namespace TownOfUs.CrewmateRoles.MediumMod
                                 VisorId = "",
                                 PlayerName = " "
                             });
-                            //player.nameText().text = "";
-                            //PlayerControl.SetPlayerMaterialColors(Color.grey, player.MyRend);
                             PlayerMaterial.SetColors(Color.grey, player.myRend());
                         }
                     }

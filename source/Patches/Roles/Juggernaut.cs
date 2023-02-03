@@ -24,7 +24,7 @@ namespace TownOfUs.Roles
         public bool JuggernautWins { get; set; }
         public int JuggKills { get; set; } = 0;
 
-        internal override bool EABBNOODFGL(ShipStatus __instance)
+        internal override bool EABBNOODFGL(LogicGameFlowNormal __instance)
         {
             if (Player.Data.IsDead || Player.Data.Disconnected) return true;
 
@@ -63,13 +63,13 @@ namespace TownOfUs.Roles
         {
             var utcNow = DateTime.UtcNow;
             var timeSpan = utcNow - LastKill;
-            var num = (CustomGameOptions.GlitchKillCooldown + 5.0f - 5.0f * JuggKills) * 1000f;
+            var num = (CustomGameOptions.JuggKCd - CustomGameOptions.ReducedKCdPerKill * JuggKills) * 1000f;
             var flag2 = num - (float)timeSpan.TotalMilliseconds < 0f;
             if (flag2) return 0;
             return (num - (float)timeSpan.TotalMilliseconds) / 1000f;
         }
 
-        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__21 __instance)
+        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__32 __instance)
         {
             var juggTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             juggTeam.Add(PlayerControl.LocalPlayer);

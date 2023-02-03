@@ -23,7 +23,7 @@ namespace TownOfUs.Roles
         public DateTime LastKill { get; set; }
         public bool PestilenceWins { get; set; }
 
-        internal override bool EABBNOODFGL(ShipStatus __instance)
+        internal override bool EABBNOODFGL(LogicGameFlowNormal __instance)
         {
             if (Player.Data.IsDead || Player.Data.Disconnected) return true;
 

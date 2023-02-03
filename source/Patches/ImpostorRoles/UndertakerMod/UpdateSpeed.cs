@@ -13,7 +13,7 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                 var role = Role.GetRole<Undertaker>(__instance.myPlayer);
                 if (role.CurrentlyDragging != null)
                     if (__instance.AmOwner && GameData.Instance && __instance.myPlayer.CanMove)
-                        __instance.body.velocity /= 2;
+                        __instance.body.velocity *= CustomGameOptions.UndertakerDragSpeed;
             }
         }
     }

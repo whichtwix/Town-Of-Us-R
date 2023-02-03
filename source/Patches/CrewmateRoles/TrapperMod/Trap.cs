@@ -28,7 +28,7 @@ namespace TownOfUs.CrewmateRoles.TrapperMod
             {
                 if (player.Data.IsDead) continue;
                 //PluginSingleton<TownOfUs>.Instance.Log.LogMessage($"player with byte {player.PlayerId} is {Vector2.Distance(transform.position, player.GetTruePosition())} away");
-                if (Vector2.Distance(transform.position, player.GetTruePosition()) < CustomGameOptions.TrapSize + 0.05f)
+                if (Vector2.Distance(transform.position, player.GetTruePosition()) < (CustomGameOptions.TrapSize + 0.01f) * ShipStatus.Instance.MaxLightRadius)
                 {
                     if (!players.ContainsKey(player.PlayerId)) players.Add(player.PlayerId, 0f);
                 } else
@@ -71,16 +71,15 @@ namespace TownOfUs.CrewmateRoles.TrapperMod
         {
             var TrapPref = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             TrapPref.name = "Trap";
-            TrapPref.transform.localScale = new Vector3(CustomGameOptions.TrapSize, CustomGameOptions.TrapSize, CustomGameOptions.TrapSize);
+            TrapPref.transform.localScale = new Vector3(CustomGameOptions.TrapSize * ShipStatus.Instance.MaxLightRadius * 2f, 
+                CustomGameOptions.TrapSize * ShipStatus.Instance.MaxLightRadius * 2f, CustomGameOptions.TrapSize * ShipStatus.Instance.MaxLightRadius * 2f);
             GameObject.Destroy(TrapPref.GetComponent<SphereCollider>());
-            TrapPref.GetComponent<MeshRenderer>().material = Roles.Trapper.trapMaterial;
+            TrapPref.GetComponent<MeshRenderer>().material = Trapper.trapMaterial;
             TrapPref.transform.position = location;
             var TrapScript = new Trap();
             TrapScript.transform = TrapPref.transform;
             Coroutines.Start(TrapScript.FrameTimer());
             return TrapScript;
         }
-
-        
     }
 }

@@ -7,27 +7,28 @@ namespace TownOfUs.Roles
     public class Jester : Role
     {
         public bool VotedOut;
+        public bool SpawnedAs = true;
 
 
         public Jester(PlayerControl player) : base(player)
         {
             Name = "Jester";
             ImpostorText = () => "Get Voted Out";
-            TaskText = () => "Get voted out!\nFake Tasks:";
+            TaskText = () => SpawnedAs ? "Get voted out!\nFake Tasks:" : "Your target was killed. Now you get voted out!\nFake Tasks:";
             Color = Patches.Colors.Jester;
             RoleType = RoleEnum.Jester;
             AddToRoleHistory(RoleType);
             Faction = Faction.Neutral;
         }
 
-        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__21 __instance)
+        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__32 __instance)
         {
             var jestTeam = new List<PlayerControl>();
             jestTeam.Add(PlayerControl.LocalPlayer);
             __instance.teamToShow = jestTeam;
         }
 
-        internal override bool EABBNOODFGL(ShipStatus __instance)
+        internal override bool EABBNOODFGL(LogicGameFlowNormal __instance)
         {
             if (!VotedOut || !Player.Data.IsDead && !Player.Data.Disconnected) return true;
             Utils.EndGame();

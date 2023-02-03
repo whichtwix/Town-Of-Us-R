@@ -29,7 +29,7 @@ namespace TownOfUs.Roles
 
             RemainingKills = CustomGameOptions.VigilanteKills;
 
-            if (CustomGameOptions.GameMode != GameMode.KillingOnly)
+            if (CustomGameOptions.GameMode == GameMode.Classic || CustomGameOptions.GameMode == GameMode.AllAny)
             {
                 ColorMapping.Add("Impostor", Colors.Impostor);
                 if (CustomGameOptions.JanitorOn > 0) ColorMapping.Add("Janitor", Colors.Impostor);
@@ -39,9 +39,9 @@ namespace TownOfUs.Roles
                 if (CustomGameOptions.UndertakerOn > 0) ColorMapping.Add("Undertaker", Colors.Impostor);
                 if (CustomGameOptions.EscapistOn > 0) ColorMapping.Add("Escapist", Colors.Impostor);
                 if (CustomGameOptions.GrenadierOn > 0) ColorMapping.Add("Grenadier", Colors.Impostor);
-                if (CustomGameOptions.PoisonerOn > 0) ColorMapping.Add("Poisoner", Colors.Impostor);
                 if (CustomGameOptions.TraitorOn > 0) ColorMapping.Add("Traitor", Colors.Impostor);
                 if (CustomGameOptions.BlackmailerOn > 0) ColorMapping.Add("Blackmailer", Colors.Impostor);
+                if (CustomGameOptions.BomberOn > 0) ColorMapping.Add("Bomber", Colors.Impostor);
 
                 if (CustomGameOptions.VigilanteGuessNeutralBenign)
                 {
@@ -60,11 +60,11 @@ namespace TownOfUs.Roles
                     if (CustomGameOptions.GlitchOn > 0) ColorMapping.Add("The Glitch", Colors.Glitch);
                     if (CustomGameOptions.PlaguebearerOn > 0) ColorMapping.Add("Plaguebearer", Colors.Plaguebearer);
                     if (CustomGameOptions.WerewolfOn > 0) ColorMapping.Add("Werewolf", Colors.Werewolf);
-                    ColorMapping.Add("Juggernaut", Colors.Juggernaut);
+                    if (CustomGameOptions.HiddenRoles) ColorMapping.Add("Juggernaut", Colors.Juggernaut);
                 }
                 if (CustomGameOptions.VigilanteGuessLovers && CustomGameOptions.LoversOn > 0) ColorMapping.Add("Lover", Colors.Lovers);
             }
-            else
+            else if (CustomGameOptions.GameMode == GameMode.KillingOnly)
             {
                 ColorMapping.Add("Morphling", Colors.Impostor);
                 ColorMapping.Add("Miner", Colors.Impostor);
@@ -80,8 +80,21 @@ namespace TownOfUs.Roles
                     if (CustomGameOptions.AddPlaguebearer) ColorMapping.Add("Plaguebearer", Colors.Plaguebearer);
                     ColorMapping.Add("The Glitch", Colors.Glitch);
                     ColorMapping.Add("Werewolf", Colors.Werewolf);
-                    ColorMapping.Add("Juggernaut", Colors.Juggernaut);
+                    if (CustomGameOptions.HiddenRoles) ColorMapping.Add("Juggernaut", Colors.Juggernaut);
                 }
+            }
+            else
+            {
+                ColorMapping.Add("Necromancer", Colors.Impostor);
+                ColorMapping.Add("Whisperer", Colors.Impostor);
+                if (CustomGameOptions.MaxChameleons > 0) ColorMapping.Add("Swooper", Colors.Impostor);
+                if (CustomGameOptions.MaxEngineers > 0) ColorMapping.Add("Demolitionist", Colors.Impostor);
+                if (CustomGameOptions.MaxInvestigators > 0) ColorMapping.Add("Consigliere", Colors.Impostor);
+                if (CustomGameOptions.MaxMystics > 0) ColorMapping.Add("Clairvoyant", Colors.Impostor);
+                if (CustomGameOptions.MaxSpies > 0) ColorMapping.Add("Rogue Agent", Colors.Impostor);
+                if (CustomGameOptions.MaxTransporters > 0) ColorMapping.Add("Escapist", Colors.Impostor);
+                if (CustomGameOptions.MaxVigilantes > 1) ColorMapping.Add("Assassin", Colors.Impostor);
+                ColorMapping.Add("Impostor", Colors.Impostor);
             }
 
             SortedColorMapping = ColorMapping.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);

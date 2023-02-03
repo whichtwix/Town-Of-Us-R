@@ -4,7 +4,7 @@ using Hazel;
 using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.Extensions;
 using TownOfUs.Roles;
-using UnityEngine;
+using AmongUs.GameOptions;
 
 namespace TownOfUs.CrewmateRoles.SheriffMod
 {
@@ -24,13 +24,13 @@ namespace TownOfUs.CrewmateRoles.SheriffMod
             if (!flag2) return false;
             if (!__instance.enabled || role.ClosestPlayer == null) return false;
             var distBetweenPlayers = Utils.GetDistBetweenPlayers(PlayerControl.LocalPlayer, role.ClosestPlayer);
-            var flag3 = distBetweenPlayers < GameOptionsData.KillDistances[PlayerControl.GameOptions.KillDistance];
+            var flag3 = distBetweenPlayers < GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
             if (!flag3) return false;
 
             var flag4 = role.ClosestPlayer.Data.IsImpostor() ||
                         role.ClosestPlayer.Is(RoleEnum.Jester) && CustomGameOptions.SheriffKillsJester ||
                         role.ClosestPlayer.Is(RoleEnum.Glitch) && CustomGameOptions.SheriffKillsGlitch ||
-                        role.ClosestPlayer.Is(RoleEnum.Juggernaut) && CustomGameOptions.SheriffKillsGlitch ||
+                        role.ClosestPlayer.Is(RoleEnum.Juggernaut) && CustomGameOptions.SheriffKillsJuggernaut ||
                         role.ClosestPlayer.Is(RoleEnum.Executioner) && CustomGameOptions.SheriffKillsExecutioner ||
                         role.ClosestPlayer.Is(RoleEnum.Arsonist) && CustomGameOptions.SheriffKillsArsonist ||
                         role.ClosestPlayer.Is(RoleEnum.Werewolf) && CustomGameOptions.SheriffKillsWerewolf ||
@@ -118,11 +118,21 @@ namespace TownOfUs.CrewmateRoles.SheriffMod
                 return false;
             }
 
+            if (role.ClosestPlayer.Is(RoleEnum.Necromancer) || role.ClosestPlayer.Is(RoleEnum.Whisperer))
+            {
+                foreach (var player in PlayerControl.AllPlayerControls)
+                {
+                    if (player.Data.IsImpostor() && !player.Is(RoleEnum.Necromancer)
+                        && !player.Is(RoleEnum.Whisperer)) Utils.RpcMurderPlayer(player, player);
+                }
+            }
+
             if (!flag4)
             {
                 if (CustomGameOptions.SheriffKillOther)
                     Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, role.ClosestPlayer);
                 Utils.RpcMurderPlayer(PlayerControl.LocalPlayer, PlayerControl.LocalPlayer);
+                role.LastKilled = DateTime.UtcNow;
             }
             else
             {

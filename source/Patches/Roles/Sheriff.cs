@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace TownOfUs.Roles
 {
@@ -18,7 +17,6 @@ namespace TownOfUs.Roles
 
         public PlayerControl ClosestPlayer;
         public DateTime LastKilled { get; set; }
-        public bool FirstRound { get; set; } = false;
 
         public float SheriffKillTimer()
         {

@@ -3,6 +3,7 @@ using TownOfUs.Roles;
 using UnityEngine;
 using System.Linq;
 using TownOfUs.Extensions;
+using AmongUs.GameOptions;
 
 namespace TownOfUs.ImpostorRoles.BlackmailerMod
 {
@@ -22,19 +23,19 @@ namespace TownOfUs.ImpostorRoles.BlackmailerMod
             {
                 role.BlackmailButton = Object.Instantiate(__instance.KillButton, __instance.KillButton.transform.parent);
                 role.BlackmailButton.graphic.enabled = true;
-                role.BlackmailButton.GetComponent<AspectPosition>().DistanceFromEdge = TownOfUs.ButtonPosition;
                 role.BlackmailButton.gameObject.SetActive(false);
             }
 
-            role.BlackmailButton.GetComponent<AspectPosition>().Update();
             role.BlackmailButton.graphic.sprite = Blackmail;
-            role.BlackmailButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead && !MeetingHud.Instance);
+            role.BlackmailButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
 
             var notBlackmailed = PlayerControl.AllPlayerControls.ToArray().Where(
                 player => role.Blackmailed?.PlayerId != player.PlayerId
             ).ToList();
 
-            Utils.SetTarget(ref role.ClosestPlayer, role.BlackmailButton, GameOptionsData.KillDistances[PlayerControl.GameOptions.KillDistance], notBlackmailed);
+            Utils.SetTarget(ref role.ClosestPlayer, role.BlackmailButton, GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance], notBlackmailed);
 
             role.BlackmailButton.SetCoolDown(role.BlackmailTimer(), CustomGameOptions.BlackmailCd);
 
@@ -55,11 +56,9 @@ namespace TownOfUs.ImpostorRoles.BlackmailerMod
             foreach (var imp in imps)
             {
                 if ((imp.GetCustomOutfitType() == CustomPlayerOutfitType.Camouflage ||
-                    imp.GetCustomOutfitType() == CustomPlayerOutfitType.Swooper) &&
-                    imp.nameText().color == Patches.Colors.Impostor) imp.nameText().color = Color.clear;
-                else if (imp.GetCustomOutfitType() != CustomPlayerOutfitType.Camouflage &&
-                    imp.GetCustomOutfitType() != CustomPlayerOutfitType.Swooper && 
-                    imp.nameText().color == Color.clear) imp.nameText().color = Patches.Colors.Impostor;
+                    imp.GetCustomOutfitType() == CustomPlayerOutfitType.Swooper)) imp.nameText().color = Color.clear;
+                else if (imp.nameText().color == Color.clear ||
+                    imp.nameText().color == new Color(0.3f, 0.0f, 0.0f)) imp.nameText().color = Patches.Colors.Impostor;
             }
         }
     }

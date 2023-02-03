@@ -4,30 +4,29 @@ using UnityEngine;
 
 namespace TownOfUs.CrewmateRoles.VeteranMod
 {
-    [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+    [HarmonyPatch(typeof(HudManager))]
     public class HudManagerUpdate
     {
-        public static void Postfix(PlayerControl __instance)
+        [HarmonyPatch(nameof(HudManager.Update))]
+        public static void Postfix(HudManager __instance)
         {
             UpdateAlertButton(__instance);
         }
 
-        public static void UpdateAlertButton(PlayerControl __instance)
+        public static void UpdateAlertButton(HudManager __instance)
         {
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
             if (PlayerControl.LocalPlayer.Data == null) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Veteran)) return;
-            var data = PlayerControl.LocalPlayer.Data;
-            var isDead = data.IsDead;
-            var alertButton = DestroyableSingleton<HudManager>.Instance.KillButton;
+            var alertButton = __instance.KillButton;
 
             var role = Role.GetRole<Veteran>(PlayerControl.LocalPlayer);
 
             if (role.UsesText == null && role.UsesLeft > 0)
             {
                 role.UsesText = Object.Instantiate(alertButton.cooldownTimerText, alertButton.transform);
-                role.UsesText.gameObject.SetActive(true);
+                role.UsesText.gameObject.SetActive(false);
                 role.UsesText.transform.localPosition = new Vector3(
                     role.UsesText.transform.localPosition.x + 0.26f,
                     role.UsesText.transform.localPosition.y + 0.29f,
@@ -41,22 +40,15 @@ namespace TownOfUs.CrewmateRoles.VeteranMod
                 role.UsesText.text = role.UsesLeft + "";
             }
 
-            if (isDead)
-            {
-                alertButton.gameObject.SetActive(false);
-                // alertButton.isActive = false;
-            }
-            else if (role.OnAlert)
-            {
-                alertButton.SetCoolDown(role.TimeRemaining, CustomGameOptions.AlertDuration);
-            }
-            else
-            {
-                alertButton.gameObject.SetActive(!MeetingHud.Instance);
-                // alertButton.isActive = !MeetingHud.Instance;
-                if (role.ButtonUsable)
-                    alertButton.SetCoolDown(role.AlertTimer(), CustomGameOptions.AlertCd);
-            }
+            alertButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            role.UsesText.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            if (role.OnAlert) alertButton.SetCoolDown(role.TimeRemaining, CustomGameOptions.AlertDuration);
+            else if (role.ButtonUsable) alertButton.SetCoolDown(role.AlertTimer(), CustomGameOptions.AlertCd);
+            else alertButton.SetCoolDown(0f, CustomGameOptions.AlertCd);
 
             var renderer = alertButton.graphic;
             if (role.OnAlert || (!alertButton.isCoolingDown && role.ButtonUsable))

@@ -22,10 +22,6 @@ namespace TownOfUs.Modifiers.DisperserMod
             if (PlayerControl.LocalPlayer.Data == null) return;
             if (!PlayerControl.LocalPlayer.Is(ModifierEnum.Disperser)) return;
 
-            var data = PlayerControl.LocalPlayer.Data;
-            var isDead = data.IsDead;
-
-
             var role = Modifier.GetModifier<Disperser>(PlayerControl.LocalPlayer);
 
             if (role.DisperseButton == null)
@@ -38,16 +34,28 @@ namespace TownOfUs.Modifiers.DisperserMod
 
             role.DisperseButton.graphic.sprite = DisperseButton;
 
+            role.DisperseButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
 
-            role.DisperseButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead && !MeetingHud.Instance);
-
-            role.DisperseButton.SetCoolDown(0f, 1f);
+            role.DisperseButton.SetCoolDown(role.StartTimer(), 10f);
             var renderer = role.DisperseButton.graphic;
 
-            var position1 = __instance.UseButton.transform.position;
-            role.DisperseButton.transform.position = new Vector3(
-                Camera.main.ScreenToWorldPoint(new Vector3(0, 0)).x + 0.75f, position1.y,
-                position1.z);
+
+            if (__instance.UseButton != null)
+            {
+                var position1 = __instance.UseButton.transform.position;
+                role.DisperseButton.transform.position = new Vector3(
+                    Camera.main.ScreenToWorldPoint(new Vector3(0, 0)).x + 0.75f, position1.y,
+                    position1.z);
+            }
+            else
+            {
+                var position1 = __instance.PetButton.transform.position;
+                role.DisperseButton.transform.position = new Vector3(
+                    Camera.main.ScreenToWorldPoint(new Vector3(0, 0)).x + 0.75f, position1.y,
+                    position1.z);
+            }
 
             if (!role.ButtonUsed)
             {
