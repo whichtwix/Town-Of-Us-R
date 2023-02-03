@@ -1,10 +1,11 @@
 using HarmonyLib;
-using TownOfUs.CrewmateRoles.ImitatorMod;
-using TownOfUs.CrewmateRoles.InvestigatorMod;
 using TownOfUs.Roles;
 using UnityEngine;
+using TownOfUs.CrewmateRoles.InvestigatorMod;
+using TownOfUs.CrewmateRoles.TrapperMod;
+using System.Collections.Generic;
 
-namespace TownOfUs.CrwemateRoles.ImitatorMod
+namespace TownOfUs.CrewmateRoles.ImitatorMod
 {
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
@@ -18,9 +19,18 @@ namespace TownOfUs.CrwemateRoles.ImitatorMod
             }
             if (StartImitate.ImitatingPlayer != null)
             {
+                PlayerControl lastExaminedPlayer = null;
+                List<RoleEnum> trappedPlayers = null;
+
                 if (PlayerControl.LocalPlayer == StartImitate.ImitatingPlayer)
                 {
                     if (PlayerControl.LocalPlayer.Is(RoleEnum.Investigator)) Footprint.DestroyAll(Role.GetRole<Investigator>(PlayerControl.LocalPlayer));
+
+                    if (PlayerControl.LocalPlayer.Is(RoleEnum.Engineer))
+                    {
+                        var engineerRole = Role.GetRole<Engineer>(PlayerControl.LocalPlayer);
+                        Object.Destroy(engineerRole.UsesText);
+                    }
 
                     if (PlayerControl.LocalPlayer.Is(RoleEnum.Tracker))
                     {
@@ -28,6 +38,13 @@ namespace TownOfUs.CrwemateRoles.ImitatorMod
                         trackerRole.TrackerArrows.Values.DestroyAll();
                         trackerRole.TrackerArrows.Clear();
                         Object.Destroy(trackerRole.UsesText);
+                    }
+
+                    if (PlayerControl.LocalPlayer.Is(RoleEnum.Mystic))
+                    {
+                        var mysticRole = Role.GetRole<Mystic>(PlayerControl.LocalPlayer);
+                        mysticRole.BodyArrows.Values.DestroyAll();
+                        mysticRole.BodyArrows.Clear();
                     }
 
                     if (PlayerControl.LocalPlayer.Is(RoleEnum.Transporter))
@@ -57,13 +74,29 @@ namespace TownOfUs.CrwemateRoles.ImitatorMod
                         medRole.MediatedPlayers.Clear();
                     }
 
+                    if (PlayerControl.LocalPlayer.Is(RoleEnum.Trapper))
+                    {
+                        var trapperRole = Role.GetRole<Trapper>(PlayerControl.LocalPlayer);
+                        Object.Destroy(trapperRole.UsesText);
+                        trapperRole.traps.ClearTraps();
+                        trappedPlayers = trapperRole.trappedPlayers;
+                    }
+
+                    if (PlayerControl.LocalPlayer.Is(RoleEnum.Detective))
+                    {
+                        var detecRole = Role.GetRole<Detective>(PlayerControl.LocalPlayer);
+                        lastExaminedPlayer = detecRole.LastExaminedPlayer;
+                    }
+
                     if (!PlayerControl.LocalPlayer.Is(RoleEnum.Investigator) && !PlayerControl.LocalPlayer.Is(RoleEnum.Mystic)
                         && !PlayerControl.LocalPlayer.Is(RoleEnum.Spy)) DestroyableSingleton<HudManager>.Instance.KillButton.gameObject.SetActive(false);
                 }
                 var role = Role.GetRole(StartImitate.ImitatingPlayer);
                 var killsList = (role.Kills, role.CorrectKills, role.IncorrectKills, role.CorrectAssassinKills, role.IncorrectAssassinKills);
                 Role.RoleDictionary.Remove(StartImitate.ImitatingPlayer.PlayerId);
-                new Imitator(StartImitate.ImitatingPlayer);
+                var imitator = new Imitator(StartImitate.ImitatingPlayer);
+                imitator.trappedPlayers = trappedPlayers;
+                imitator.LastExaminedPlayer = lastExaminedPlayer;
                 var newRole = Role.GetRole(StartImitate.ImitatingPlayer);
                 newRole.RemoveFromRoleHistory(newRole.RoleType);
                 newRole.Kills = killsList.Kills;

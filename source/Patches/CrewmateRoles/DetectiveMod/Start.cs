@@ -14,6 +14,7 @@ namespace TownOfUs.CrewmateRoles.DetectiveMod
                 var detective = (Detective) role;
                 detective.LastExamined = DateTime.UtcNow;
                 detective.LastExamined = detective.LastExamined.AddSeconds(CustomGameOptions.InitialCooldowns - CustomGameOptions.ExamineCd);
+                detective.LastExaminedPlayer = null;
             }
         }
     }

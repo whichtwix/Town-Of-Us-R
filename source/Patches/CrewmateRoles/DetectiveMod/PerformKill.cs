@@ -38,6 +38,7 @@ namespace TownOfUs.CrewmateRoles.DetectiveMod
                 }
                 if (hasKilled) Coroutines.Start(Utils.FlashCoroutine(Color.red));
                 else Coroutines.Start(Utils.FlashCoroutine(Color.green));
+                role.LastExaminedPlayer = role.ClosestPlayer;
             }
             if (interact[0] == true)
             {

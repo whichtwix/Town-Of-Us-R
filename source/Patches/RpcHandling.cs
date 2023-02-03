@@ -866,9 +866,8 @@ namespace TownOfUs
                         break;
                     case CustomRPC.EngineerFix:
                         var engineer = Utils.PlayerById(reader.ReadByte());
-                        Role.GetRole<Engineer>(engineer).UsedThisRound = true;
+                        Role.GetRole<Engineer>(engineer).UsesLeft -= 1;
                         break;
-
 
                     case CustomRPC.FixLights:
                         var lights = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();

@@ -75,6 +75,7 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 # Releases
 | Among Us - Version| Mod Version | Link |
 |----------|-------------|-----------------|
+| 2022.12.14s & 2022.12.14e | v4.0.2 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.2/ToU.v4.0.2.zip) |
 | 2022.12.14s & 2022.12.14e | v4.0.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.1/ToU.v4.0.1.zip) |
 | 2022.12.14s & 2022.12.14e | v4.0.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.0/ToU.v4.0.0.zip) |
 | 2022.10.25s & 2022.10.25e | v3.4.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v3.4.0/ToU.v3.4.0.zip) |
@@ -128,6 +129,16 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 
 <details>
   <summary> Changelog </summary>
+  <details>
+  <summary> v4.0.2 </summary>
+  <ul> <li>Bug Fix: Cultist no longer doesn't automatically set the Impostors to 1 for the game mode</li> </ul>
+  <ul> <li>Bug Fix: Dead people no longer interfere with how many people die to a bomb</li> </ul>
+  <ul> <li>Added a new Examine Report to Detective</li> </ul>
+  <ul> <li>Engineer Fix Per Round/Game changed to Uses throughout the game</li> </ul>
+  <ul> <li>Made Medic & Trapper imitatable for the Imitator</li> </ul>
+  <ul> <li>Added indications so the dead can see who the Guardian Angel and Executioner targets are</li> </ul>
+  <ul> <li>Removed option for Snitch to be hidden on Game Start</li> </ul>
+  </details>
   <details>
   <summary> v4.0.1 </summary>
   <ul> <li>Fixed the Kill Button not working in Hide & Seek</li> </ul>
@@ -682,6 +693,16 @@ If you have issues installing Town of Us, you can join our [Discord](https://dis
 ### **Team: Crewmates**
 The Detective is a Crewmate that can examine other players for suspicious behaviour.\
 If the player the Detective examines has killed recently the Detective will be alerted about it.
+### Role Info
+- Your target has an unusual obsession with dead bodies (Altruist/Amnesiac/Janitor/Medium/Undertaker)
+- Your target tries to protect themselves or others by any means necessary (Grenadier/Guardian Angel/Medic/Survivor/Veteran)
+- Your target is a causer of chaos (Bomber/Executioner/Jester/Swapper/Transporter)
+- Your target is concealing information (Blackmailer/Mayor/Snitch/Swooper/Trapper)
+- Your target started innocent but gained the capability to kill (Juggernaut/Sheriff/Traitor/Vigilante/Werewolf)
+- Your target likes to interact with others (Arsonist/Detective/Plaguebearer/Seer/Tracker)
+- Your target likes exploring (Engineer/Escapist/Investigator/Miner/Mystic)
+- Your target views the world through a different lens (Glitch/Imitator/Morphling/Spy)
+- Your target appears to be roleless (Crewmate/Impostor)
 
 ### Game Options
 | Name | Description | Type | Default |
@@ -693,6 +714,7 @@ If the player the Detective examines has killed recently the Detective will be a
 | Show Detective Reports | Whether the Detective should get information when reporting a body | Toggle | True |
 | Time Where Detective Reports Will Have Role | If a body has been dead for shorter than this amount, the Detective's report will contain the killer's role | Time | 15s |
 | Time Where Detective Reports Will Have Faction | If a body has been dead for shorter than this amount, the Detective's report will contain the killer's faction | Time | 30s |
+| Show Examine Reports | Whether the Detective should get information about their last exmaine target | Toggle | True |
 
 -----------------------
 ## Haunter
@@ -760,13 +782,11 @@ A player's name will change color to their team.
 
 The Snitch is a Crewmate that can get arrows pointing towards the Impostors, once all their tasks are finished.\
 The names of the Impostors will also show up as red on their screen.\
-Based on the game settings, the Snitch may not know who they are until they have one task left.\
 However, when they only have a single task left, the Impostors get an arrow pointing towards the Snitch.
 ### Game Options
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Snitch | The percentage probability of the Snitch appearing | Percentage | 0% |
-| Snitch knows who they are on Game Start | Whether the Snitch knows their role at the start of a game | Toggle | False |
 | Snitch Sees Neutral Roles | Whether the Snitch also Reveals Neutral Roles | Toggle | False |
 | Tasks Remaining When Revealed | The number of tasks remaining when the Snitch is revealed to Impostors | Number | 1 |
 | Snitch Sees Impostors in Meetings | Whether the Snitch sees the Impostor's names red in Meetings | Toggle | True |
@@ -951,7 +971,7 @@ They can use vents to get across the map easily.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Engineer | The percentage probability of the Engineer appearing | Percentage | 0% |
-| Engineer Fix Per | Whether the Engineer can fix 1 sabotage per round or per game | Round / Game | Round |
+| Maximum Fixes | The number of times the Engineer can fix a sabotage | Number | 5 |
 
 -----------------------
 ## Imitator
@@ -1236,7 +1256,7 @@ However, a sabotage and a smoke grenade can not be active at the same time.
 | Grenadier | The percentage probability of the Grenadier appearing | Percentage | 0% |
 | Flash Grenade Cooldown | The cooldown of the Grenadier's Flash button | Time | 25s |
 | Flash Grenade Duration | How long the Flash Grenade lasts for | Time | 10s |
-| Flash Radius | How wide the flash radius is | Factor | 1x |
+| Flash Radius | How wide the flash radius is | Multiplier | 1x |
 | Indicate Flashed Crewmates | Whether the Grenadier can see who has been flashed | Toggle | False |
 | Grenadier can Vent | Whether the Grenadier can Vent | Toggle | False |
 -----------------------
@@ -1283,7 +1303,7 @@ Once the bomb detonates it will kill all crewmates (and Impostors!) inside the r
 | Bomber | The percentage probability of the Bomber appearing | Percentage | 0% |
 | Detonate Delay | The delay of the detonation after bomb has been planted | Time | 5s |
 | Max Kills In Detonation | Maximum number of kills in the detonation | Time | 5s |
-| Detonate Radius | How wide the detonate radius is | Factor | 0.25x |
+| Detonate Radius | How wide the detonate radius is | Multiplier | 0.25x |
 | Bomber can Vent | Whether the Bomber can Vent | Toggle | False |
 
 -----------------------
@@ -1349,7 +1369,7 @@ The Undertaker is an Impostor that can drag and drop bodies.
 |----------|:-------------:|:------:|:------:|
 | Undertaker | The percentage probability of the Undertaker appearing | Percentage | 0% |
 | Undertaker Drag Cooldown | The cooldown of the Undertaker Drag ability | Time | 25s |
-| Undertaker Speed While Dragging | How fast the Undertaker moves while dragging a body in comparison to normal | Factor | 0.75x |
+| Undertaker Speed While Dragging | How fast the Undertaker moves while dragging a body in comparison to normal | Multiplier | 0.75x |
 | Undertaker can Vent | Whether the Undertaker can Vent | Toggle | False |
 | Undertaker can Vent while Dragging | Whether the Undertaker can Vent when they are Dragging a Body | Toggle | False |
 
@@ -1384,7 +1404,7 @@ Killing the Diseased triples the killer's Kill cooldown.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Diseased | The percentage probability of the Diseased appearing | Percentage | 0% |
-| Kill Multiplier | How much the Kill Cooldown of the Impostor is increased by | Factor | 3x |
+| Kill Multiplier | How much the Kill Cooldown of the Impostor is increased by | Multiplier | 3x |
 
 -----------------------
 ## Multitasker
@@ -1422,7 +1442,7 @@ The Flash travels at twice the speed of a normal player.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Flash | The percentage probability of the Flash appearing | Percentage | 0% |
-| Speed | How fast the Flash moves in comparison to normal | Factor | 1.25x |
+| Speed | How fast the Flash moves in comparison to normal | Multiplier | 1.25x |
 
 -----------------------
 ## Giant
@@ -1432,7 +1452,7 @@ The Giant is a gigantic Crewmate, that has a decreased walk speed.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Giant | The percentage probability of the Giant appearing | Percentage | 0% |
-| Speed | How fast the Giant moves in comparison to normal | Factor | 0.75x |
+| Speed | How fast the Giant moves in comparison to normal | Multiplier | 0.75x |
 
 -----------------------
 ## Lovers
@@ -1567,7 +1587,7 @@ When they are the only remaining Impostor, they will have their kill cooldown sh
 | Max Vigilantes | The maximum number of Vigilantes that can spawn | Number | 3 |
 | Initial Whisper Cooldown | The initial cooldown of the Whisperer's Whisper button | Time | 25s |
 | Increased Cooldown Per Whisper | The amount of time the Whisperer's whisper cooldown increases by per Whisper | Time | 5s |
-| Whisper Radius | How wide the whisper radius is | Factor | 0.25x |
+| Whisper Radius | How wide the whisper radius is | Multiplier | 0.25x |
 | Conversion Percentage | The percentage someone is leant towards being converted (addition not chance) | Percentage | 25% |
 | Decreased Conversion Percentage Per Conversion | The percentage decrease of the conversion percentage with each conversion | Percentage | 5% |
 | Initial Revive Cooldown | The initial cooldown of the Necromancer's Revive button | Time | 25s |
@@ -1644,7 +1664,6 @@ If they guess wrong, they die instead.
 | Assassin Kill | The number of kill the Assassin can do with his ability | Number | 1 |
 | Assassin Guess Crewmate | Whether the Assassin can Guess "Crewmate" | Toggle | False |
 | Assassin Multiple Kill  | Whether the Assassin can kill more than once per meeting | Toggle | False |
-| Assassinate Snitch via Crewmate Guess  | Whether the Assassin can kill the Snitch by Guessing Crewmate | Toggle | False |
 | Assassin Guess Neutral Benign  | Whether the Assassin can Guess Neutral Benign roles | Toggle | False |
 | Assassin Guess Neutral Evil  | Whether the Assassin can Guess Neutral Evil roles | Toggle | False |
 | Assassin Guess Neutral Killing  | Whether the Assassin can Guess Neutral Killing roles | Toggle | False |

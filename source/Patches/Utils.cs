@@ -355,7 +355,7 @@ namespace TownOfUs
             return reset;
         }
 
-        public static Il2CppSystem.Collections.Generic.List<PlayerControl> GetClosestPlayers(Vector2 truePosition, float radius)
+        public static Il2CppSystem.Collections.Generic.List<PlayerControl> GetClosestPlayers(Vector2 truePosition, float radius, bool includeDead)
         {
             Il2CppSystem.Collections.Generic.List<PlayerControl> playerControlList = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             float lightRadius = radius * ShipStatus.Instance.MaxLightRadius;
@@ -363,7 +363,7 @@ namespace TownOfUs
             for (int index = 0; index < allPlayers.Count; ++index)
             {
                 GameData.PlayerInfo playerInfo = allPlayers[index];
-                if (!playerInfo.Disconnected)
+                if (!playerInfo.Disconnected && (!playerInfo.Object.Data.IsDead || includeDead))
                 {
                     Vector2 vector2 = new Vector2(playerInfo.Object.GetTruePosition().x - truePosition.x, playerInfo.Object.GetTruePosition().y - truePosition.y);
                     float magnitude = ((Vector2)vector2).magnitude;

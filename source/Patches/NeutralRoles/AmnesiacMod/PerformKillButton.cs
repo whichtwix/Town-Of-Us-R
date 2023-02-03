@@ -206,7 +206,7 @@ namespace TownOfUs.NeutralRoles.AmnesiacMod
             else if (role == RoleEnum.Engineer)
             {
                 var engiRole = Role.GetRole<Engineer>(amnesiac);
-                engiRole.UsedThisRound = false;
+                engiRole.UsesLeft = CustomGameOptions.MaxFixes;
             }
 
             else if (role == RoleEnum.Medic)

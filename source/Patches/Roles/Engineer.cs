@@ -1,3 +1,5 @@
+using TMPro;
+
 namespace TownOfUs.Roles
 {
     public class Engineer : Role
@@ -10,8 +12,12 @@ namespace TownOfUs.Roles
             Color = Patches.Colors.Engineer;
             RoleType = RoleEnum.Engineer;
             AddToRoleHistory(RoleType);
+            UsesLeft = CustomGameOptions.MaxFixes;
         }
 
-        public bool UsedThisRound { get; set; } = false;
+        public int UsesLeft;
+        public TextMeshPro UsesText;
+
+        public bool ButtonUsable => UsesLeft != 0;
     }
 }

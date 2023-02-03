@@ -58,7 +58,11 @@ namespace TownOfUs.CrewmateRoles.ImitatorMod
             var role = Role.GetRole(ImitatingPlayer);
             var killsList = (role.Kills, role.CorrectKills, role.IncorrectKills, role.CorrectAssassinKills, role.IncorrectAssassinKills);
             Role.RoleDictionary.Remove(ImitatingPlayer.PlayerId);
-            if (imitatorRole == RoleEnum.Detective) new Detective(ImitatingPlayer);
+            if (imitatorRole == RoleEnum.Detective)
+            {
+                var detective = new Detective(ImitatingPlayer);
+                detective.LastExamined = detective.LastExamined.AddSeconds(CustomGameOptions.InitialExamineCd - CustomGameOptions.ExamineCd);
+            }
             if (imitatorRole == RoleEnum.Investigator) new Investigator(ImitatingPlayer);
             if (imitatorRole == RoleEnum.Mystic) new Mystic(ImitatingPlayer);
             if (imitatorRole == RoleEnum.Seer) new Seer(ImitatingPlayer);
@@ -70,6 +74,13 @@ namespace TownOfUs.CrewmateRoles.ImitatorMod
             if (imitatorRole == RoleEnum.Engineer) new Engineer(ImitatingPlayer);
             if (imitatorRole == RoleEnum.Medium) new Medium(ImitatingPlayer);
             if (imitatorRole == RoleEnum.Transporter) new Transporter(ImitatingPlayer);
+            if (imitatorRole == RoleEnum.Trapper) new Trapper(ImitatingPlayer);
+            if (imitatorRole == RoleEnum.Medic)
+            {
+                var medic = new Medic(ImitatingPlayer);
+                medic.UsedAbility = true;
+                medic.StartingCooldown = medic.StartingCooldown.AddSeconds(-10f);
+            }
             var newRole = Role.GetRole(ImitatingPlayer);
             newRole.RemoveFromRoleHistory(newRole.RoleType);
             newRole.Kills = killsList.Kills;

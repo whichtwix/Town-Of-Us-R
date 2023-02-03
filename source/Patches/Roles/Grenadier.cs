@@ -58,7 +58,7 @@ namespace TownOfUs.Roles
         {
             if (Enabled != true)
             {
-                closestPlayers = Utils.GetClosestPlayers(Player.GetTruePosition(), CustomGameOptions.FlashRadius);
+                closestPlayers = Utils.GetClosestPlayers(Player.GetTruePosition(), CustomGameOptions.FlashRadius, true);
                 flashedPlayers = closestPlayers;
             }
             Enabled = true;

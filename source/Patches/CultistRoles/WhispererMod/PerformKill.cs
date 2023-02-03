@@ -28,7 +28,7 @@ namespace TownOfUs.CultistRoles.WhispererMod
                 if (flag2) return false;
                 if (!__instance.enabled) return false;
                 Vector2 truePosition = role.Player.GetTruePosition();
-                var closestPlayers = Utils.GetClosestPlayers(truePosition, CustomGameOptions.WhisperRadius);
+                var closestPlayers = Utils.GetClosestPlayers(truePosition, CustomGameOptions.WhisperRadius, false);
                 if (role.PlayerConversion.Count == 0) role.PlayerConversion = role.GetPlayers();
                 var oldStats = role.PlayerConversion;
                 role.PlayerConversion = new List<(PlayerControl, int)>();
@@ -47,7 +47,6 @@ namespace TownOfUs.CultistRoles.WhispererMod
                 CheckConversion(role);
                 return false;
             }
-
             return true;
         }
 

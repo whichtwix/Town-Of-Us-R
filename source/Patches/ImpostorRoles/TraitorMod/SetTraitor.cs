@@ -56,6 +56,12 @@ namespace TownOfUs.ImpostorRoles.TraitorMod
 
                 if (PlayerControl.LocalPlayer.Is(RoleEnum.Investigator)) Footprint.DestroyAll(Role.GetRole<Investigator>(PlayerControl.LocalPlayer));
 
+                if (PlayerControl.LocalPlayer.Is(RoleEnum.Engineer))
+                {
+                    var engineerRole = Role.GetRole<Engineer>(PlayerControl.LocalPlayer);
+                    Object.Destroy(engineerRole.UsesText);
+                }
+
                 if (PlayerControl.LocalPlayer.Is(RoleEnum.Tracker))
                 {
                     var trackerRole = Role.GetRole<Tracker>(PlayerControl.LocalPlayer);

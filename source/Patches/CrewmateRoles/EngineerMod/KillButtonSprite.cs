@@ -1,6 +1,7 @@
 using System.Linq;
 using HarmonyLib;
 using TownOfUs.Roles;
+using UnityEngine;
 
 namespace TownOfUs.CrewmateRoles.EngineerMod
 {
@@ -18,8 +19,28 @@ namespace TownOfUs.CrewmateRoles.EngineerMod
 
             var role = Role.GetRole<Engineer>(PlayerControl.LocalPlayer);
 
+            if (role.UsesText == null && role.UsesLeft > 0)
+            {
+                role.UsesText = Object.Instantiate(__instance.KillButton.cooldownTimerText, __instance.KillButton.transform);
+                role.UsesText.gameObject.SetActive(false);
+                role.UsesText.transform.localPosition = new Vector3(
+                    role.UsesText.transform.localPosition.x + 0.26f,
+                    role.UsesText.transform.localPosition.y + 0.29f,
+                    role.UsesText.transform.localPosition.z);
+                role.UsesText.transform.localScale = role.UsesText.transform.localScale * 0.65f;
+                role.UsesText.alignment = TMPro.TextAlignmentOptions.Right;
+                role.UsesText.fontStyle = TMPro.FontStyles.Bold;
+            }
+            if (role.UsesText != null)
+            {
+                role.UsesText.text = role.UsesLeft + "";
+            }
+
             __instance.KillButton.SetCoolDown(0f, 10f);
             __instance.KillButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            role.UsesText.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
                     && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
                     && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
             if (PlayerControl.LocalPlayer.Data.IsDead) return;
@@ -30,7 +51,7 @@ namespace TownOfUs.CrewmateRoles.EngineerMod
             var dummyActive = system.dummy.IsActive;
             var sabActive = specials.Any(s => s.IsActive);
             var renderer = __instance.KillButton.graphic;
-            if (sabActive & !dummyActive & !role.UsedThisRound & __instance.KillButton.enabled)
+            if (sabActive & !dummyActive & role.ButtonUsable & __instance.KillButton.enabled)
             {
                 renderer.color = Palette.EnabledColor;
                 renderer.material.SetFloat("_Desat", 0f);
