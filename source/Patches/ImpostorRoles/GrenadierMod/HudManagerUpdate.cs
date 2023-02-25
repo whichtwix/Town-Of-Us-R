@@ -22,7 +22,6 @@ namespace TownOfUs.ImpostorRoles.GrenadierMod
             {
                 role.FlashButton = Object.Instantiate(__instance.KillButton, __instance.KillButton.transform.parent);
                 role.FlashButton.graphic.enabled = true;
-                role.FlashButton.GetComponent<AspectPosition>().DistanceFromEdge = TownOfUs.ButtonPosition;
                 role.FlashButton.gameObject.SetActive(false);
             }
 
@@ -45,9 +44,10 @@ namespace TownOfUs.ImpostorRoles.GrenadierMod
                 }
             }
 
-            role.FlashButton.GetComponent<AspectPosition>().Update();
             role.FlashButton.graphic.sprite = FlashSprite;
-            role.FlashButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead && !MeetingHud.Instance);
+            role.FlashButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
 
             if (role.Flashed)
             {

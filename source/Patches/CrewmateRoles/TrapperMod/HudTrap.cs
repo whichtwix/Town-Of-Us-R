@@ -4,30 +4,29 @@ using UnityEngine;
 
 namespace TownOfUs.CrewmateRoles.TrapperMod
 {
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
+    [HarmonyPatch(typeof(HudManager))]
     public class HudTrap
     {
-        public static void Postfix(PlayerControl __instance)
+        [HarmonyPatch(nameof(HudManager.Update))]
+        public static void Postfix(HudManager __instance)
         {
             UpdateTrapButton(__instance);
         }
 
-        public static void UpdateTrapButton(PlayerControl __instance)
+        public static void UpdateTrapButton(HudManager __instance)
         {
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
             if (PlayerControl.LocalPlayer.Data == null) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Trapper)) return;
-            var data = PlayerControl.LocalPlayer.Data;
-            var isDead = data.IsDead;
-            var trapButton = DestroyableSingleton<HudManager>.Instance.KillButton;
+            var trapButton = __instance.KillButton;
 
             var role = Role.GetRole<Trapper>(PlayerControl.LocalPlayer);
 
             if (role.UsesText == null && role.UsesLeft > 0)
             {
                 role.UsesText = Object.Instantiate(trapButton.cooldownTimerText, trapButton.transform);
-                role.UsesText.gameObject.SetActive(true);
+                role.UsesText.gameObject.SetActive(false);
                 role.UsesText.transform.localPosition = new Vector3(
                     role.UsesText.transform.localPosition.x + 0.26f,
                     role.UsesText.transform.localPosition.y + 0.29f,
@@ -41,20 +40,14 @@ namespace TownOfUs.CrewmateRoles.TrapperMod
                 role.UsesText.text = role.UsesLeft + "";
             }
 
-            if (isDead)
-            {
-                trapButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                trapButton.gameObject.SetActive(!MeetingHud.Instance);
-                if (role.ButtonUsable)
-                {
-                    trapButton.SetCoolDown(role.TrapTimer(), CustomGameOptions.TrapCooldown);
-                }
-                
-            }
-
+            trapButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            role.UsesText.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            if (role.ButtonUsable) trapButton.SetCoolDown(role.TrapTimer(), CustomGameOptions.TrapCooldown);
+            else trapButton.SetCoolDown(0f, CustomGameOptions.TrapCooldown);
 
             var renderer = trapButton.graphic;
             if (!trapButton.isCoolingDown && trapButton.gameObject.active && role.ButtonUsable)

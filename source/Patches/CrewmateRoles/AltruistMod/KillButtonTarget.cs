@@ -19,7 +19,6 @@ namespace TownOfUs.CrewmateRoles.AltruistMod
             if (role.CurrentTarget && role.CurrentTarget != target)
                 role.CurrentTarget.bodyRenderer.material.SetFloat("_Outline", 0f);
 
-
             if (target != null && target.ParentId == DontRevive) target = null;
             role.CurrentTarget = target;
             if (role.CurrentTarget && __instance.enabled)

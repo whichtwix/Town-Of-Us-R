@@ -34,19 +34,17 @@ namespace TownOfUs.ImpostorRoles.MinerMod
                 writer.Write(id);
                 writer.Write(PlayerControl.LocalPlayer.PlayerId);
                 writer.Write(position);
-                writer.Write(0.01f);
+                writer.Write(position.z + 0.001f);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
-                SpawnVent(id, role, position, 0.01f);
+                SpawnVent(id, role, position, position.z + 0.001f);
                 return false;
             }
 
             return true;
         }
 
-
         public static void SpawnVent(int ventId, Miner role, Vector2 position, float zAxis)
         {
-            
             var ventPrefab = Object.FindObjectOfType<Vent>();
             var vent = Object.Instantiate(ventPrefab, ventPrefab.transform.parent);
             

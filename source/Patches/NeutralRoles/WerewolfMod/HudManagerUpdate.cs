@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using HarmonyLib;
+﻿using HarmonyLib;
 using TownOfUs.Roles;
 using UnityEngine;
 
@@ -17,29 +16,25 @@ namespace TownOfUs.NeutralRoles.WerewolfMod
             if (PlayerControl.LocalPlayer.Data == null) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Werewolf)) return;
             var role = Role.GetRole<Werewolf>(PlayerControl.LocalPlayer);
-            var isDead = PlayerControl.LocalPlayer.Data.IsDead;
 
-            __instance.KillButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead && !MeetingHud.Instance);
+            __instance.KillButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
             __instance.KillButton.SetCoolDown(role.KillTimer(), CustomGameOptions.RampageKillCd);
-
-            if (isDead)
-            {
-                role.RampageButton.gameObject.SetActive(false);
-                return;
-            }
 
             if (role.RampageButton == null)
             {
                 role.RampageButton = Object.Instantiate(__instance.KillButton, __instance.KillButton.transform.parent);
                 role.RampageButton.graphic.enabled = true;
-                role.RampageButton.GetComponent<AspectPosition>().DistanceFromEdge = TownOfUs.ButtonPosition;
                 role.RampageButton.gameObject.SetActive(false);
             }
 
-            role.RampageButton.GetComponent<AspectPosition>().Update();
             role.RampageButton.graphic.sprite = RampageSprite;
+            role.RampageButton.transform.localPosition = new Vector3(-2f, 0f, 0f);
 
-            role.RampageButton.gameObject.SetActive(!PlayerControl.LocalPlayer.Data.IsDead && !MeetingHud.Instance);
+            role.RampageButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
 
             if (role.Rampaged)
             {

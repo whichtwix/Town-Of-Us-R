@@ -7,27 +7,25 @@ namespace TownOfUs.NeutralRoles.SurvivorMod
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public class HudManagerUpdate
     {
-        public static void Postfix(PlayerControl __instance)
+        public static void Postfix(HudManager __instance)
         {
             UpdateVestButton(__instance);
         }
 
-        public static void UpdateVestButton(PlayerControl __instance)
+        public static void UpdateVestButton(HudManager __instance)
         {
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
             if (PlayerControl.LocalPlayer.Data == null) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Survivor)) return;
-            var data = PlayerControl.LocalPlayer.Data;
-            var isDead = data.IsDead;
-            var vestButton = DestroyableSingleton<HudManager>.Instance.KillButton;
+            var vestButton = __instance.KillButton;
 
             var role = Role.GetRole<Survivor>(PlayerControl.LocalPlayer);
 
             if (role.UsesText == null && role.UsesLeft > 0)
             {
                 role.UsesText = Object.Instantiate(vestButton.cooldownTimerText, vestButton.transform);
-                role.UsesText.gameObject.SetActive(true);
+                role.UsesText.gameObject.SetActive(false);
                 role.UsesText.transform.localPosition = new Vector3(
                     role.UsesText.transform.localPosition.x + 0.26f,
                     role.UsesText.transform.localPosition.y + 0.29f,
@@ -41,21 +39,15 @@ namespace TownOfUs.NeutralRoles.SurvivorMod
                 role.UsesText.text = role.UsesLeft + "";
             }
 
-            if (isDead)
-            {
-                vestButton.gameObject.SetActive(false);
-            }
-            else if (role.Vesting)
-            {
-                vestButton.SetCoolDown(role.TimeRemaining, CustomGameOptions.VestDuration);
-                return;
-            }
-            else
-            {
-                vestButton.gameObject.SetActive(!MeetingHud.Instance);
-                if (role.ButtonUsable)
-                    vestButton.SetCoolDown(role.VestTimer(), CustomGameOptions.VestCd);
-            }
+            vestButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            role.UsesText.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            if (role.Vesting) vestButton.SetCoolDown(role.TimeRemaining, CustomGameOptions.VestDuration);
+            else if (role.ButtonUsable) vestButton.SetCoolDown(role.VestTimer(), CustomGameOptions.VestCd);
+            else vestButton.SetCoolDown(0f, CustomGameOptions.VestCd);
 
             var renderer = vestButton.graphic;
             if (role.Vesting || (!vestButton.isCoolingDown && role.ButtonUsable))

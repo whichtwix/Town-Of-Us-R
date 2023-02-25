@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TMPro;
+using AmongUs.GameOptions;
 using TownOfUs.Extensions;
 
 namespace TownOfUs.Roles
@@ -58,6 +59,12 @@ namespace TownOfUs.Roles
 
         public void UnProtect()
         {
+            var ga = GetRole<GuardianAngel>(Player);
+            if (!ga.target.IsShielded())
+            {
+                ga.target.myRend().material.SetColor("_VisorColor", Palette.VisorColor);
+                ga.target.myRend().material.SetFloat("_Outline", 0f);
+            }
             Enabled = false;
             LastProtected = DateTime.UtcNow;
         }
@@ -65,7 +72,8 @@ namespace TownOfUs.Roles
         public void ImpTargetWin()
         {
             Player.Data.Role.TeamType = RoleTeamTypes.Impostor;
-            RoleManager.Instance.SetRole(Player, RoleTypes.Impostor);
+            if (Player.Data.IsDead) RoleManager.Instance.SetRole(Player, RoleTypes.ImpostorGhost);
+            else RoleManager.Instance.SetRole(Player, RoleTypes.Impostor);
         }
 
         public void ImpTargetLose()
@@ -73,7 +81,7 @@ namespace TownOfUs.Roles
             LostByRPC = true;
         }
 
-        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__21 __instance)
+        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__32 __instance)
         {
             var gaTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             gaTeam.Add(PlayerControl.LocalPlayer);

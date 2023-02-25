@@ -19,9 +19,10 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                 body.bodyRenderer.material.SetFloat("_Outline", 0f);
                 return;
             }
-            var currentPosition = __instance.GetTruePosition();
+            var currentPosition = __instance.transform.position;
             var velocity = __instance.gameObject.GetComponent<Rigidbody2D>().velocity.normalized;
             Vector3 newPos = ((Vector2)__instance.transform.position) - (velocity / 3) + body.myCollider.offset;
+            newPos.z = currentPosition.z;
 
             //WHY ARE THERE DIFFERENT LOCAL Z INDEXS FOR DIFFERENT DECALS ON DIFFERENT LEVELS?!?!?!
             if (Patches.SubmergedCompatibility.isSubmerged())
@@ -34,7 +35,6 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                     newPos.z = -0.0273f;
                 }
             }
-
 
             if (!PhysicsHelpers.AnythingBetween(
                 currentPosition,

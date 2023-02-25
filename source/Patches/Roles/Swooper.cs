@@ -1,7 +1,6 @@
 using System;
 using TownOfUs.Extensions;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace TownOfUs.Roles
 {
@@ -41,7 +40,6 @@ namespace TownOfUs.Roles
         {
             var utcNow = DateTime.UtcNow;
             var timeSpan = utcNow - LastSwooped;
-            ;
             var num = CustomGameOptions.SwoopCd * 1000f;
             var flag2 = num - (float) timeSpan.TotalMilliseconds < 0f;
             if (flag2) return 0;
@@ -73,7 +71,6 @@ namespace TownOfUs.Roles
                 Player.nameText().color = Color.clear;
                 Player.cosmetics.colorBlindText.color = Color.clear;
             }
-
         }
 
 

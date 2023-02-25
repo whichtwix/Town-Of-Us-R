@@ -3,6 +3,7 @@ using Hazel;
 using Reactor.Utilities;
 using TownOfUs.Roles;
 using UnityEngine;
+using AmongUs.GameOptions;
 
 namespace TownOfUs.ImpostorRoles.JanitorMod
 {
@@ -23,7 +24,7 @@ namespace TownOfUs.ImpostorRoles.JanitorMod
                 var flag2 = __instance.isCoolingDown;
                 if (flag2) return false;
                 if (!__instance.enabled) return false;
-                var maxDistance = GameOptionsData.KillDistances[PlayerControl.GameOptions.KillDistance];
+                var maxDistance = GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
                 if (Vector2.Distance(role.CurrentTarget.TruePosition,
                     PlayerControl.LocalPlayer.GetTruePosition()) > maxDistance) return false;
                 var playerId = role.CurrentTarget.ParentId;

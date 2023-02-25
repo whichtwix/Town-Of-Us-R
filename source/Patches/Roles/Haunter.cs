@@ -6,6 +6,7 @@ namespace TownOfUs.Roles
 {
     public class Haunter : Role
     {
+        public RoleEnum formerRole = new RoleEnum();
         public bool Caught;
         public bool Revealed;
         public bool CompletedTasks;
@@ -30,9 +31,10 @@ namespace TownOfUs.Roles
         public void Fade()
         {
             Faded = true;
+            Player.Visible = true;
             var color = new Color(1f, 1f, 1f, 0f);
 
-            var maxDistance = ShipStatus.Instance.MaxLightRadius * PlayerControl.GameOptions.CrewLightMod;
+            var maxDistance = ShipStatus.Instance.MaxLightRadius * GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
 
             if (PlayerControl.LocalPlayer == null)
                 return;
@@ -43,7 +45,7 @@ namespace TownOfUs.Roles
             distPercent = Mathf.Max(0, distPercent - 1);
 
             var velocity = Player.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude;
-            color.a = 0.07f + velocity / Player.MyPhysics.TrueGhostSpeed * 0.13f;
+            color.a = 0.07f + velocity / Player.MyPhysics.GhostSpeed * 0.13f;
             color.a = Mathf.Lerp(color.a, 0, distPercent);
 
 
