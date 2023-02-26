@@ -393,7 +393,7 @@ namespace TownOfUs.Roles
         public static Role GetRole(PlayerVoteArea area)
         {
             var player = PlayerControl.AllPlayerControls.ToArray()
-                .FirstOrDefault(x => x.PlayerId == area.TargetPlayerId && !x.isDummy);
+                .FirstOrDefault(x => x.PlayerId == area.TargetPlayerId);
             return player == null ? null : GetRole(player);
         }
 
@@ -779,9 +779,6 @@ namespace TownOfUs.Roles
                     }
 
                     var role = GetRole(player);
-
-                    if (role != null && !player.isDummy)
-                    
                     if (role != null)
                     {
                         if (role.Criteria())
