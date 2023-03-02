@@ -11,7 +11,7 @@ namespace TownOfUs.LocalGame
 
         public static void Prefix(AmongUsClient __instance)
         {
-            if (AmongUsClient.Instance.NetworkMode != NetworkModes.LocalGame) return;
+            if (!InstanceControl.LocalGame) return;
 
             foreach (var player in __instance.allClients)
             {

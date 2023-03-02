@@ -14,12 +14,12 @@ namespace TownOfUs.LocalGame
 
         public static void Postfix()
         {
-            if (AmongUsClient.Instance.NetworkMode != NetworkModes.LocalGame) return;
+            if (!InstanceControl.LocalGame) return;
 
             if (Input.GetKeyDown(KeyCode.F5))
             {
                 controllingFigure = PlayerControl.LocalPlayer.PlayerId;
-                if (PlayerControl.AllPlayerControls.Count == 15 && !Input.GetKeyDown(KeyCode.F6)) return; //press f5 and f6 together
+                if (PlayerControl.AllPlayerControls.Count == 15 && !Input.GetKeyDown(KeyCode.F6)) return; //press f6 and f5 to bypass limit
                 Utils.CleanUpLoad();
                 Utils.CreatePlayerInstance("Robot");
             }
@@ -36,6 +36,16 @@ namespace TownOfUs.LocalGame
                 controllingFigure--;
                 controllingFigure = Mathf.Clamp(controllingFigure, 0, PlayerControl.AllPlayerControls.Count - 1);
                 InstanceControl.SwitchTo((byte)controllingFigure);
+            }
+
+            if (Input.GetKeyDown(KeyCode.F6))
+            {
+                InstanceControl.Respawn = !InstanceControl.Respawn;
+            }
+
+            if (Input.GetKeyDown(KeyCode.F11))
+            {
+                Utils.RemoveAllPlayers();
             }
         }
     }

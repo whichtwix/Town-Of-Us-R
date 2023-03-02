@@ -11,7 +11,7 @@ namespace TownOfUs.LocalGame
 
         public static void Postfix(MeetingHud __instance, ref byte suspectStateIdx)
         {
-            if (AmongUsClient.Instance.NetworkMode != NetworkModes.LocalGame) return;
+            if (!InstanceControl.LocalGame) return;
 
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {

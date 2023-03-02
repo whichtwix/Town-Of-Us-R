@@ -13,6 +13,10 @@ namespace TownOfUs.LocalGame
 
         public const int MaxID = 100;
 
+        public static bool Respawn;
+
+        public static bool LocalGame = AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
+
         public static int AvailableId()
         {
             for (int i = 2; i < MaxID; i++)
@@ -69,12 +73,6 @@ namespace TownOfUs.LocalGame
             KillAnimation.SetMovement(PlayerControl.LocalPlayer, true);
             PlayerControl.LocalPlayer.MyPhysics.inputHandler.enabled = true;
             CurrentPlayerInPower = newPlayer;
-        }
-
-        public static void SwitchTo(int clientId)
-        {
-            byte? id = PlayerIdClientId.Keys.FirstOrDefault((byte x) => PlayerIdClientId[x] == clientId);
-            if (id != null) SwitchTo((byte)id);
         }
     }
 }
