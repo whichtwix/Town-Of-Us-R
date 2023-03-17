@@ -64,6 +64,7 @@ namespace TownOfUs.LocalGame
         public static void RemoveAllPlayers()
         {
             foreach (byte playerId in InstanceControl.PlayerIdClientId.Keys) RemovePlayer(playerId);
+            InstanceControl.SwitchTo(AmongUsClient.Instance.allClients[0].Character.PlayerId);
         }
     }
 }

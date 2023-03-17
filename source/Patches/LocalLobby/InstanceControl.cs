@@ -15,7 +15,7 @@ namespace TownOfUs.LocalGame
 
         public static bool Respawn;
 
-        public static bool LocalGame = AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
+        public static readonly bool LocalGame = AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
 
         public static int AvailableId()
         {
@@ -34,13 +34,14 @@ namespace TownOfUs.LocalGame
             PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(PlayerControl.LocalPlayer.transform.position);
             PlayerControl.LocalPlayer.moveable = false;
 
-            Object.Destroy(PlayerControl.LocalPlayer.lightSource);
+            var light = PlayerControl.LocalPlayer.lightSource;
 
             var newPlayer = Utils.PlayerById(playerId);
 
             HudManager.Instance.KillButton.buttonLabelText.gameObject.SetActive(false);
 
             PlayerControl.LocalPlayer = newPlayer;
+            PlayerControl.LocalPlayer.lightSource = light;
             PlayerControl.LocalPlayer.moveable = true;
 
             AmongUsClient.Instance.ClientId = PlayerControl.LocalPlayer.OwnerId;
@@ -64,10 +65,8 @@ namespace TownOfUs.LocalGame
                                             if (x.gameObject.name == "KillButton(Clone)") Object.Destroy(x.gameObject);
                                          });
 
-            PlayerControl.LocalPlayer.lightSource = Object.Instantiate(PlayerControl.LocalPlayer.LightPrefab);
-            PlayerControl.LocalPlayer.lightSource.transform.SetParent(PlayerControl.LocalPlayer.transform);
-            PlayerControl.LocalPlayer.lightSource.transform.localPosition = PlayerControl.LocalPlayer.Collider.offset;
-            PlayerControl.LocalPlayer.lightSource.Initialize(PlayerControl.LocalPlayer.Collider.offset * 0.5f);
+            light.transform.SetParent(PlayerControl.LocalPlayer.transform);
+            light.transform.localPosition = PlayerControl.LocalPlayer.Collider.offset;
             Camera.main.GetComponent<FollowerCamera>().SetTarget(PlayerControl.LocalPlayer);
             PlayerControl.LocalPlayer.MyPhysics.ResetMoveState(true);
             KillAnimation.SetMovement(PlayerControl.LocalPlayer, true);
