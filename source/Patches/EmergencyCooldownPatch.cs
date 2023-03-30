@@ -27,7 +27,6 @@ namespace TownOfUs
             }
 
             if (Time < CustomGameOptions.InitialCooldowns) Time += UnityEngine.Time.fixedDeltaTime;
-            System.Console.WriteLine(Time);
         }
 
         [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
