@@ -109,6 +109,7 @@ namespace TownOfUs.CustomOption
         public static CustomToggleOption WhiteNameplates;
         public static CustomNumberOption VanillaGame;
         public static CustomNumberOption InitialCooldowns;
+        public static CustomToggleOption ButtonBarryGetsCooldown;
         public static CustomToggleOption ParallelMedScans;
         public static CustomStringOption SkipButtonDisable;
         public static CustomToggleOption HiddenRoles;
@@ -688,6 +689,7 @@ namespace TownOfUs.CustomOption
                 PercentFormat);
             InitialCooldowns =
                 new CustomNumberOption(num++, MultiMenu.main, "Game Start Cooldowns", 10f, 10f, 30f, 2.5f, CooldownFormat);
+            ButtonBarryGetsCooldown = new CustomToggleOption(num++, MultiMenu.main, "Button barry has initial cooldown", false);
             ParallelMedScans = new CustomToggleOption(num++, MultiMenu.main, "Parallel Medbay Scans", false);
             SkipButtonDisable = new CustomStringOption(num++, MultiMenu.main, "Disable Meeting Skip Button", new[] { "No", "Emergency", "Always" });
             DisableLevels = new CustomToggleOption(num++, MultiMenu.main, "Disable Level Icons", false);
