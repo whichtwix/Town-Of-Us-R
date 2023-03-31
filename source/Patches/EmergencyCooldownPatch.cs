@@ -21,12 +21,11 @@ namespace TownOfUs
 
         public static void Postfix()
         {
-            if (!GameManager.Instance.GameHasStarted)
+            if (!GameManager.Instance.GameHasStarted || Time >= CustomGameOptions.InitialCooldowns)
             {
                 return;
             }
-
-            if (Time < CustomGameOptions.InitialCooldowns) Time += UnityEngine.Time.fixedDeltaTime;
+            Time += UnityEngine.Time.deltaTime;
         }
 
         [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
