@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hazel;
+using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.Extensions;
 
 namespace TownOfUs.Roles
@@ -16,7 +17,7 @@ namespace TownOfUs.Roles
         public DateTime LastDoused;
         public bool LastKiller = false;
 
-        public int DousedAlive => DousedPlayers.Count(x => Utils.PlayerById(x) != null && Utils.PlayerById(x).Data != null && !Utils.PlayerById(x).Data.IsDead);
+        public int DousedAlive => DousedPlayers.Count(x => Utils.PlayerById(x) != null && Utils.PlayerById(x).Data != null && !Utils.PlayerById(x).Data.IsDead && !Utils.PlayerById(x).Data.Disconnected);
 
 
         public Arsonist(PlayerControl player) : base(player)
@@ -28,7 +29,7 @@ namespace TownOfUs.Roles
             LastDoused = DateTime.UtcNow;
             RoleType = RoleEnum.Arsonist;
             AddToRoleHistory(RoleType);
-            Faction = Faction.Neutral;
+            Faction = Faction.NeutralKilling;
         }
 
         public KillButton IgniteButton
@@ -42,7 +43,7 @@ namespace TownOfUs.Roles
             }
         }
 
-        internal override bool EABBNOODFGL(LogicGameFlowNormal __instance)
+        internal override bool NeutralWin(LogicGameFlowNormal __instance)
         {
             if (Player.Data.IsDead || Player.Data.Disconnected) return true;
 
@@ -78,7 +79,7 @@ namespace TownOfUs.Roles
             LostByRPC = true;
         }
 
-        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__32 __instance)
+        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__36 __instance)
         {
             var arsonistTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             arsonistTeam.Add(PlayerControl.LocalPlayer);
@@ -97,20 +98,25 @@ namespace TownOfUs.Roles
 
         public void Ignite()
         {
-            System.Console.WriteLine("Ignite 1");
             foreach (var playerId in DousedPlayers)
             {
                 var player = Utils.PlayerById(playerId);
-                if (
-                    player == null ||
-                    player.Data.Disconnected ||
-                    player.Data.IsDead ||
-                    player.Is(RoleEnum.Pestilence)
-                ) continue;
-                Utils.MurderPlayer(Player, player);
+                if (!player.Is(RoleEnum.Pestilence) && !player.IsShielded() && !player.IsProtected())
+                {
+                    Utils.RpcMultiMurderPlayer(Player, player);
+                }
+                else if (player.IsShielded())
+                {
+                    var medic = player.GetMedic().Player.PlayerId;
+                    var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                        (byte)CustomRPC.AttemptSound, SendOption.Reliable, -1);
+                    writer.Write(medic);
+                    writer.Write(player.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    StopKill.BreakShield(medic, player.PlayerId, CustomGameOptions.ShieldBreaks);
+                }
             }
             DousedPlayers.Clear();
-            System.Console.WriteLine("Ignite 2");
         }
     }
 }

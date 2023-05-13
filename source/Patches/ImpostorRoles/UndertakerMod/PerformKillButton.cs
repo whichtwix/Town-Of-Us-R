@@ -67,12 +67,14 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                         }
                     }
 
+                    position.y -= 0.3636f;
+
                     writer.Write(position);
                     writer.Write(position.z);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
 
                     var body = role.CurrentlyDragging;
-                    body.bodyRenderer.material.SetFloat("_Outline", 0f);
+                    foreach (var body2 in role.CurrentlyDragging.bodyRenderers) body2.material.SetFloat("_Outline", 0f);
                     role.CurrentlyDragging = null;
                     __instance.graphic.sprite = TownOfUs.DragSprite;
                     role.LastDragged = DateTime.UtcNow;

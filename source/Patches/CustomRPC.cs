@@ -8,17 +8,15 @@ namespace TownOfUs
         SetAssassin,
         SetTarget,
         SetGATarget,
+        SetDelayRoles,
 
         SetPhantom,
-        PhantomDied,
         CatchPhantom,
 
         SetHaunter,
-        HaunterDied,
         CatchHaunter,
 
         SetTraitor,
-        TraitorSpawn,
 
         LoveWin,
         GlitchWin,
@@ -55,8 +53,6 @@ namespace TownOfUs
         Morph,
         Mine,
         Swoop,
-        Douse,
-        Ignite,
         AltruistRevive,
         BarryButton,
         Drag,
@@ -83,9 +79,9 @@ namespace TownOfUs
         ChameleonSwoop,
         Imitate,
         StartImitate,
-        Detonate,
 
         BypassKill,
+        BypassMultiKill,
         SetMimic,
         RpcResetAnim,
         SetHacked,

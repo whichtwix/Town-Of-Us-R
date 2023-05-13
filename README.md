@@ -75,6 +75,9 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 # Releases
 | Among Us - Version| Mod Version | Link |
 |----------|-------------|-----------------|
+| 2023.3.28s & 2023.3.28e | v4.0.5 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.5/ToU.v4.0.5.zip) |
+| 2023.3.28s & 2023.3.28e | v4.0.4 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.4/ToU.v4.0.4.zip) |
+| 2023.2.28s & 2023.2.28e | v4.0.3 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.3/ToU.v4.0.3.zip) |
 | 2022.12.14s & 2022.12.14e | v4.0.2 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.2/ToU.v4.0.2.zip) |
 | 2022.12.14s & 2022.12.14e | v4.0.1 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.1/ToU.v4.0.1.zip) |
 | 2022.12.14s & 2022.12.14e | v4.0.0 | [Download](https://github.com/eDonnes124/Town-Of-Us/releases/download/v4.0.0/ToU.v4.0.0.zip) |
@@ -129,6 +132,26 @@ Join our [Discord](https://discord.gg/ugyc4EVUYZ) if you have any problems or wa
 
 <details>
   <summary> Changelog </summary>
+  <details>
+  <summary> v4.0.5 </summary>
+  <ul> <li>Bug Fix: Exile Functions now work when someone disconnects right after being assassinated</li> </ul>
+  </details>
+  <details>
+  <summary> v4.0.4 </summary>
+  <ul> <li>Compatibility with the new Among Us version v2023.3.28</li> </ul>
+  <ul> <li>Haunter/Phantom/Traitor spawn adjustments</li> </ul>
+  </details>
+  <details>
+  <summary> v4.0.3 </summary>
+  <ul> <li>Compatibility with the new Among Us version v2023.2.28</li> </ul>
+  <ul> <li>New Setting: Who can see dead players on admin (under Spy)</li> </ul>
+  <ul> <li>Bug Fix: Transporter and Glitch get everyone alive on their transport/mimic menus</li> </ul>
+  <ul> <li>Bug Fix: Undertaker can no longer drag bodies to unreportable positions</li> </ul>
+  <ul> <li>Bug Fix: Players can no longer infinitely vent in Hide & Seek</li> </ul>
+  <ul> <li>Bug Fix: Swapper swap bugs... all of them... I think</li> </ul>
+  <ul> <li>Optimisation: As Imitator you no longer need to deselect someone to select another player</li> </ul>
+  <ul> <li>Medic Shields and Guardian Angel Protects now stop a Bomb detonation and Arsonist ignites</li> </ul>
+  </details>
   <details>
   <summary> v4.0.2 </summary>
   <ul> <li>Bug Fix: Cultist no longer doesn't automatically set the Impostors to 1 for the game mode</li> </ul>
@@ -803,6 +826,7 @@ On Vitals, the Spy can see how long killed bodies have been dead for.
 | Name | Description | Type | Default |
 |----------|:-------------:|:------:|:------:|
 | Spy | The percentage probability of the Spy appearing | Percentage | 0% |
+| Who Sees Dead Bodies On Admin | Which players see dead bodies on the admin map | Nobody / Spy / Everyone But Spy / Everyone | Nobody |
 
 -----------------------
 ## Tracker
@@ -1629,7 +1653,6 @@ When they are the only remaining Impostor, they will have their kill cooldown sh
 | Camouflaged Comms | Whether everyone becomes camouflaged when Comms are sabotaged | Toggle | False |
 | Impostors can see the roles of their team | Whether Impostors are able to see which Impostor roles their teammates have | Toggle | False |
 | Dead can see everyone's roles and Votes | Whether dead players are able to see the roles and votes of everyone else | Toggle | False |
-| Probability of a completely vanilla game | The percentage probability of a vanilla Among Us game happening | Percentage | 0% |
 | Game Start Cooldowns | The cooldown for all roles at the start of the game | Time | 10s |
 | Parallel Medbay Scans | Whether players have to wait for others to scan | Toggle | False |
 | Disable Meeting Skip Button | Whether the meeting button is disabled | No / Emergency / Always | No |
