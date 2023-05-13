@@ -12,8 +12,9 @@ namespace TownOfUs.ImpostorRoles.JanitorMod
         public static IEnumerator CleanCoroutine(DeadBody body, Janitor role)
         {
             KillButtonTarget.SetTarget(DestroyableSingleton<HudManager>.Instance.KillButton, null, role);
-            role.Player.SetKillTimer(PlayerControl.GameOptions.KillCooldown);
-            var renderer = body.bodyRenderer;
+            role.Player.SetKillTimer(GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown);
+            SpriteRenderer renderer = null;
+            foreach (var body2 in body.bodyRenderers) renderer = body2;
             var backColor = renderer.material.GetColor(BackColor);
             var bodyColor = renderer.material.GetColor(BodyColor);
             var newColor = new Color(1f, 1f, 1f, 0f);

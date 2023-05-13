@@ -16,12 +16,13 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
             if (__instance.Data.IsDead)
             {
                 role.CurrentlyDragging = null;
-                body.bodyRenderer.material.SetFloat("_Outline", 0f);
+                foreach (var body2 in body.bodyRenderers) body2.material.SetFloat("_Outline", 0f);
                 return;
             }
-            var currentPosition = __instance.GetTruePosition();
+            var currentPosition = __instance.transform.position;
             var velocity = __instance.gameObject.GetComponent<Rigidbody2D>().velocity.normalized;
             Vector3 newPos = ((Vector2)__instance.transform.position) - (velocity / 3) + body.myCollider.offset;
+            newPos.z = currentPosition.z;
 
             //WHY ARE THERE DIFFERENT LOCAL Z INDEXS FOR DIFFERENT DECALS ON DIFFERENT LEVELS?!?!?!
             if (Patches.SubmergedCompatibility.isSubmerged())
@@ -35,7 +36,6 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                 }
             }
 
-
             if (!PhysicsHelpers.AnythingBetween(
                 currentPosition,
                 newPos,
@@ -43,9 +43,11 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                 false
             )) body.transform.position = newPos;
             if (!__instance.AmOwner) return;
-            var material = body.bodyRenderer.material;
-            material.SetColor("_OutlineColor", Color.green);
-            material.SetFloat("_Outline", 1f);
+            foreach (var body2 in body.bodyRenderers)
+            {
+                body2.material.SetColor("_OutlineColor", Color.green);
+                body2.material.SetFloat("_Outline", 1f);
+            }
         }
     }
 }

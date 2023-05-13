@@ -14,13 +14,14 @@ namespace TownOfUs
             if (CustomGameOptions.ColourblindComms)
             {
                 if (ShipStatus.Instance != null)
-                    switch (PlayerControl.GameOptions.MapId)
+                    switch (GameOptionsManager.Instance.currentNormalGameOptions.MapId)
                     {
                         case 0:
                         case 2:
                         case 3:
                         case 4:
                         case 5:
+                        case 6:
                             var comms1 = ShipStatus.Instance.Systems[SystemTypes.Comms].Cast<HudOverrideSystemType>();
                             if (comms1.IsActive)
                             {

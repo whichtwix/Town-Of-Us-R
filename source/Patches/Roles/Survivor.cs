@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TMPro;
+using AmongUs.GameOptions;
 
 namespace TownOfUs.Roles
 {
@@ -14,17 +15,18 @@ namespace TownOfUs.Roles
         public TextMeshPro UsesText;
 
         public bool ButtonUsable => UsesLeft != 0;
+        public bool SpawnedAs = true;
 
 
         public Survivor(PlayerControl player) : base(player)
         {
             Name = "Survivor";
             ImpostorText = () => "Do Whatever It Takes To Live";
-            TaskText = () => "Stay alive to win";
+            TaskText = () => SpawnedAs ? "Stay alive to win" : "Your target was killed. Now you just need to live!";
             Color = Patches.Colors.Survivor;
             LastVested = DateTime.UtcNow;
             RoleType = RoleEnum.Survivor;
-            Faction = Faction.Neutral;
+            Faction = Faction.NeutralOther;
             AddToRoleHistory(RoleType);
 
             UsesLeft = CustomGameOptions.MaxVests;
@@ -55,7 +57,7 @@ namespace TownOfUs.Roles
             LastVested = DateTime.UtcNow;
         }
 
-        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__21 __instance)
+        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__36 __instance)
         {
             var survTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             survTeam.Add(PlayerControl.LocalPlayer);

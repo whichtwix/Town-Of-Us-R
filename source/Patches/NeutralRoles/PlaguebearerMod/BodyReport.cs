@@ -11,10 +11,11 @@ namespace TownOfUs.NeutralRoles.PlaguebearerMod
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
             if (PlayerControl.LocalPlayer.Data == null) return;
+            if (info == null) return;
 
             foreach (var player in PlayerControl.AllPlayerControls)
             {
-                if (player.PlayerId == info.PlayerId)
+                if (!info.Disconnected && player.PlayerId == info.PlayerId)
                 {
                     if (PlayerControl.LocalPlayer.IsInfected() || player.IsInfected())
                     {

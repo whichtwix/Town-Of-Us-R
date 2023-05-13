@@ -24,7 +24,7 @@ namespace TownOfUs.Modifiers.AssassinMod
         {
             if (voteArea.AmDead) return true;
             var player = Utils.PlayerById(voteArea.TargetPlayerId);
-            if (PlayerControl.LocalPlayer.Is(Faction.Neutral))
+            if (PlayerControl.LocalPlayer.Is(Faction.NeutralKilling))
             {
                 if (
                     player == null ||
@@ -160,13 +160,8 @@ namespace TownOfUs.Modifiers.AssassinMod
                 var playerModifier = Modifier.GetModifier(voteArea);
 
                 var toDie = playerRole.Name == currentGuess ? playerRole.Player : role.Player;
-                if (CustomGameOptions.AssassinSnitchViaCrewmate)
-                    if (playerModifier != null)
-                        toDie = (playerRole.Name == currentGuess || playerRole.Name == "Snitch" && currentGuess == "Crewmate" || playerModifier.Name == currentGuess) ? playerRole.Player : role.Player;
-                    else toDie = (playerRole.Name == currentGuess || playerRole.Name == "Snitch" && currentGuess == "Crewmate") ? playerRole.Player : role.Player;
-                else
-                    if (playerModifier != null)
-                        toDie = (playerRole.Name == currentGuess || playerModifier.Name == currentGuess) ? playerRole.Player : role.Player;
+                if (playerModifier != null)
+                    toDie = (playerRole.Name == currentGuess || playerModifier.Name == currentGuess) ? playerRole.Player : role.Player;
 
                 if (!toDie.Is(RoleEnum.Pestilence) || PlayerControl.LocalPlayer.Is(RoleEnum.Pestilence))
                 {
@@ -181,7 +176,7 @@ namespace TownOfUs.Modifiers.AssassinMod
                         }
                         else
                         {
-                            AssassinKill.RpcMurderPlayer(toDie);
+                            AssassinKill.RpcMurderPlayer(toDie, PlayerControl.LocalPlayer);
                             role.RemainingKills--;
                             ShowHideButtons.HideSingle(role, targetId, toDie == role.Player);
                             if (toDie.IsLover() && CustomGameOptions.BothLoversDie)
@@ -193,7 +188,7 @@ namespace TownOfUs.Modifiers.AssassinMod
                     }
                     else
                     {
-                        AssassinKill.RpcMurderPlayer(toDie);
+                        AssassinKill.RpcMurderPlayer(toDie, PlayerControl.LocalPlayer);
                         role.RemainingKills--;
                         ShowHideButtons.HideSingle(role, targetId, toDie == role.Player);
                         if (toDie.IsLover() && CustomGameOptions.BothLoversDie)
@@ -220,6 +215,7 @@ namespace TownOfUs.Modifiers.AssassinMod
 
             if (PlayerControl.LocalPlayer.Data.IsDead) return;
             if (!PlayerControl.LocalPlayer.Is(AbilityEnum.Assassin)) return;
+            if (PlayerControl.LocalPlayer.Is(Faction.NeutralOther)) return;
 
             var assassinRole = Ability.GetAbility<Assassin>(PlayerControl.LocalPlayer);
             if (assassinRole.RemainingKills <= 0) return;

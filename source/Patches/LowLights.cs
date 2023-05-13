@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using HarmonyLib;
 using TownOfUs.Extensions;
 using TownOfUs.Roles;
@@ -11,6 +12,21 @@ namespace TownOfUs
         public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] GameData.PlayerInfo player,
             ref float __result)
         {
+            if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek)
+            {
+                if (GameOptionsManager.Instance.currentHideNSeekGameOptions.useFlashlight)
+                {
+                    if (player.IsImpostor()) __result = __instance.MaxLightRadius * GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorFlashlightSize;
+                    else __result = __instance.MaxLightRadius * GameOptionsManager.Instance.currentHideNSeekGameOptions.CrewmateFlashlightSize;
+                }
+                else
+                {
+                    if (player.IsImpostor()) __result = __instance.MaxLightRadius * GameOptionsManager.Instance.currentHideNSeekGameOptions.ImpostorLightMod;
+                    else __result = __instance.MaxLightRadius * GameOptionsManager.Instance.currentHideNSeekGameOptions.CrewLightMod;
+                }
+                return false;
+            }
+
             if (player == null || player.IsDead)
             {
                 __result = __instance.MaxLightRadius;
@@ -23,7 +39,7 @@ namespace TownOfUs
                 (player._object.Is(RoleEnum.Jester) && CustomGameOptions.JesterImpVision) ||
                 (player._object.Is(RoleEnum.Arsonist) && CustomGameOptions.ArsoImpVision))
             {
-                __result = __instance.MaxLightRadius * PlayerControl.GameOptions.ImpostorLightMod;
+                __result = __instance.MaxLightRadius * GameOptionsManager.Instance.currentNormalGameOptions.ImpostorLightMod;
                 return false;
             }
             else if (player._object.Is(RoleEnum.Werewolf))
@@ -31,24 +47,22 @@ namespace TownOfUs
                 var role = Role.GetRole<Werewolf>(PlayerControl.LocalPlayer);
                 if (role.Rampaged)
                 {
-                    __result = __instance.MaxLightRadius * PlayerControl.GameOptions.ImpostorLightMod;
+                    __result = __instance.MaxLightRadius * GameOptionsManager.Instance.currentNormalGameOptions.ImpostorLightMod;
                     return false;
                 }
             }
 
-
             if (Patches.SubmergedCompatibility.isSubmerged())
             {
-                if (player._object.Is(ModifierEnum.Torch)) __result = Mathf.Lerp(__instance.MinLightRadius, __instance.MaxLightRadius, 1) * PlayerControl.GameOptions.CrewLightMod;
+                if (player._object.Is(ModifierEnum.Torch)) __result = Mathf.Lerp(__instance.MinLightRadius, __instance.MaxLightRadius, 1) * GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
                 return false;
             }
 
-
             var t = switchSystem.Value / 255f;
-            
+
             if (player._object.Is(ModifierEnum.Torch)) t = 1;
             __result = Mathf.Lerp(__instance.MinLightRadius, __instance.MaxLightRadius, t) *
-                       PlayerControl.GameOptions.CrewLightMod;
+                       GameOptionsManager.Instance.currentNormalGameOptions.CrewLightMod;
             return false;
         }
     }

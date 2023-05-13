@@ -3,38 +3,30 @@ using TownOfUs.Roles;
 
 namespace TownOfUs.CrewmateRoles.DetectiveMod
 {
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
+    [HarmonyPatch(typeof(HudManager))]
     public class HudExamine
     {
-        public static void Postfix(PlayerControl __instance)
+        [HarmonyPatch(nameof(HudManager.Update))]
+        public static void Postfix(HudManager __instance)
         {
             UpdateExamineButton(__instance);
         }
 
-        public static void UpdateExamineButton(PlayerControl __instance)
+        public static void UpdateExamineButton(HudManager __instance)
         {
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
             if (PlayerControl.LocalPlayer.Data == null) return;
             if (!PlayerControl.LocalPlayer.Is(RoleEnum.Detective)) return;
-            var data = PlayerControl.LocalPlayer.Data;
-            var isDead = data.IsDead;
-            var examineButton = DestroyableSingleton<HudManager>.Instance.KillButton;
 
+            var examineButton = __instance.KillButton;
             var role = Role.GetRole<Detective>(PlayerControl.LocalPlayer);
 
-            if (isDead)
-            {
-                examineButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                examineButton.gameObject.SetActive(!MeetingHud.Instance);
-                // trackButton.isActive = !MeetingHud.Instance;
-                examineButton.SetCoolDown(role.ExamineTimer(), CustomGameOptions.ExamineCd);
-
-                Utils.SetTarget(ref role.ClosestPlayer, examineButton, float.NaN);
-            }
+            examineButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
+                    && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
+                    && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started);
+            examineButton.SetCoolDown(role.ExamineTimer(), CustomGameOptions.ExamineCd);
+            Utils.SetTarget(ref role.ClosestPlayer, examineButton, float.NaN);
 
             var renderer = examineButton.graphic;
             if (role.ClosestPlayer != null)

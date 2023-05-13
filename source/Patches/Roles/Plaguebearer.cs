@@ -16,7 +16,7 @@ namespace TownOfUs.Roles
         public bool PlaguebearerWins { get; set; }
 
         public int InfectedAlive => InfectedPlayers.Count(x => Utils.PlayerById(x) != null && Utils.PlayerById(x).Data != null && !Utils.PlayerById(x).Data.IsDead);
-        public bool CanTransform => PlayerControl.AllPlayerControls.ToArray().Count(x => x != null && !x.Data.IsDead) <= InfectedAlive;
+        public bool CanTransform => PlayerControl.AllPlayerControls.ToArray().Count(x => x != null && !x.Data.IsDead && !x.Data.Disconnected) <= InfectedAlive;
 
         public Plaguebearer(PlayerControl player) : base(player)
         {
@@ -26,11 +26,11 @@ namespace TownOfUs.Roles
             Color = Patches.Colors.Plaguebearer;
             RoleType = RoleEnum.Plaguebearer;
             AddToRoleHistory(RoleType);
-            Faction = Faction.Neutral;
+            Faction = Faction.NeutralKilling;
             InfectedPlayers.Add(player.PlayerId);
         }
 
-        internal override bool EABBNOODFGL(ShipStatus __instance)
+        internal override bool NeutralWin(LogicGameFlowNormal __instance)
         {
             if (Player.Data.IsDead || Player.Data.Disconnected) return true;
 
@@ -65,7 +65,7 @@ namespace TownOfUs.Roles
             LostByRPC = true;
         }
 
-        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__21 __instance)
+        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__36 __instance)
         {
             var plaguebearerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             plaguebearerTeam.Add(PlayerControl.LocalPlayer);

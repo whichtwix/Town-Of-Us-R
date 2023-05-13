@@ -18,7 +18,9 @@ namespace TownOfUs.CrewmateRoles.TrapperMod
             if (!role.ButtonUsable) return false;
             role.UsesLeft--;
             role.LastTrapped = System.DateTime.UtcNow;
-            role.traps.Add(TrapExtentions.CreateTrap(PlayerControl.LocalPlayer.GetTruePosition()));
+            var pos = PlayerControl.LocalPlayer.transform.position;
+            pos.z += 0.001f;
+            role.traps.Add(TrapExtentions.CreateTrap(pos));
 
             return false;
         }

@@ -10,6 +10,7 @@ namespace TownOfUs.CrewmateRoles.EngineerMod
     {
         public static bool Prefix(KillButton __instance)
         {
+            if (CustomGameOptions.GameMode == GameMode.Cultist) return false;
             if (__instance != DestroyableSingleton<HudManager>.Instance.KillButton) return true;
             var flag = PlayerControl.LocalPlayer.Is(RoleEnum.Engineer);
             if (!flag) return true;
@@ -17,15 +18,16 @@ namespace TownOfUs.CrewmateRoles.EngineerMod
             if (PlayerControl.LocalPlayer.Data.IsDead) return false;
             if (!__instance.enabled) return false;
             var role = Role.GetRole<Engineer>(PlayerControl.LocalPlayer);
-            if (role.UsedThisRound) return false;
+            if (!role.ButtonUsable) return false;
             var system = ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>();
+            if (system == null) return false;
             var specials = system.specials.ToArray();
             var dummyActive = system.dummy.IsActive;
             var sabActive = specials.Any(s => s.IsActive);
             if (!sabActive | dummyActive) return false;
-            role.UsedThisRound = true;
+            role.UsesLeft -= 1;
 
-            switch (PlayerControl.GameOptions.MapId)
+            switch (GameOptionsManager.Instance.currentNormalGameOptions.MapId)
             {
                 case 0:
                 case 3:
@@ -80,6 +82,16 @@ namespace TownOfUs.CrewmateRoles.EngineerMod
                             return FixSubOxygen();
                         }
                     }
+                    break;
+                case 6:
+                    var comms6 = ShipStatus.Instance.Systems[SystemTypes.Comms].Cast<HudOverrideSystemType>();
+                    if (comms6.IsActive) return FixComms();
+                    var reactor6 = ShipStatus.Instance.Systems[SystemTypes.Reactor].Cast<ReactorSystemType>();
+                    if (reactor6.IsActive) return FixReactor(SystemTypes.Reactor);
+                    var oxygen6 = ShipStatus.Instance.Systems[SystemTypes.LifeSupp].Cast<LifeSuppSystemType>();
+                    if (oxygen6.IsActive) return FixOxygen();
+                    var lights6 = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+                    if (lights6.IsActive) return FixLights(lights6);
                     break;
             }
 

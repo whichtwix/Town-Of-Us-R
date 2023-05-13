@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Reactor.Utilities.Extensions;
 using TMPro;
+using TownOfUs.Extensions;
 using TownOfUs.Roles;
 using TownOfUs.Roles.Modifiers;
 using UnityEngine;
@@ -22,11 +23,23 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
         {
             if (voteArea.AmDead) return true;
             var player = Utils.PlayerById(voteArea.TargetPlayerId);
-            if (
-                player == null ||
-                player.Data.IsDead ||
-                player.Data.Disconnected
-            ) return true;
+            if (!PlayerControl.LocalPlayer.Is(Faction.Impostors))
+            {
+                if (
+                    player == null ||
+                    player.Data.IsDead ||
+                    player.Data.Disconnected
+                ) return true;
+            }
+            else
+            {
+                if (
+                    player == null ||
+                    player.Data.IsImpostor() ||
+                    player.Data.IsDead ||
+                    player.Data.Disconnected
+                ) return true;
+            }
             var role = Role.GetRole(player);
             return role != null && role.Criteria();
         }
@@ -148,10 +161,18 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
                 var toDie = playerRole.Name == currentGuess ? playerRole.Player : role.Player;
                 if (playerModifier != null)
                     toDie = (playerRole.Name == currentGuess || playerModifier.Name == currentGuess) ? playerRole.Player : role.Player;
+                
+                if (toDie.Is(RoleEnum.Necromancer) || toDie.Is(RoleEnum.Whisperer))
+                {
+                    foreach (var player in PlayerControl.AllPlayerControls)
+                    {
+                        if (player.Data.IsImpostor()) Utils.RpcMurderPlayer(player, player);
+                    }
+                }
 
                 if (!toDie.Is(RoleEnum.Pestilence))
                 {
-                    VigilanteKill.RpcMurderPlayer(toDie);
+                    VigilanteKill.RpcMurderPlayer(toDie, PlayerControl.LocalPlayer);
                     role.RemainingKills--;
                     ShowHideButtonsVigi.HideSingle(role, targetId, toDie == role.Player);
                     if (toDie.IsLover() && CustomGameOptions.BothLoversDie)

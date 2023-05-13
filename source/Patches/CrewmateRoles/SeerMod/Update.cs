@@ -1,4 +1,3 @@
-using System.Linq;
 using HarmonyLib;
 using TownOfUs.Extensions;
 using TownOfUs.Roles;
@@ -9,18 +8,6 @@ namespace TownOfUs.CrewmateRoles.SeerMod
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public class Update
     {
-        public static string NameText(PlayerControl player, string str = "", bool meeting = false)
-        {
-            if (CamouflageUnCamouflage.IsCamoed)
-            {
-                if (meeting) return player.name + str;
-
-                return "";
-            }
-
-            return player.name + str;
-        }
-
         private static void UpdateMeeting(MeetingHud __instance, Seer seer)
         {
             foreach (var player in PlayerControl.AllPlayerControls)
@@ -37,8 +24,7 @@ namespace TownOfUs.CrewmateRoles.SeerMod
                             ((player.Is(RoleEnum.Sheriff) || player.Is(RoleEnum.Veteran) || player.Is(RoleEnum.Vigilante)) && !CustomGameOptions.CrewKillingRed) ||
                             ((player.Is(RoleEnum.Amnesiac) || player.Is(RoleEnum.Survivor) || player.Is(RoleEnum.GuardianAngel)) && !CustomGameOptions.NeutBenignRed) ||
                             ((player.Is(RoleEnum.Executioner) || player.Is(RoleEnum.Jester) || player.Is(RoleEnum.Phantom)) && !CustomGameOptions.NeutEvilRed) ||
-                            ((player.Is(RoleEnum.Arsonist) || player.Is(RoleEnum.Glitch) || player.Is(RoleEnum.Juggernaut) ||
-                            player.Is(RoleEnum.Plaguebearer) || player.Is(RoleEnum.Pestilence) || player.Is(RoleEnum.Werewolf)) && !CustomGameOptions.NeutKillingRed))
+                            (player.Is(Faction.NeutralKilling) && !CustomGameOptions.NeutKillingRed))
                             {
                                 state.NameText.color = Color.green;
                             }
@@ -75,12 +61,10 @@ namespace TownOfUs.CrewmateRoles.SeerMod
             var seer = Role.GetRole<Seer>(PlayerControl.LocalPlayer);
             if (MeetingHud.Instance != null) UpdateMeeting(MeetingHud.Instance, seer);
 
-
             foreach (var player in PlayerControl.AllPlayerControls)
             {
                 if (!seer.Investigated.Contains(player.PlayerId)) continue;
                 var roleType = Utils.GetRole(player);
-                player.nameText().transform.localPosition = new Vector3(0f, 2f, -0.5f);
                 switch (roleType)
                 {
                     default:
@@ -88,8 +72,7 @@ namespace TownOfUs.CrewmateRoles.SeerMod
                             ((player.Is(RoleEnum.Sheriff) || player.Is(RoleEnum.Veteran) || player.Is(RoleEnum.Vigilante)) && !CustomGameOptions.CrewKillingRed) ||
                             ((player.Is(RoleEnum.Amnesiac) || player.Is(RoleEnum.Survivor) || player.Is(RoleEnum.GuardianAngel)) && !CustomGameOptions.NeutBenignRed) ||
                             ((player.Is(RoleEnum.Executioner) || player.Is(RoleEnum.Jester) || player.Is(RoleEnum.Phantom)) && !CustomGameOptions.NeutEvilRed) ||
-                            ((player.Is(RoleEnum.Arsonist) || player.Is(RoleEnum.Glitch) || player.Is(RoleEnum.Juggernaut) ||
-                            player.Is(RoleEnum.Plaguebearer) || player.Is(RoleEnum.Pestilence) || player.Is(RoleEnum.Werewolf)) && !CustomGameOptions.NeutKillingRed))
+                            (player.Is(Faction.NeutralKilling) && !CustomGameOptions.NeutKillingRed))
                         {
                             player.nameText().color = Color.green;
                         }

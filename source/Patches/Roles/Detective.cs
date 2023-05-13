@@ -5,6 +5,7 @@ namespace TownOfUs.Roles
     public class Detective : Role
     {
         public PlayerControl ClosestPlayer;
+        public PlayerControl LastExaminedPlayer;
         public DateTime LastExamined { get; set; }
 
         public Detective(PlayerControl player) : base(player)

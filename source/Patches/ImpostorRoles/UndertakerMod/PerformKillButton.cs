@@ -4,6 +4,7 @@ using Hazel;
 using TownOfUs.Roles;
 using UnityEngine;
 using Reactor.Networking.Extensions;
+using AmongUs.GameOptions;
 
 namespace TownOfUs.ImpostorRoles.UndertakerMod
 {
@@ -24,10 +25,15 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                 {
                     if (__instance.isCoolingDown) return false;
                     if (!__instance.enabled) return false;
-                    var maxDistance = GameOptionsData.KillDistances[PlayerControl.GameOptions.KillDistance];
+                    var maxDistance = GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
                     if (Vector2.Distance(role.CurrentTarget.TruePosition,
                         PlayerControl.LocalPlayer.GetTruePosition()) > maxDistance) return false;
                     var playerId = role.CurrentTarget.ParentId;
+                    var player = Utils.PlayerById(playerId);
+                    if ((player.IsInfected() || role.Player.IsInfected()) && !player.Is(RoleEnum.Plaguebearer))
+                    {
+                        foreach (var pb in Role.GetRoles(RoleEnum.Plaguebearer)) ((Plaguebearer)pb).RpcSpreadInfection(player, role.Player);
+                    }
 
                     var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                         (byte) CustomRPC.Drag, SendOption.Reliable, -1);
@@ -47,8 +53,7 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                     var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                         (byte) CustomRPC.Drop, SendOption.Reliable, -1);
                     writer.Write(PlayerControl.LocalPlayer.PlayerId);
-                    Vector3 position = PlayerControl.LocalPlayer.GetTruePosition();
-
+                    Vector3 position = PlayerControl.LocalPlayer.transform.position;
 
                     if (Patches.SubmergedCompatibility.isSubmerged())
                     {
@@ -62,18 +67,19 @@ namespace TownOfUs.ImpostorRoles.UndertakerMod
                         }
                     }
 
+                    position.y -= 0.3636f;
+
                     writer.Write(position);
                     writer.Write(position.z);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
 
                     var body = role.CurrentlyDragging;
-                    body.bodyRenderer.material.SetFloat("_Outline", 0f);
+                    foreach (var body2 in role.CurrentlyDragging.bodyRenderers) body2.material.SetFloat("_Outline", 0f);
                     role.CurrentlyDragging = null;
                     __instance.graphic.sprite = TownOfUs.DragSprite;
                     role.LastDragged = DateTime.UtcNow;
 
                     body.transform.position = position;
-
 
                     return false;
                 }

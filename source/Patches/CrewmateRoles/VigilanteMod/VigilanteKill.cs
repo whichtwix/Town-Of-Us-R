@@ -3,30 +3,35 @@ using Hazel;
 using TownOfUs.Roles;
 using TownOfUs.Roles.Modifiers;
 using UnityEngine;
+using UnityEngine.UI;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.Modifiers.AssassinMod;
 using TownOfUs.ImpostorRoles.BlackmailerMod;
 using TownOfUs.Extensions;
+using TownOfUs.CrewmateRoles.ImitatorMod;
+using TownOfUs.CrewmateRoles.SwapperMod;
+using TownOfUs.Patches;
 
 namespace TownOfUs.CrewmateRoles.VigilanteMod
 {
     public class VigilanteKill
     {
-        public static void RpcMurderPlayer(PlayerControl player)
-
+        public static void RpcMurderPlayer(PlayerControl player, PlayerControl vigilante)
         {
             PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
                 x => x.TargetPlayerId == player.PlayerId
             );
-            RpcMurderPlayer(voteArea, player);
+            RpcMurderPlayer(voteArea, player, vigilante);
         }
-        public static void RpcMurderPlayer(PlayerVoteArea voteArea, PlayerControl player)
+        public static void RpcMurderPlayer(PlayerVoteArea voteArea, PlayerControl player, PlayerControl vigilante)
         {
             MurderPlayer(voteArea, player);
+            VigiKillCount(player, vigilante);
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                 (byte)CustomRPC.VigilanteKill, SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
+            writer.Write(vigilante.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
 
@@ -36,6 +41,12 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
                 x => x.TargetPlayerId == player.PlayerId
             );
             MurderPlayer(voteArea, player, checkLover);
+        }
+        public static void VigiKillCount(PlayerControl player, PlayerControl vigilante)
+        {
+            var vigi = Role.GetRole<Vigilante>(vigilante);
+            if (player == vigilante) vigi.IncorrectAssassinKills += 1;
+            else vigi.CorrectAssassinKills += 1;
         }
         public static void MurderPlayer(
             PlayerVoteArea voteArea,
@@ -58,7 +69,7 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
                 player.RpcSetScanner(false);
                 ImportantTextTask importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
                 importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
-                if (!PlayerControl.GameOptions.GhostsDoTasks)
+                if (!GameOptionsManager.Instance.currentNormalGameOptions.GhostsDoTasks)
                 {
                     for (int i = 0;i < player.myTasks.Count;i++)
                     {
@@ -88,18 +99,13 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
                     ShowHideButtons.HideButtons(assassin);
                 }
             }
-            player.Die(DeathReason.Kill);
+            player.Die(DeathReason.Kill, false);
             if (checkLover && player.IsLover() && CustomGameOptions.BothLoversDie)
             {
                 var otherLover = Modifier.GetModifier<Lover>(player).OtherLover.Player;
                 if (!otherLover.Is(RoleEnum.Pestilence)) MurderPlayer(otherLover, false);
             }
 
-            var meetingHud = MeetingHud.Instance;
-            if (amOwner)
-            {
-                meetingHud.SetForegroundForDead();
-            }
             var deadPlayer = new DeadPlayer
             {
                 PlayerId = player.PlayerId,
@@ -116,6 +122,12 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
             voteArea.XMark.gameObject.SetActive(true);
             voteArea.XMark.transform.localScale = Vector3.one;
 
+            var meetingHud = MeetingHud.Instance;
+            if (amOwner)
+            {
+                meetingHud.SetForegroundForDead();
+            }
+
             var blackmailers = Role.AllRoles.Where(x => x.RoleType == RoleEnum.Blackmailer && x.Player != null).Cast<Blackmailer>();
             foreach (var role in blackmailers)
             {
@@ -131,6 +143,38 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
                             voteArea.XMark.transform.localPosition.z);
                     }
                 }
+            }
+
+            if (PlayerControl.LocalPlayer.Is(RoleEnum.Vigilante) && !PlayerControl.LocalPlayer.Data.IsDead)
+            {
+                var vigi = Role.GetRole<Vigilante>(PlayerControl.LocalPlayer);
+                ShowHideButtonsVigi.HideTarget(vigi, voteArea.TargetPlayerId);
+            }
+
+            if (PlayerControl.LocalPlayer.Is(AbilityEnum.Assassin) && !PlayerControl.LocalPlayer.Data.IsDead)
+            {
+                var assassin = Ability.GetAbility<Assassin>(PlayerControl.LocalPlayer);
+                ShowHideButtons.HideTarget(assassin, voteArea.TargetPlayerId);
+            }
+
+            if (PlayerControl.LocalPlayer.Is(RoleEnum.Swapper) && !PlayerControl.LocalPlayer.Data.IsDead)
+            {
+                var swapper = Role.GetRole<Swapper>(PlayerControl.LocalPlayer);
+                var button = swapper.Buttons[voteArea.TargetPlayerId];
+                if (button.GetComponent<SpriteRenderer>().sprite == TownOfUs.SwapperSwitch)
+                {
+                    swapper.ListOfActives[voteArea.TargetPlayerId] = false;
+                    if (SwapVotes.Swap1 == voteArea) SwapVotes.Swap1 = null;
+                    if (SwapVotes.Swap2 == voteArea) SwapVotes.Swap2 = null;
+                    var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                            (byte)CustomRPC.SetSwaps, SendOption.Reliable, -1);
+                    writer.Write(sbyte.MaxValue);
+                    writer.Write(sbyte.MaxValue);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                }
+                button.SetActive(false);
+                button.GetComponent<PassiveButton>().OnClick = new Button.ButtonClickedEvent();
+                swapper.Buttons[voteArea.TargetPlayerId] = null;
             }
 
             foreach (var playerVoteArea in meetingHud.playerStates)
@@ -167,8 +211,36 @@ namespace TownOfUs.CrewmateRoles.VigilanteMod
                         }
                     }
                 }
+
+                if (ExilePatch.HaunterOn && ExilePatch.WillBeHaunter == null)
+                {
+                    if (player.Is(Faction.Crewmates) && !player.Is(ModifierEnum.Lover))
+                    {
+                        ExilePatch.WillBeHaunter = player;
+                        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                            (byte)CustomRPC.SetHaunter, SendOption.Reliable, -1);
+                        writer.Write(player.PlayerId);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    }
+                }
+
+                if (ExilePatch.PhantomOn && ExilePatch.WillBePhantom == null)
+                {
+                    if ((player.Is(Faction.NeutralOther) || player.Is(Faction.NeutralKilling)) && !player.Is(ModifierEnum.Lover))
+                    {
+                        ExilePatch.WillBePhantom = player;
+                        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                            (byte)CustomRPC.SetPhantom, SendOption.Reliable, -1);
+                        writer.Write(player.PlayerId);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    }
+                }
+
                 meetingHud.CheckForEndVoting();
             }
+
+            ExilePatch.AssassinatedPlayers.Add(player);
+            ExilePatch.CheckTraitorSpawn(player);
         }
     }
 }
