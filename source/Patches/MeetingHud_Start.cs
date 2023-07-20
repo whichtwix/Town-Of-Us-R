@@ -2,6 +2,8 @@ using HarmonyLib;
 using Object = UnityEngine.Object;
 using Hazel;
 using Reactor.Utilities.Extensions;
+using UnityEngine;
+using TownOfUs.Patches;
 
 namespace TownOfUs
 {
@@ -16,6 +18,17 @@ namespace TownOfUs
             {
                 player.MyPhysics.ResetAnimState();
             }
+
+            HudUpdate.Zooming = false;
+            Camera.main.orthographicSize = 3f;
+
+            foreach (var cam in Camera.allCameras)
+            {
+                if (cam?.gameObject.name == "UI Camera")
+                    cam.orthographicSize = 3f;
+            }
+
+            ResolutionManager.ResolutionChanged.Invoke((float)Screen.width / Screen.height);
         }
     }
 
@@ -24,9 +37,7 @@ namespace TownOfUs
     {
         public static void Postfix(MeetingHud __instance)
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                (byte)CustomRPC.RemoveAllBodies, SendOption.Reliable, -1);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            Utils.Rpc(CustomRPC.RemoveAllBodies);
             var buggedBodies = Object.FindObjectsOfType<DeadBody>();
             foreach (var body in buggedBodies)
             {

@@ -10,8 +10,6 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using TownOfUs.Roles.Modifiers;
 using AmongUs.GameOptions;
-using TownOfUs.Patches;
-using Hazel;
 
 namespace TownOfUs.CrewmateRoles.AltruistMod
 {
@@ -77,6 +75,8 @@ namespace TownOfUs.CrewmateRoles.AltruistMod
                 var lover = Modifier.GetModifier<Lover>(player).OtherLover.Player;
 
                 lover.Revive();
+                if (lover.Is(Faction.Impostors)) RoleManager.Instance.SetRole(lover, RoleTypes.Impostor);
+                else RoleManager.Instance.SetRole(lover, RoleTypes.Crewmate);
                 Murder.KilledPlayers.Remove(
                     Murder.KilledPlayers.FirstOrDefault(x => x.PlayerId == lover.PlayerId));
                 revived.Add(lover);
@@ -100,62 +100,7 @@ namespace TownOfUs.CrewmateRoles.AltruistMod
                 {
                 }
 
-            ExilePatch.CheckTraitorSpawn(null);
-            if (AmongUsClient.Instance.AmHost)
-            {
-                if (ExilePatch.WillBeHaunter == player)
-                {
-                    var toChooseFrom = PlayerControl.AllPlayerControls.ToArray().Where(x => x.Is(Faction.Crewmates) && !x.Is(ModifierEnum.Lover) && x.Data.IsDead && !x.Data.Disconnected && x != player).ToList();
-                    if (toChooseFrom.Count == 0)
-                    {
-                        ExilePatch.WillBeHaunter = null;
-                        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                            (byte)CustomRPC.SetHaunter, SendOption.Reliable, -1);
-                        writer.Write(byte.MaxValue);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    }
-                    else
-                    {
-                        var rand = UnityEngine.Random.RandomRangeInt(0, toChooseFrom.Count);
-                        var pc = toChooseFrom[rand];
-
-                        ExilePatch.WillBeHaunter = pc;
-
-                        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                            (byte)CustomRPC.SetHaunter, SendOption.Reliable, -1);
-                        writer.Write(pc.PlayerId);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    }
-                }
-                if (ExilePatch.WillBePhantom == player)
-                {
-                    var toChooseFrom = PlayerControl.AllPlayerControls.ToArray().Where(x => (x.Is(Faction.NeutralOther) || x.Is(Faction.NeutralKilling)) && !x.Is(ModifierEnum.Lover) && x.Data.IsDead && !x.Data.Disconnected && x != player).ToList();
-                    if (toChooseFrom.Count == 0)
-                    {
-                        ExilePatch.WillBePhantom = null;
-                        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                            (byte)CustomRPC.SetPhantom, SendOption.Reliable, -1);
-                        writer.Write(byte.MaxValue);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    }
-                    else
-                    {
-                        var rand = UnityEngine.Random.RandomRangeInt(0, toChooseFrom.Count);
-                        var pc = toChooseFrom[rand];
-
-                        ExilePatch.WillBePhantom = pc;
-
-                        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                            (byte)CustomRPC.SetPhantom, SendOption.Reliable, -1);
-                        writer.Write(pc.PlayerId);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    }
-                }
-            }
-
-            if (PlayerControl.LocalPlayer.Data.IsImpostor() || PlayerControl.LocalPlayer.Is(RoleEnum.Glitch) || PlayerControl.LocalPlayer.Is(RoleEnum.Juggernaut)
-                || PlayerControl.LocalPlayer.Is(RoleEnum.Arsonist) || PlayerControl.LocalPlayer.Is(RoleEnum.Werewolf)
-                || PlayerControl.LocalPlayer.Is(RoleEnum.Plaguebearer) || PlayerControl.LocalPlayer.Is(RoleEnum.Pestilence))
+            if (PlayerControl.LocalPlayer.Data.IsImpostor() || PlayerControl.LocalPlayer.Is(Faction.NeutralKilling))
             {
                 var gameObj = new GameObject();
                 Arrow = gameObj.AddComponent<ArrowBehaviour>();

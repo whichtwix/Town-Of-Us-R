@@ -19,6 +19,7 @@ using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TownOfUs.Patches.ScreenEffects;
 
 namespace TownOfUs
 {
@@ -29,9 +30,11 @@ namespace TownOfUs
     public class TownOfUs : BasePlugin
     {
         public const string Id = "com.slushiegoose.townofus";
-        public const string VersionString = "4.0.5";
+        public const string VersionString = "5.0.1";
         public static System.Version Version = System.Version.Parse(VersionString);
-        
+
+        public static AssetLoader bundledAssets;
+
         public static Sprite JanitorClean;
         public static Sprite EngineerFix;
         public static Sprite SwapperSwitch;
@@ -73,6 +76,7 @@ namespace TownOfUs
         public static Sprite InfectSprite;
         public static Sprite RampageSprite;
         public static Sprite TrapSprite;
+        public static Sprite InspectSprite;
         public static Sprite ExamineSprite;
         public static Sprite EscapeSprite;
         public static Sprite MarkSprite;
@@ -80,6 +84,16 @@ namespace TownOfUs
         public static Sprite WhisperSprite;
         public static Sprite ImitateSelectSprite;
         public static Sprite ImitateDeselectSprite;
+        public static Sprite ObserveSprite;
+        public static Sprite BiteSprite;
+        public static Sprite StakeSprite;
+        public static Sprite RevealSprite;
+        public static Sprite ConfessSprite;
+        public static Sprite NoAbilitySprite;
+        public static Sprite CamouflageSprite;
+        public static Sprite CamoSprintSprite;
+        public static Sprite CamoSprintFreezeSprite;
+        public static Sprite RadiateSprite;
         public static Sprite HackSprite;
         public static Sprite MimicSprite;
         public static Sprite LockSprite;
@@ -93,8 +107,9 @@ namespace TownOfUs
         public static Sprite UpdateTOUButton;
         public static Sprite UpdateSubmergedButton;
 
-        public static Sprite HorseEnabledImage;
-        public static Sprite HorseDisabledImage;
+        public static Sprite ZoomPlusButton;
+        public static Sprite ZoomMinusButton;
+
         public static Vector3 ButtonPosition { get; private set; } = new Vector3(2.6f, 0.7f, -9f);
 
         private static DLoadImage _iCallLoadImage;
@@ -113,6 +128,8 @@ namespace TownOfUs
             _harmony = new Harmony("com.slushiegoose.townofus");
 
             Generate.GenerateAll();
+
+            bundledAssets = new();
 
             JanitorClean = CreateSprite("TownOfUs.Resources.Janitor.png");
             EngineerFix = CreateSprite("TownOfUs.Resources.Engineer.png");
@@ -155,6 +172,7 @@ namespace TownOfUs
             InfectSprite = CreateSprite("TownOfUs.Resources.Infect.png");
             RampageSprite = CreateSprite("TownOfUs.Resources.Rampage.png");
             TrapSprite = CreateSprite("TownOfUs.Resources.Trap.png");
+            InspectSprite = CreateSprite("TownOfUs.Resources.Inspect.png");
             ExamineSprite = CreateSprite("TownOfUs.Resources.Examine.png");
             EscapeSprite = CreateSprite("TownOfUs.Resources.Recall.png");
             MarkSprite = CreateSprite("TownOfUs.Resources.Mark.png");
@@ -162,6 +180,16 @@ namespace TownOfUs
             WhisperSprite = CreateSprite("TownOfUs.Resources.Whisper.png");
             ImitateSelectSprite = CreateSprite("TownOfUs.Resources.ImitateSelect.png");
             ImitateDeselectSprite = CreateSprite("TownOfUs.Resources.ImitateDeselect.png");
+            ObserveSprite = CreateSprite("TownOfUs.Resources.Observe.png");
+            BiteSprite = CreateSprite("TownOfUs.Resources.Bite.png");
+            StakeSprite = CreateSprite("TownOfUs.Resources.Stake.png");
+            RevealSprite = CreateSprite("TownOfUs.Resources.Reveal.png");
+            ConfessSprite = CreateSprite("TownOfUs.Resources.Confess.png");
+            NoAbilitySprite = CreateSprite("TownOfUs.Resources.NoAbility.png");
+            CamouflageSprite = CreateSprite("TownOfUs.Resources.Camouflage.png");
+            CamoSprintSprite = CreateSprite("TownOfUs.Resources.CamoSprint.png");
+            CamoSprintFreezeSprite = CreateSprite("TownOfUs.Resources.CamoSprintFreeze.png");
+            RadiateSprite = CreateSprite("TownOfUs.Resources.Radiate.png");
             HackSprite = CreateSprite("TownOfUs.Resources.Hack.png");
             MimicSprite = CreateSprite("TownOfUs.Resources.Mimic.png");
             LockSprite = CreateSprite("TownOfUs.Resources.Lock.png");
@@ -175,8 +203,8 @@ namespace TownOfUs
             UpdateTOUButton = CreateSprite("TownOfUs.Resources.UpdateToUButton.png");
             UpdateSubmergedButton = CreateSprite("TownOfUs.Resources.UpdateSubmergedButton.png");
 
-            HorseEnabledImage = CreateSprite("TownOfUs.Resources.HorseOn.png");
-            HorseDisabledImage = CreateSprite("TownOfUs.Resources.HorseOff.png");
+            ZoomPlusButton = CreateSprite("TownOfUs.Resources.Plus.png");
+            ZoomMinusButton = CreateSprite("TownOfUs.Resources.Minus.png");
 
             PalettePatch.Load();
             ClassInjector.RegisterTypeInIl2Cpp<RainbowBehaviour>();
