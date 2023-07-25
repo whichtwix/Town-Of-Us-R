@@ -91,8 +91,6 @@ namespace TownOfUs
         RemoveAllBodies,
         CheckMurder,
 
-        SubmergedFixOxygen,
-        
-        Revive
+        SubmergedFixOxygen
     }
 }
