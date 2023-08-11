@@ -28,7 +28,7 @@ namespace TownOfUs.CrewmateRoles.TrackerMod
             if (!role.ButtonUsable) return false;
 
             var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer);
-            if (interact[4] == true)
+            if (interact.abilityUsed)
             {
                 var gameObj = new GameObject();
                 var arrow = gameObj.AddComponent<ArrowBehaviour>();
@@ -53,18 +53,18 @@ namespace TownOfUs.CrewmateRoles.TrackerMod
                 role.TrackerArrows.Add(target.PlayerId, arrow);
                 role.UsesLeft--;
             }
-            if (interact[0] == true)
+            if (interact.fullCooldownReset)
             {
                 role.LastTracked = DateTime.UtcNow;
                 return false;
             }
-            else if (interact[1] == true)
+            else if (interact.gaReset)
             {
                 role.LastTracked = DateTime.UtcNow;
                 role.LastTracked = role.LastTracked.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.TrackCd);
                 return false;
             }
-            else if (interact[3] == true) return false;
+            else if (interact.zeroSecReset) return false;
             return false;
         }
     }

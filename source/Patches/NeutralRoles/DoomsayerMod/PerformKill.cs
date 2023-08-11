@@ -23,22 +23,22 @@ namespace TownOfUs.NeutralRoles.DoomsayerMod
                         GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
             if (!flag3) return false;
             var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer);
-            if (interact[4] == true)
+            if (interact.abilityUsed)
             {
                 role.LastObservedPlayer = role.ClosestPlayer;
             }
-            if (interact[0] == true)
+            if (interact.fullCooldownReset)
             {
                 role.LastObserved = DateTime.UtcNow;
                 return false;
             }
-            else if (interact[1] == true)
+            else if (interact.gaReset)
             {
                 role.LastObserved = DateTime.UtcNow;
                 role.LastObserved = role.LastObserved.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.ObserveCooldown);
                 return false;
             }
-            else if (interact[3] == true) return false;
+            else if (interact.zeroSecReset) return false;
             return false;
         }
     }

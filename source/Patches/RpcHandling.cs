@@ -35,22 +35,25 @@ using AmongUs.GameOptions;
 using TownOfUs.NeutralRoles.VampireMod;
 using TownOfUs.CrewmateRoles.MayorMod;
 using System.Reflection;
+using RoleData = (System.Type role, int chance, bool unique);
+using ModifierData = (System.Type modifier, int chance);
+using AbilityData = (System.Type ability, TownOfUs.CustomRPC rpc, int chance);
 
 namespace TownOfUs
 {
     public static class RpcHandling
     {
-        private static readonly List<(Type, int, bool)> CrewmateRoles = new();
-        private static readonly List<(Type, int, bool)> NeutralBenignRoles = new();
-        private static readonly List<(Type, int, bool)> NeutralEvilRoles = new();
-        private static readonly List<(Type, int, bool)> NeutralKillingRoles = new();
-        private static readonly List<(Type, int, bool)> ImpostorRoles = new();
-        private static readonly List<(Type, int)> CrewmateModifiers = new();
-        private static readonly List<(Type, int)> GlobalModifiers = new();
-        private static readonly List<(Type, int)> ImpostorModifiers = new();
-        private static readonly List<(Type, int)> ButtonModifiers = new();
-        private static readonly List<(Type, int)> AssassinModifiers = new();
-        private static readonly List<(Type, CustomRPC, int)> AssassinAbility = new();
+        private static readonly List<RoleData> CrewmateRoles = new();
+        private static readonly List<RoleData> NeutralBenignRoles = new();
+        private static readonly List<RoleData> NeutralEvilRoles = new();
+        private static readonly List<RoleData> NeutralKillingRoles = new();
+        private static readonly List<RoleData> ImpostorRoles = new();
+        private static readonly List<ModifierData> CrewmateModifiers = new();
+        private static readonly List<ModifierData> GlobalModifiers = new();
+        private static readonly List<ModifierData> ImpostorModifiers = new();
+        private static readonly List<ModifierData> ButtonModifiers = new();
+        private static readonly List<ModifierData> AssassinModifiers = new();
+        private static readonly List<AbilityData> AssassinAbility = new();
         private static bool PhantomOn;
         private static bool HaunterOn;
         private static bool TraitorOn;
@@ -73,21 +76,21 @@ namespace TownOfUs
             roleCount = Random.RandomRangeInt(min, max + 1);
         }
 
-        private static void SortRoles(List<(Type, int, bool)> roles, int numRoles)
+        private static void SortRoles(List<RoleData> roles, int numRoles)
         {
             roles.Shuffle();
             if (roles.Count < numRoles) numRoles = roles.Count;
             roles.Sort((a, b) =>
             {
-                var a_ = a.Item2 == 100 ? 0 : 100;
-                var b_ = b.Item2 == 100 ? 0 : 100;
+                var a_ = a.chance == 100 ? 0 : 100;
+                var b_ = b.chance == 100 ? 0 : 100;
                 return a_.CompareTo(b_);
             });
             var certainRoles = 0;
             var odds = 0;
             foreach (var role in roles)
-                if (role.Item2 == 100) certainRoles += 1;
-                else odds += role.Item2;
+                if (role.chance == 100) certainRoles += 1;
+                else odds += role.chance;
             while (certainRoles < numRoles)
             {
                 var num = certainRoles;
@@ -95,10 +98,10 @@ namespace TownOfUs
                 var rolePicked = false;
                 while (num < roles.Count && rolePicked == false)
                 {
-                    random -= roles[num].Item2;
+                    random -= roles[num].chance;
                     if (random < 0)
                     {
-                        odds -= roles[num].Item2;
+                        odds -= roles[num].chance;
                         var role = roles[num];
                         roles.Remove(role);
                         roles.Insert(0, role);
@@ -111,13 +114,13 @@ namespace TownOfUs
             while (roles.Count > numRoles) roles.RemoveAt(roles.Count - 1);
         }
 
-        private static void SortModifiers(List<(Type, int)> roles, int max)
+        private static void SortModifiers(List<ModifierData> roles, int max)
         {
             roles.Shuffle();
             roles.Sort((a, b) =>
             {
-                var a_ = a.Item2 == 100 ? 0 : 100;
-                var b_ = b.Item2 == 100 ? 0 : 100;
+                var a_ = a.chance == 100 ? 0 : 100;
+                var b_ = b.chance == 100 ? 0 : 100;
                 return a_.CompareTo(b_);
             });
             while (roles.Count > max) roles.RemoveAt(roles.Count - 1);
@@ -250,14 +253,14 @@ namespace TownOfUs
                 SortRoles(ImpostorRoles, impostors.Count);
             }
 
-            var crewAndNeutralRoles = new List<(Type, int, bool)>();
+            var crewAndNeutralRoles = new List<RoleData>();
             if (CustomGameOptions.GameMode == GameMode.Classic) crewAndNeutralRoles.AddRange(CrewmateRoles);
             crewAndNeutralRoles.AddRange(NeutralBenignRoles);
             crewAndNeutralRoles.AddRange(NeutralEvilRoles);
             crewAndNeutralRoles.AddRange(NeutralKillingRoles);
 
-            var crewRoles = new List<(Type, int, bool)>();
-            var impRoles = new List<(Type, int, bool)>();
+            var crewRoles = new List<RoleData>();
+            var impRoles = new List<RoleData>();
 
             if (CustomGameOptions.GameMode == GameMode.AllAny)
             {
@@ -265,13 +268,13 @@ namespace TownOfUs
                 if (crewAndNeutralRoles.Count > 0)
                 {
                     crewRoles.Add(crewAndNeutralRoles[0]);
-                    if (crewAndNeutralRoles[0].Item3 == true) crewAndNeutralRoles.Remove(crewAndNeutralRoles[0]);
+                    if (crewAndNeutralRoles[0].unique) crewAndNeutralRoles.Remove(crewAndNeutralRoles[0]);
                 }
                 if (CrewmateRoles.Count > 0)
                 {
                     CrewmateRoles.Shuffle();
                     crewRoles.Add(CrewmateRoles[0]);
-                    if (CrewmateRoles[0].Item3 == true) CrewmateRoles.Remove(CrewmateRoles[0]);
+                    if (CrewmateRoles[0].unique) CrewmateRoles.Remove(CrewmateRoles[0]);
                 }
                 else
                 {
@@ -282,7 +285,7 @@ namespace TownOfUs
                 {
                     crewAndNeutralRoles.Shuffle();
                     crewRoles.Add(crewAndNeutralRoles[0]);
-                    if (crewAndNeutralRoles[0].Item3 == true)
+                    if (crewAndNeutralRoles[0].unique)
                     {
                         if (CrewmateRoles.Contains(crewAndNeutralRoles[0])) CrewmateRoles.Remove(crewAndNeutralRoles[0]);
                         crewAndNeutralRoles.Remove(crewAndNeutralRoles[0]);
@@ -292,7 +295,7 @@ namespace TownOfUs
                 {
                     ImpostorRoles.Shuffle();
                     impRoles.Add(ImpostorRoles[0]);
-                    if (ImpostorRoles[0].Item3 == true) ImpostorRoles.Remove(ImpostorRoles[0]);
+                    if (ImpostorRoles[0].unique) ImpostorRoles.Remove(ImpostorRoles[0]);
                 }
             }
             crewRoles.Shuffle();
@@ -554,17 +557,17 @@ namespace TownOfUs
                 }
             }
 
-            var crewAndNeutralRoles = new List<(Type, int, bool)>();
+            var crewAndNeutralRoles = new List<RoleData>();
             crewAndNeutralRoles.AddRange(CrewmateRoles);
             crewAndNeutralRoles.AddRange(NeutralKillingRoles);
             crewAndNeutralRoles.Shuffle();
             ImpostorRoles.Shuffle();
 
-            foreach (var (type, _, unique) in crewAndNeutralRoles)
+            foreach (var (type, _, _) in crewAndNeutralRoles)
             {
                 Role.GenRole<Role>(type, crewmates);
             }
-            foreach (var (type, _, unique) in ImpostorRoles)
+            foreach (var (type, _, _) in ImpostorRoles)
             {
                 Role.GenRole<Role>(type, impostors);
             }
@@ -576,9 +579,9 @@ namespace TownOfUs
             crewmates.Shuffle();
             impostors.Shuffle();
 
-            var specialRoles = new List<(Type, int, bool)>();
-            var crewRoles = new List<(Type, int, bool)>();
-            var impRole = new List<(Type, int, bool)>();
+            var specialRoles = new List<RoleData>();
+            var crewRoles = new List<RoleData>();
+            var impRole = new List<RoleData>();
             if (CustomGameOptions.MayorCultistOn > 0) specialRoles.Add((typeof(Mayor), CustomGameOptions.MayorCultistOn, true));
             if (CustomGameOptions.SeerCultistOn > 0) specialRoles.Add((typeof(CultistSeer), CustomGameOptions.SeerCultistOn, true));
             if (CustomGameOptions.SheriffCultistOn > 0) specialRoles.Add((typeof(Sheriff), CustomGameOptions.SheriffCultistOn, true));
@@ -641,15 +644,15 @@ namespace TownOfUs
             impRole.Add((typeof(Whisperer), 10, true));
             SortRoles(impRole, 1);
 
-            foreach (var (type, _, unique) in specialRoles)
+            foreach (var (type, _, _) in specialRoles)
             {
                 Role.GenRole<Role>(type, crewmates);
             }
-            foreach (var (type, _, unique) in crewRoles)
+            foreach (var (type, _, _) in crewRoles)
             {
                 Role.GenRole<Role>(type, crewmates);
             }
-            foreach (var (type, _, unique) in impRole)
+            foreach (var (type, _, _) in impRole)
             {
                 Role.GenRole<Role>(type, impostors);
             }
@@ -1145,12 +1148,14 @@ namespace TownOfUs
                         var oldRole = Role.GetRole(traitor);
                         var killsList = (oldRole.CorrectKills, oldRole.IncorrectKills, oldRole.CorrectAssassinKills, oldRole.IncorrectAssassinKills);
                         Role.RoleDictionary.Remove(traitor.PlayerId);
-                        var traitorRole = new Traitor(traitor);
-                        traitorRole.formerRole = oldRole.RoleType;
-                        traitorRole.CorrectKills = killsList.CorrectKills;
-                        traitorRole.IncorrectKills = killsList.IncorrectKills;
-                        traitorRole.CorrectAssassinKills = killsList.CorrectAssassinKills;
-                        traitorRole.IncorrectAssassinKills = killsList.IncorrectAssassinKills;
+                        var traitorRole = new Traitor(traitor)
+                        {
+                            formerRole = oldRole.RoleType,
+                            CorrectKills = killsList.CorrectKills,
+                            IncorrectKills = killsList.IncorrectKills,
+                            CorrectAssassinKills = killsList.CorrectAssassinKills,
+                            IncorrectAssassinKills = killsList.IncorrectAssassinKills
+                        };
                         traitorRole.RegenTask();
                         SetTraitor.TurnImp(traitor);
                         break;
@@ -1182,7 +1187,7 @@ namespace TownOfUs
                             body.gameObject.Destroy();
                         break;
                     case CustomRPC.SubmergedFixOxygen:
-                        Patches.SubmergedCompatibility.RepairOxygen();
+                        SubmergedCompatibility.RepairOxygen();
                         break;
                     case CustomRPC.SetPos:
                         var setplayer = Utils.PlayerById(reader.ReadByte());

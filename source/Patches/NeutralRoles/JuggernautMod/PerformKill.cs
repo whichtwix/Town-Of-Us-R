@@ -26,25 +26,25 @@ namespace TownOfUs.NeutralRoles.JuggernautMod
                         GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
             if (!flag3) return false;
             var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer, true);
-            if (interact[4] == true) return false;
-            else if (interact[0] == true)
+            if (interact.abilityUsed) return false;
+            else if (interact.fullCooldownReset)
             {
                 role.LastKill = DateTime.UtcNow;
                 return false;
             }
-            else if (interact[1] == true)
+            else if (interact.gaReset)
             {
                 role.LastKill = DateTime.UtcNow;
                 role.LastKill = role.LastKill.AddSeconds(-(CustomGameOptions.JuggKCd - CustomGameOptions.ReducedKCdPerKill * role.JuggKills) + CustomGameOptions.ProtectKCReset);
                 return false;
             }
-            else if (interact[2] == true)
+            else if (interact.survReset)
             {
                 role.LastKill = DateTime.UtcNow;
                 role.LastKill = role.LastKill.AddSeconds(-(CustomGameOptions.JuggKCd - CustomGameOptions.ReducedKCdPerKill * role.JuggKills) + CustomGameOptions.VestKCReset);
                 return false;
             }
-            else if (interact[3] == true) return false;
+            else if (interact.zeroSecReset) return false;
             return false;
         }
     }

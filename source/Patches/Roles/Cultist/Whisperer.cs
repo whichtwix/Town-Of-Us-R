@@ -10,8 +10,9 @@ namespace TownOfUs.Roles.Cultist
         public DateTime LastWhispered;
         public int WhisperCount;
         public int ConversionCount;
-        public List<(PlayerControl, int)> PlayerConversion = new List<(PlayerControl, int)>();
+        public List<ConversionData> PlayerConversion = new();
         public int WhisperConversion;
+        public record ConversionData(PlayerControl Player, int UnconvertableChance);
 
 
         public Whisperer(PlayerControl player) : base(player)
@@ -48,15 +49,15 @@ namespace TownOfUs.Roles.Cultist
             return (num - (float) timeSpan.TotalMilliseconds) / 1000f;
         }
 
-        public List<(PlayerControl, int)> GetPlayers()
+        public List<ConversionData> GetPlayers()
         {
-            var playerList = new List<(PlayerControl, int)>();
+            var playerList = new List<ConversionData>();
             foreach (var player in PlayerControl.AllPlayerControls)
             {
                 if (!(player.Is(RoleEnum.Sheriff) || player.Is(RoleEnum.CultistSeer) |
                     player.Is(RoleEnum.Survivor) || player.Is(RoleEnum.Mayor) || player.Is(RoleEnum.Whisperer)))
                 {
-                    playerList.Add((player, 100));
+                    playerList.Add(new(player, 100));
                 }
             }
             return playerList;

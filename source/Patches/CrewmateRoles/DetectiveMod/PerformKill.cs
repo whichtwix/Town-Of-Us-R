@@ -30,23 +30,23 @@ namespace TownOfUs.CrewmateRoles.DetectiveMod
                     PlayerControl.LocalPlayer.GetTruePosition()) > maxDistance) return false;
                 if (role.ClosestPlayer == null) return false;
                 var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer);
-                if (interact[4] == true)
+                if (interact.abilityUsed)
                 {
                     if (role.ClosestPlayer == role.DetectedKiller) Coroutines.Start(Utils.FlashCoroutine(Color.red));
                     else Coroutines.Start(Utils.FlashCoroutine(Color.green));
                 }
-                if (interact[0] == true)
+                if (interact.fullCooldownReset)
                 {
                     role.LastExamined = DateTime.UtcNow;
                     return false;
                 }
-                else if (interact[1] == true)
+                else if (interact.gaReset)
                 {
                     role.LastExamined = DateTime.UtcNow;
                     role.LastExamined = role.LastExamined.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.ExamineCd);
                     return false;
                 }
-                else if (interact[3] == true) return false;
+                else if (interact.zeroSecReset) return false;
                 return false;
             }
             else
