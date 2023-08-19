@@ -30,7 +30,7 @@ namespace TownOfUs.CultistRoles.WhispererMod
                 var closestPlayers = Utils.GetClosestPlayers(truePosition, CustomGameOptions.WhisperRadius, false);
                 if (role.PlayerConversion.Count == 0) role.PlayerConversion = role.GetPlayers();
                 var oldStats = role.PlayerConversion;
-                role.PlayerConversion = [];
+                role.PlayerConversion = new();
                 foreach (var conversionRate in oldStats)
                 {
                     var player = conversionRate.Player;
@@ -51,7 +51,7 @@ namespace TownOfUs.CultistRoles.WhispererMod
 
         public static void CheckConversion(Whisperer role)
         {
-            var removals = new List<Whisperer.ConversionData>();
+            var removals = new List<ConversionData>();
             foreach (var playerConversion in role.PlayerConversion)
             {
                 if (playerConversion.UnconvertableChance <= 0)

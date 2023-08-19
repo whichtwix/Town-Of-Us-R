@@ -466,25 +466,25 @@ namespace TownOfUs.Roles
                 {
                     if (__gInstance.Player.inVent) return;
                     var interact = Utils.Interact(__gInstance.Player, __gInstance.KillTarget, true);
-                    if (interact.abilityUsed) return;
-                    else if (interact.fullCooldownReset)
+                    if (interact.AbilityUsed) return;
+                    else if (interact.FullCooldownReset)
                     {
                         __gInstance.LastKill = DateTime.UtcNow;
                         return;
                     }
-                    else if (interact.gaReset)
+                    else if (interact.GaReset)
                     {
                         __gInstance.LastKill = DateTime.UtcNow;
                         __gInstance.LastKill = __gInstance.LastKill.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.GlitchKillCooldown);
                         return;
                     }
-                    else if (interact.survReset)
+                    else if (interact.SurvReset)
                     {
                         __gInstance.LastKill = DateTime.UtcNow;
                         __gInstance.LastKill = __gInstance.LastKill.AddSeconds(CustomGameOptions.VestKCReset - CustomGameOptions.GlitchKillCooldown);
                         return;
                     }
-                    else if (interact.zeroSecReset) return;
+                    else if (interact.ZeroSecReset) return;
                     return;
                 }
             }
@@ -537,22 +537,22 @@ namespace TownOfUs.Roles
                 if (__gInstance.HackTarget != null)
                 {
                     var interact = Utils.Interact(__gInstance.Player, __gInstance.HackTarget);
-                    if (interact.abilityUsed)
+                    if (interact.AbilityUsed)
                     {
                         __gInstance.RpcSetHacked(__gInstance.HackTarget);
                     }
-                    if (interact.fullCooldownReset)
+                    if (interact.FullCooldownReset)
                     {
                         __gInstance.LastHack = DateTime.UtcNow;
                         return;
                     }
-                    else if (interact.gaReset)
+                    else if (interact.GaReset)
                     {
                         __gInstance.LastHack = DateTime.UtcNow;
                         __gInstance.LastHack.AddSeconds(CustomGameOptions.ProtectKCReset  - CustomGameOptions.HackCooldown);
                         return;
                     }
-                    else if (interact.zeroSecReset) return;
+                    else if (interact.ZeroSecReset) return;
                     return;
                 }
             }

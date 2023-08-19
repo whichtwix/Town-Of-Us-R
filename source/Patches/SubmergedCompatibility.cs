@@ -11,7 +11,6 @@ using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
 using Reactor.Utilities;
 using TownOfUs.Roles;
-using ElevatorData = (bool atTopFloor, object player);
 
 namespace TownOfUs.Patches
 {
@@ -174,7 +173,7 @@ namespace TownOfUs.Patches
             Types = AccessTools.GetTypesFromAssembly(Assembly);
 
             InjectedTypes = (Dictionary<string, Type>)AccessTools.PropertyGetter(Types.FirstOrDefault(t => t.Name == "ComponentExtensions"), "RegisteredTypes")
-                .Invoke(null, []);
+                .Invoke(null, Array.Empty<object>());
 
             SubmarineStatusType = Types.First(t => t.Name == "SubmarineStatus");
             SubmergedInstance = AccessTools.Field(SubmarineStatusType, "instance");
@@ -221,8 +220,8 @@ namespace TownOfUs.Patches
             if (!isSubmerged()) return;
 
             ElevatorData elevator = GetPlayerElevator(player);
-            if (!elevator.atTopFloor) return;
-            bool CurrentFloor = (bool)UpperDeckIsTargetFloor.GetValue(getSubElevatorSystem.GetValue(elevator.player)); //true is top, false is bottom
+            if (!elevator.AtTopFloor) return;
+            bool CurrentFloor = (bool)UpperDeckIsTargetFloor.GetValue(getSubElevatorSystem.GetValue(elevator.Player)); //true is top, false is bottom
             bool PlayerFloor = player.transform.position.y > -7f; //true is top, false is bottom
             
             if (CurrentFloor != PlayerFloor)
@@ -235,13 +234,13 @@ namespace TownOfUs.Patches
         {
             if (!isSubmerged()) return;
             ElevatorData elevator = GetPlayerElevator(player);
-            if (!elevator.atTopFloor) return;
+            if (!elevator.AtTopFloor) return;
 
-            int MovementStage = (int)GetMovementStageFromTime.Invoke(elevator.player, null);
+            int MovementStage = (int)GetMovementStageFromTime.Invoke(elevator.Player, null);
             if (MovementStage >= 5)
             {
                 //Fade to clear
-                bool topfloortarget = (bool)UpperDeckIsTargetFloor.GetValue(getSubElevatorSystem.GetValue(elevator.player)); //true is top, false is bottom
+                bool topfloortarget = (bool)UpperDeckIsTargetFloor.GetValue(getSubElevatorSystem.GetValue(elevator.Player)); //true is top, false is bottom
                 bool topintendedtarget = player.transform.position.y > -7f; //true is top, false is bottom
                 if (topfloortarget != topintendedtarget)
                 {

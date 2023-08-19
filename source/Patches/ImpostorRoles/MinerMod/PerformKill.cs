@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
 using HarmonyLib;
-using Hazel;
 using TownOfUs.Patches;
 using TownOfUs.Roles;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using Reactor.Networking.Extensions;
 
 namespace TownOfUs.ImpostorRoles.MinerMod
 {
@@ -26,7 +24,7 @@ namespace TownOfUs.ImpostorRoles.MinerMod
                 if (!__instance.isActiveAndEnabled) return false;
                 if (!role.CanPlace) return false;
                 if (role.MineTimer() != 0) return false;
-                if (SubmergedCompatibility.GetPlayerElevator(PlayerControl.LocalPlayer).atTopFloor) return false;
+                if (SubmergedCompatibility.GetPlayerElevator(PlayerControl.LocalPlayer).AtTopFloor) return false;
                 var position = PlayerControl.LocalPlayer.transform.position;
                 var id = GetAvailableId();
                 Utils.Rpc(CustomRPC.Mine, id, PlayerControl.LocalPlayer.PlayerId, position, position.z + 0.001f);

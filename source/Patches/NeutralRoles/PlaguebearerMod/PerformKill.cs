@@ -25,18 +25,18 @@ namespace TownOfUs.NeutralRoles.PlaguebearerMod
                         GameOptionsData.KillDistances[GameOptionsManager.Instance.currentNormalGameOptions.KillDistance];
             if (!flag3) return false;
             var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer);
-            if (interact.fullCooldownReset)
+            if (interact.FullCooldownReset)
             {
                 role.LastInfected = DateTime.UtcNow;
                 return false;
             }
-            else if (interact.gaReset)
+            else if (interact.GaReset)
             {
                 role.LastInfected = DateTime.UtcNow;
                 role.LastInfected.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.InfectCd);
                 return false;
             }
-            else if (interact.zeroSecReset) return false;
+            else if (interact.ZeroSecReset) return false;
             return false;
         }
     }

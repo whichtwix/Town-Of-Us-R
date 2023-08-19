@@ -30,19 +30,19 @@ namespace TownOfUs.NeutralRoles.ArsonistMod
                     if (!role.DousedPlayers.Contains(role.ClosestPlayerIgnite.PlayerId)) return false;
 
                     var interact2 = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayerIgnite);
-                    if (interact2.abilityUsed) role.Ignite();
-                    if (interact2.fullCooldownReset)
+                    if (interact2.AbilityUsed) role.Ignite();
+                    if (interact2.FullCooldownReset)
                     {
                         role.LastDoused = DateTime.UtcNow;
                         return false;
                     }
-                    else if (interact2.gaReset)
+                    else if (interact2.GaReset)
                     {
                         role.LastDoused = DateTime.UtcNow;
                         role.LastDoused.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.DouseCd);
                         return false;
                     }
-                    else if (interact2.zeroSecReset) return false;
+                    else if (interact2.ZeroSecReset) return false;
                     return false;
                 }
                 else return false;
@@ -57,19 +57,19 @@ namespace TownOfUs.NeutralRoles.ArsonistMod
             if (!flag2) return false;
             if (role.DousedPlayers.Contains(role.ClosestPlayerDouse.PlayerId)) return false;
             var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayerDouse);
-            if (interact.abilityUsed) role.DousedPlayers.Add(role.ClosestPlayerDouse.PlayerId);
-            if (interact.fullCooldownReset)
+            if (interact.AbilityUsed) role.DousedPlayers.Add(role.ClosestPlayerDouse.PlayerId);
+            if (interact.FullCooldownReset)
             {
                 role.LastDoused = DateTime.UtcNow;
                 return false;
             }
-            else if (interact.gaReset)
+            else if (interact.GaReset)
             {
                 role.LastDoused = DateTime.UtcNow;
                 role.LastDoused.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.DouseCd);
                 return false;
             }
-            else if (interact.zeroSecReset) return false;
+            else if (interact.ZeroSecReset) return false;
             return false;
         }
     }

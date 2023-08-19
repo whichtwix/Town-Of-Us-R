@@ -12,7 +12,6 @@ namespace TownOfUs.Roles.Cultist
         public int ConversionCount;
         public List<ConversionData> PlayerConversion = new();
         public int WhisperConversion;
-        public record ConversionData(PlayerControl Player, int UnconvertableChance);
 
 
         public Whisperer(PlayerControl player) : base(player)

@@ -35,9 +35,6 @@ using AmongUs.GameOptions;
 using TownOfUs.NeutralRoles.VampireMod;
 using TownOfUs.CrewmateRoles.MayorMod;
 using System.Reflection;
-using RoleData = (System.Type role, int chance, bool unique);
-using ModifierData = (System.Type modifier, int chance);
-using AbilityData = (System.Type ability, TownOfUs.CustomRPC rpc, int chance);
 
 namespace TownOfUs
 {
@@ -82,15 +79,15 @@ namespace TownOfUs
             if (roles.Count < numRoles) numRoles = roles.Count;
             roles.Sort((a, b) =>
             {
-                var a_ = a.chance == 100 ? 0 : 100;
-                var b_ = b.chance == 100 ? 0 : 100;
+                var a_ = a.Chance == 100 ? 0 : 100;
+                var b_ = b.Chance == 100 ? 0 : 100;
                 return a_.CompareTo(b_);
             });
             var certainRoles = 0;
             var odds = 0;
             foreach (var role in roles)
-                if (role.chance == 100) certainRoles += 1;
-                else odds += role.chance;
+                if (role.Chance == 100) certainRoles += 1;
+                else odds += role.Chance;
             while (certainRoles < numRoles)
             {
                 var num = certainRoles;
@@ -98,10 +95,10 @@ namespace TownOfUs
                 var rolePicked = false;
                 while (num < roles.Count && rolePicked == false)
                 {
-                    random -= roles[num].chance;
+                    random -= roles[num].Chance;
                     if (random < 0)
                     {
-                        odds -= roles[num].chance;
+                        odds -= roles[num].Chance;
                         var role = roles[num];
                         roles.Remove(role);
                         roles.Insert(0, role);
@@ -119,8 +116,8 @@ namespace TownOfUs
             roles.Shuffle();
             roles.Sort((a, b) =>
             {
-                var a_ = a.chance == 100 ? 0 : 100;
-                var b_ = b.chance == 100 ? 0 : 100;
+                var a_ = a.Chance == 100 ? 0 : 100;
+                var b_ = b.Chance == 100 ? 0 : 100;
                 return a_.CompareTo(b_);
             });
             while (roles.Count > max) roles.RemoveAt(roles.Count - 1);
@@ -244,9 +241,10 @@ namespace TownOfUs
                 SortRoles(NeutralEvilRoles, evil);
                 SortRoles(NeutralKillingRoles, killing);
 
-                if (NeutralKillingRoles.Contains((typeof(Vampire), CustomGameOptions.VampireOn, true)) && CustomGameOptions.VampireHunterOn > 0)
+                if (NeutralKillingRoles.Any(x => x.Role == typeof(Vampire) && x.Chance == CustomGameOptions.VampireOn && x.Unique == true) 
+                    && CustomGameOptions.VampireHunterOn > 0)
                 {
-                    CrewmateRoles.Add((typeof(VampireHunter), CustomGameOptions.VampireHunterOn, true));
+                    CrewmateRoles.Add(new(typeof(VampireHunter), CustomGameOptions.VampireHunterOn, true));
                 }
 
                 SortRoles(CrewmateRoles, crewmates.Count - NeutralBenignRoles.Count - NeutralEvilRoles.Count - NeutralKillingRoles.Count);
@@ -268,24 +266,24 @@ namespace TownOfUs
                 if (crewAndNeutralRoles.Count > 0)
                 {
                     crewRoles.Add(crewAndNeutralRoles[0]);
-                    if (crewAndNeutralRoles[0].unique) crewAndNeutralRoles.Remove(crewAndNeutralRoles[0]);
+                    if (crewAndNeutralRoles[0].Unique) crewAndNeutralRoles.Remove(crewAndNeutralRoles[0]);
                 }
                 if (CrewmateRoles.Count > 0)
                 {
                     CrewmateRoles.Shuffle();
                     crewRoles.Add(CrewmateRoles[0]);
-                    if (CrewmateRoles[0].unique) CrewmateRoles.Remove(CrewmateRoles[0]);
+                    if (CrewmateRoles[0].Unique) CrewmateRoles.Remove(CrewmateRoles[0]);
                 }
                 else
                 {
-                    crewRoles.Add((typeof(Crewmate), 100, false));
+                    crewRoles.Add(new(typeof(Crewmate), 100, false));
                 }
                 crewAndNeutralRoles.AddRange(CrewmateRoles);
                 while (crewRoles.Count < crewmates.Count && crewAndNeutralRoles.Count > 0)
                 {
                     crewAndNeutralRoles.Shuffle();
                     crewRoles.Add(crewAndNeutralRoles[0]);
-                    if (crewAndNeutralRoles[0].unique)
+                    if (crewAndNeutralRoles[0].Unique)
                     {
                         if (CrewmateRoles.Contains(crewAndNeutralRoles[0])) CrewmateRoles.Remove(crewAndNeutralRoles[0]);
                         crewAndNeutralRoles.Remove(crewAndNeutralRoles[0]);
@@ -295,7 +293,7 @@ namespace TownOfUs
                 {
                     ImpostorRoles.Shuffle();
                     impRoles.Add(ImpostorRoles[0]);
-                    if (ImpostorRoles[0].unique) ImpostorRoles.Remove(ImpostorRoles[0]);
+                    if (ImpostorRoles[0].Unique) ImpostorRoles.Remove(ImpostorRoles[0]);
                 }
             }
             crewRoles.Shuffle();
@@ -308,24 +306,24 @@ namespace TownOfUs
 
             if (CustomGameOptions.GameMode == GameMode.AllAny)
             {
-                foreach (var (type, _, unique) in crewRoles)
+                foreach (var role in crewRoles)
                 {
-                    Role.GenRole<Role>(type, crewmates);
+                    Role.GenRole<Role>(role.Role, crewmates);
                 }
-                foreach (var (type, _, unique) in impRoles)
+                foreach (var role in impRoles)
                 {
-                    Role.GenRole<Role>(type, impostors);
+                    Role.GenRole<Role>(role.Role, impostors);
                 }
             }
             else
             {
-                foreach (var (type, _, unique) in crewAndNeutralRoles)
+                foreach (var role in crewAndNeutralRoles)
                 {
-                    Role.GenRole<Role>(type, crewmates);
+                    Role.GenRole<Role>(role.Role, crewmates);
                 }
-                foreach (var (type, _, unique) in ImpostorRoles)
+                foreach (var role in ImpostorRoles)
                 {
-                    Role.GenRole<Role>(type, impostors);
+                    Role.GenRole<Role>(role.Role, impostors);
                 }
             }
 
@@ -350,57 +348,57 @@ namespace TownOfUs
 
             while (canHaveAbility.Count > 0 && impAssassins > 0)
             {
-                var (type, rpc, _) = AssassinAbility.Ability();
-                Role.Gen<Ability>(type, canHaveAbility.TakeFirst(), rpc);
+                AbilityData data = AssassinAbility.Ability();
+                Role.Gen<Ability>(data.Ability, canHaveAbility.TakeFirst(), data.Rpc);
                 impAssassins -= 1;
             }
 
             while (canHaveAbility2.Count > 0 && neutAssassins > 0)
             {
-                var (type, rpc, _) = AssassinAbility.Ability();
-                Role.Gen<Ability>(type, canHaveAbility2.TakeFirst(), rpc);
+                AbilityData data = AssassinAbility.Ability();
+                Role.Gen<Ability>(data.Ability, canHaveAbility2.TakeFirst(), data.Rpc);
                 neutAssassins -= 1;
             }
 
             var canHaveAssassinModifier = PlayerControl.AllPlayerControls.ToArray().ToList();
             canHaveAssassinModifier.RemoveAll(player => !player.Is(Faction.Impostors) || !player.Is(AbilityEnum.Assassin));
 
-            foreach (var (type, _) in AssassinModifiers)
+            foreach (var mod in AssassinModifiers)
             {
                 if (canHaveAssassinModifier.Count == 0) break;
-                Role.GenModifier<Modifier>(type, canHaveAssassinModifier);
+                Role.GenModifier<Modifier>(mod.Modifier, canHaveAssassinModifier);
             }
 
             canHaveImpModifier.RemoveAll(player => player.Is(ModifierEnum.DoubleShot));
 
-            foreach (var (type, _) in ImpostorModifiers)
+            foreach (var mod in ImpostorModifiers)
             {
                 if (canHaveImpModifier.Count == 0) break;
-                Role.GenModifier<Modifier>(type, canHaveImpModifier);
+                Role.GenModifier<Modifier>(mod.Modifier, canHaveImpModifier);
             }
 
             canHaveModifier.RemoveAll(player => player.Is(ModifierEnum.Disperser) || player.Is(ModifierEnum.DoubleShot) || player.Is(ModifierEnum.Underdog));
 
-            foreach (var (type, id) in GlobalModifiers)
+            foreach (var mod in GlobalModifiers)
             {
                 if (canHaveModifier.Count == 0) break;
-                if (type.FullName.Contains("Lover"))
+                if (mod.Modifier.FullName.Contains("Lover"))
                 {
                     if (canHaveModifier.Count == 1) continue;
                         Lover.Gen(canHaveModifier);
                 }
                 else
                 {
-                    Role.GenModifier<Modifier>(type, canHaveModifier);
+                    Role.GenModifier<Modifier>(mod.Modifier, canHaveModifier);
                 }
             }
 
             canHaveModifier.RemoveAll(player => player.Is(RoleEnum.Glitch));
 
-            foreach (var (type, id) in ButtonModifiers)
+            foreach (var mod in ButtonModifiers)
             {
                 if (canHaveModifier.Count == 0) break;
-                Role.GenModifier<Modifier>(type, canHaveModifier);
+                Role.GenModifier<Modifier>(mod.Modifier, canHaveModifier);
             }
 
             canHaveModifier.RemoveAll(player => !player.Is(Faction.Crewmates));
@@ -408,8 +406,8 @@ namespace TownOfUs
 
             while (canHaveModifier.Count > 0 && CrewmateModifiers.Count > 0)
             {
-                var (type, _) = CrewmateModifiers.TakeFirst();
-                Role.GenModifier<Modifier>(type, canHaveModifier.TakeFirst());
+                ModifierData data = CrewmateModifiers.TakeFirst();
+                Role.GenModifier<Modifier>(data.Modifier, canHaveModifier.TakeFirst());
             }
 
 
@@ -506,23 +504,23 @@ namespace TownOfUs
             crewmates.Shuffle();
             impostors.Shuffle();
 
-            ImpostorRoles.Add((typeof(Undertaker), 10, true));
-            ImpostorRoles.Add((typeof(Morphling), 10, false));
-            ImpostorRoles.Add((typeof(Escapist), 10, false));
-            ImpostorRoles.Add((typeof(Miner), 10, true));
-            ImpostorRoles.Add((typeof(Swooper), 10, false));
-            ImpostorRoles.Add((typeof(Grenadier), 10, true));
+            ImpostorRoles.Add(new(typeof(Undertaker), 10, true));
+            ImpostorRoles.Add(new(typeof(Morphling), 10, false));
+            ImpostorRoles.Add(new(typeof(Escapist), 10, false));
+            ImpostorRoles.Add(new(typeof(Miner), 10, true));
+            ImpostorRoles.Add(new(typeof(Swooper), 10, false));
+            ImpostorRoles.Add(new(typeof(Grenadier), 10, true));
 
             SortRoles(ImpostorRoles, impostors.Count);
 
-            NeutralKillingRoles.Add((typeof(Glitch), 10, true));
-            NeutralKillingRoles.Add((typeof(Werewolf), 10, true));
+            NeutralKillingRoles.Add(new(typeof(Glitch), 10, true));
+            NeutralKillingRoles.Add(new(typeof(Werewolf), 10, true));
             if (CustomGameOptions.HiddenRoles)
-                NeutralKillingRoles.Add((typeof(Juggernaut), 10, true));
+                NeutralKillingRoles.Add(new(typeof(Juggernaut), 10, true));
             if (CustomGameOptions.AddArsonist)
-                NeutralKillingRoles.Add((typeof(Arsonist), 10, true));
+                NeutralKillingRoles.Add(new(typeof(Arsonist), 10, true));
             if (CustomGameOptions.AddPlaguebearer)
-                NeutralKillingRoles.Add((typeof(Plaguebearer), 10, true));
+                NeutralKillingRoles.Add(new(typeof(Plaguebearer), 10, true));
 
             var neutrals = 0;
             if (NeutralKillingRoles.Count < CustomGameOptions.NeutralRoles) neutrals = NeutralKillingRoles.Count;
@@ -534,13 +532,13 @@ namespace TownOfUs
             var veterans = CustomGameOptions.VeteranCount;
             while (veterans > 0)
             {
-                CrewmateRoles.Add((typeof(Veteran), 10, false));
+                CrewmateRoles.Add(new(typeof(Veteran), 10, false));
                 veterans -= 1;
             }
             var vigilantes = CustomGameOptions.VigilanteCount;
             while (vigilantes > 0)
             {
-                CrewmateRoles.Add((typeof(Vigilante), 10, false));
+                CrewmateRoles.Add(new(typeof(Vigilante), 10, false));
                 vigilantes -= 1;
             }
             if (CrewmateRoles.Count + NeutralKillingRoles.Count > crewmates.Count)
@@ -552,7 +550,7 @@ namespace TownOfUs
                 var sheriffs = crewmates.Count - NeutralKillingRoles.Count - CrewmateRoles.Count;
                 while (sheriffs > 0)
                 {
-                    CrewmateRoles.Add((typeof(Sheriff), 10, false));
+                    CrewmateRoles.Add(new(typeof(Sheriff), 10, false));
                     sheriffs -= 1;
                 }
             }
@@ -563,13 +561,13 @@ namespace TownOfUs
             crewAndNeutralRoles.Shuffle();
             ImpostorRoles.Shuffle();
 
-            foreach (var (type, _, _) in crewAndNeutralRoles)
+            foreach (var role in crewAndNeutralRoles)
             {
-                Role.GenRole<Role>(type, crewmates);
+                Role.GenRole<Role>(role.Role, crewmates);
             }
-            foreach (var (type, _, _) in ImpostorRoles)
+            foreach (var role in ImpostorRoles)
             {
-                Role.GenRole<Role>(type, impostors);
+                Role.GenRole<Role>(role.Role, impostors);
             }
         }
         private static void GenEachRoleCultist(List<GameData.PlayerInfo> infected)
@@ -582,10 +580,10 @@ namespace TownOfUs
             var specialRoles = new List<RoleData>();
             var crewRoles = new List<RoleData>();
             var impRole = new List<RoleData>();
-            if (CustomGameOptions.MayorCultistOn > 0) specialRoles.Add((typeof(Mayor), CustomGameOptions.MayorCultistOn, true));
-            if (CustomGameOptions.SeerCultistOn > 0) specialRoles.Add((typeof(CultistSeer), CustomGameOptions.SeerCultistOn, true));
-            if (CustomGameOptions.SheriffCultistOn > 0) specialRoles.Add((typeof(Sheriff), CustomGameOptions.SheriffCultistOn, true));
-            if (CustomGameOptions.SurvivorCultistOn > 0) specialRoles.Add((typeof(Survivor), CustomGameOptions.SurvivorCultistOn, true));
+            if (CustomGameOptions.MayorCultistOn > 0) specialRoles.Add(new(typeof(Mayor), CustomGameOptions.MayorCultistOn, true));
+            if (CustomGameOptions.SeerCultistOn > 0) specialRoles.Add(new(typeof(CultistSeer), CustomGameOptions.SeerCultistOn, true));
+            if (CustomGameOptions.SheriffCultistOn > 0) specialRoles.Add(new(typeof(Sheriff), CustomGameOptions.SheriffCultistOn, true));
+            if (CustomGameOptions.SurvivorCultistOn > 0) specialRoles.Add(new(typeof(Survivor), CustomGameOptions.SurvivorCultistOn, true));
             if (specialRoles.Count > CustomGameOptions.SpecialRoleCount) SortRoles(specialRoles, CustomGameOptions.SpecialRoleCount);
             if (specialRoles.Count > crewmates.Count) SortRoles(specialRoles, crewmates.Count);
             if (specialRoles.Count < crewmates.Count)
@@ -600,61 +598,61 @@ namespace TownOfUs
                 var vigilantes = CustomGameOptions.MaxVigilantes;
                 while (chameleons > 0)
                 {
-                    crewRoles.Add((typeof(Chameleon), 10, false));
+                    crewRoles.Add(new(typeof(Chameleon), 10, false));
                     chameleons--;
                 }
                 while (engineers > 0)
                 {
-                    crewRoles.Add((typeof(Engineer), 10, false));
+                    crewRoles.Add(new(typeof(Engineer), 10, false));
                     engineers--;
                 }
                 while (investigators > 0)
                 {
-                    crewRoles.Add((typeof(Investigator), 10, false));
+                    crewRoles.Add(new(typeof(Investigator), 10, false));
                     investigators--;
                 }
                 while (mystics > 0)
                 {
-                    crewRoles.Add((typeof(CultistMystic), 10, false));
+                    crewRoles.Add(new(typeof(CultistMystic), 10, false));
                     mystics--;
                 }
                 while (snitches > 0)
                 {
-                    crewRoles.Add((typeof(CultistSnitch), 10, false));
+                    crewRoles.Add(new(typeof(CultistSnitch), 10, false));
                     snitches--;
                 }
                 while (spies > 0)
                 {
-                    crewRoles.Add((typeof(Spy), 10, false));
+                    crewRoles.Add(new(typeof(Spy), 10, false));
                     spies--;
                 }
                 while (transporters > 0)
                 {
-                    crewRoles.Add((typeof(Transporter), 10, false));
+                    crewRoles.Add(new(typeof(Transporter), 10, false));
                     transporters--;
                 }
                 while (vigilantes > 0)
                 {
-                    crewRoles.Add((typeof(Vigilante), 10, false));
+                    crewRoles.Add(new(typeof(Vigilante), 10, false));
                     vigilantes--;
                 }
                 SortRoles(crewRoles, crewmates.Count - specialRoles.Count);
             }
-            impRole.Add((typeof(Necromancer), 10, true));
-            impRole.Add((typeof(Whisperer), 10, true));
+            impRole.Add(new(typeof(Necromancer), 10, true));
+            impRole.Add(new(typeof(Whisperer), 10, true));
             SortRoles(impRole, 1);
 
-            foreach (var (type, _, _) in specialRoles)
+            foreach (var role in specialRoles)
             {
-                Role.GenRole<Role>(type, crewmates);
+                Role.GenRole<Role>(role.Role, crewmates);
             }
-            foreach (var (type, _, _) in crewRoles)
+            foreach (var role in crewRoles)
             {
-                Role.GenRole<Role>(type, crewmates);
+                Role.GenRole<Role>(role.Role, crewmates);
             }
-            foreach (var (type, _, _) in impRole)
+            foreach (var role in impRole)
             {
-                Role.GenRole<Role>(type, impostors);
+                Role.GenRole<Role>(role.Role, impostors);
             }
 
             foreach (var crewmate in crewmates)
@@ -1283,195 +1281,195 @@ namespace TownOfUs
                 {
                     #region Crewmate Roles
                     if (CustomGameOptions.MayorOn > 0)
-                        CrewmateRoles.Add((typeof(Mayor), CustomGameOptions.MayorOn, true));
+                        CrewmateRoles.Add(new(typeof(Mayor), CustomGameOptions.MayorOn, true));
 
                     if (CustomGameOptions.SheriffOn > 0)
-                        CrewmateRoles.Add((typeof(Sheriff), CustomGameOptions.SheriffOn, false));
+                        CrewmateRoles.Add(new(typeof(Sheriff), CustomGameOptions.SheriffOn, false));
 
                     if (CustomGameOptions.EngineerOn > 0)
-                        CrewmateRoles.Add((typeof(Engineer), CustomGameOptions.EngineerOn, false));
+                        CrewmateRoles.Add(new(typeof(Engineer), CustomGameOptions.EngineerOn, false));
 
                     if (CustomGameOptions.SwapperOn > 0)
-                        CrewmateRoles.Add((typeof(Swapper), CustomGameOptions.SwapperOn, true));
+                        CrewmateRoles.Add(new(typeof(Swapper), CustomGameOptions.SwapperOn, true));
 
                     if (CustomGameOptions.InvestigatorOn > 0)
-                        CrewmateRoles.Add((typeof(Investigator), CustomGameOptions.InvestigatorOn, false));
+                        CrewmateRoles.Add(new(typeof(Investigator), CustomGameOptions.InvestigatorOn, false));
 
                     if (CustomGameOptions.MedicOn > 0)
-                        CrewmateRoles.Add((typeof(Medic), CustomGameOptions.MedicOn, true));
+                        CrewmateRoles.Add(new(typeof(Medic), CustomGameOptions.MedicOn, true));
 
                     if (CustomGameOptions.SeerOn > 0)
-                        CrewmateRoles.Add((typeof(Seer), CustomGameOptions.SeerOn, false));
+                        CrewmateRoles.Add(new(typeof(Seer), CustomGameOptions.SeerOn, false));
 
                     if (CustomGameOptions.SpyOn > 0)
-                        CrewmateRoles.Add((typeof(Spy), CustomGameOptions.SpyOn, false));
+                        CrewmateRoles.Add(new(typeof(Spy), CustomGameOptions.SpyOn, false));
 
                     if (CustomGameOptions.SnitchOn > 0)
-                        CrewmateRoles.Add((typeof(Snitch), CustomGameOptions.SnitchOn, true));
+                        CrewmateRoles.Add(new(typeof(Snitch), CustomGameOptions.SnitchOn, true));
 
                     if (CustomGameOptions.AltruistOn > 0)
-                        CrewmateRoles.Add((typeof(Altruist), CustomGameOptions.AltruistOn, true));
+                        CrewmateRoles.Add(new(typeof(Altruist), CustomGameOptions.AltruistOn, true));
 
                     if (CustomGameOptions.VigilanteOn > 0)
-                        CrewmateRoles.Add((typeof(Vigilante), CustomGameOptions.VigilanteOn, false));
+                        CrewmateRoles.Add(new(typeof(Vigilante), CustomGameOptions.VigilanteOn, false));
 
                     if (CustomGameOptions.VeteranOn > 0)
-                        CrewmateRoles.Add((typeof(Veteran), CustomGameOptions.VeteranOn, false));
+                        CrewmateRoles.Add(new(typeof(Veteran), CustomGameOptions.VeteranOn, false));
 
                     if (CustomGameOptions.TrackerOn > 0)
-                        CrewmateRoles.Add((typeof(Tracker), CustomGameOptions.TrackerOn, false));
+                        CrewmateRoles.Add(new(typeof(Tracker), CustomGameOptions.TrackerOn, false));
 
                     if (CustomGameOptions.TransporterOn > 0)
-                        CrewmateRoles.Add((typeof(Transporter), CustomGameOptions.TransporterOn, false));
+                        CrewmateRoles.Add(new(typeof(Transporter), CustomGameOptions.TransporterOn, false));
 
                     if (CustomGameOptions.MediumOn > 0)
-                        CrewmateRoles.Add((typeof(Medium), CustomGameOptions.MediumOn, false));
+                        CrewmateRoles.Add(new(typeof(Medium), CustomGameOptions.MediumOn, false));
 
                     if (CustomGameOptions.MysticOn > 0)
-                        CrewmateRoles.Add((typeof(Mystic), CustomGameOptions.MysticOn, false));
+                        CrewmateRoles.Add(new(typeof(Mystic), CustomGameOptions.MysticOn, false));
 
                     if (CustomGameOptions.TrapperOn > 0)
-                        CrewmateRoles.Add((typeof(Trapper), CustomGameOptions.TrapperOn, false));
+                        CrewmateRoles.Add(new(typeof(Trapper), CustomGameOptions.TrapperOn, false));
 
                     if (CustomGameOptions.DetectiveOn > 0)
-                        CrewmateRoles.Add((typeof(Detective), CustomGameOptions.DetectiveOn, false));
+                        CrewmateRoles.Add(new(typeof(Detective), CustomGameOptions.DetectiveOn, false));
 
                     if (CustomGameOptions.ImitatorOn > 0)
-                        CrewmateRoles.Add((typeof(Imitator), CustomGameOptions.ImitatorOn, true));
+                        CrewmateRoles.Add(new(typeof(Imitator), CustomGameOptions.ImitatorOn, true));
 
                     if (CustomGameOptions.ProsecutorOn > 0)
-                        CrewmateRoles.Add((typeof(Prosecutor), CustomGameOptions.ProsecutorOn, true));
+                        CrewmateRoles.Add(new(typeof(Prosecutor), CustomGameOptions.ProsecutorOn, true));
 
                     if (CustomGameOptions.OracleOn > 0)
-                        CrewmateRoles.Add((typeof(Oracle), CustomGameOptions.OracleOn, true));
+                        CrewmateRoles.Add(new(typeof(Oracle), CustomGameOptions.OracleOn, true));
 
                     if (CustomGameOptions.AurialOn > 0)
-                        CrewmateRoles.Add((typeof(Aurial), CustomGameOptions.AurialOn, false));
+                        CrewmateRoles.Add(new(typeof(Aurial), CustomGameOptions.AurialOn, false));
                     #endregion
                     #region Neutral Roles
                     if (CustomGameOptions.JesterOn > 0)
-                        NeutralEvilRoles.Add((typeof(Jester), CustomGameOptions.JesterOn, false));
+                        NeutralEvilRoles.Add(new(typeof(Jester), CustomGameOptions.JesterOn, false));
 
                     if (CustomGameOptions.AmnesiacOn > 0)
-                        NeutralBenignRoles.Add((typeof(Amnesiac), CustomGameOptions.AmnesiacOn, false));
+                        NeutralBenignRoles.Add(new(typeof(Amnesiac), CustomGameOptions.AmnesiacOn, false));
 
                     if (CustomGameOptions.ExecutionerOn > 0)
-                        NeutralEvilRoles.Add((typeof(Executioner), CustomGameOptions.ExecutionerOn, false));
+                        NeutralEvilRoles.Add(new(typeof(Executioner), CustomGameOptions.ExecutionerOn, false));
 
                     if (CustomGameOptions.DoomsayerOn > 0)
-                        NeutralEvilRoles.Add((typeof(Doomsayer), CustomGameOptions.DoomsayerOn, false));
+                        NeutralEvilRoles.Add(new(typeof(Doomsayer), CustomGameOptions.DoomsayerOn, false));
 
                     if (CustomGameOptions.SurvivorOn > 0)
-                        NeutralBenignRoles.Add((typeof(Survivor), CustomGameOptions.SurvivorOn, false));
+                        NeutralBenignRoles.Add(new(typeof(Survivor), CustomGameOptions.SurvivorOn, false));
 
                     if (CustomGameOptions.GuardianAngelOn > 0)
-                        NeutralBenignRoles.Add((typeof(GuardianAngel), CustomGameOptions.GuardianAngelOn, false));
+                        NeutralBenignRoles.Add(new(typeof(GuardianAngel), CustomGameOptions.GuardianAngelOn, false));
 
                     if (CustomGameOptions.GlitchOn > 0)
-                        NeutralKillingRoles.Add((typeof(Glitch), CustomGameOptions.GlitchOn, true));
+                        NeutralKillingRoles.Add(new(typeof(Glitch), CustomGameOptions.GlitchOn, true));
 
                     if (CustomGameOptions.ArsonistOn > 0)
-                        NeutralKillingRoles.Add((typeof(Arsonist), CustomGameOptions.ArsonistOn, true));
+                        NeutralKillingRoles.Add(new(typeof(Arsonist), CustomGameOptions.ArsonistOn, true));
 
                     if (CustomGameOptions.PlaguebearerOn > 0)
-                        NeutralKillingRoles.Add((typeof(Plaguebearer), CustomGameOptions.PlaguebearerOn, true));
+                        NeutralKillingRoles.Add(new(typeof(Plaguebearer), CustomGameOptions.PlaguebearerOn, true));
 
                     if (CustomGameOptions.WerewolfOn > 0)
-                        NeutralKillingRoles.Add((typeof(Werewolf), CustomGameOptions.WerewolfOn, true));
+                        NeutralKillingRoles.Add(new(typeof(Werewolf), CustomGameOptions.WerewolfOn, true));
 
                     if (CustomGameOptions.GameMode == GameMode.Classic && CustomGameOptions.VampireOn > 0)
-                        NeutralKillingRoles.Add((typeof(Vampire), CustomGameOptions.VampireOn, true));
+                        NeutralKillingRoles.Add(new(typeof(Vampire), CustomGameOptions.VampireOn, true));
 
                     if ((CheckJugg() || CustomGameOptions.GameMode == GameMode.AllAny) && CustomGameOptions.HiddenRoles)
-                        NeutralKillingRoles.Add((typeof(Juggernaut), 100, true));
+                        NeutralKillingRoles.Add(new(typeof(Juggernaut), 100, true));
                     #endregion
                     #region Impostor Roles
                     if (CustomGameOptions.UndertakerOn > 0)
-                        ImpostorRoles.Add((typeof(Undertaker), CustomGameOptions.UndertakerOn, true));
+                        ImpostorRoles.Add(new(typeof(Undertaker), CustomGameOptions.UndertakerOn, true));
 
                     if (CustomGameOptions.MorphlingOn > 0)
-                        ImpostorRoles.Add((typeof(Morphling), CustomGameOptions.MorphlingOn, false));
+                        ImpostorRoles.Add(new(typeof(Morphling), CustomGameOptions.MorphlingOn, false));
 
                     if (CustomGameOptions.BlackmailerOn > 0)
-                        ImpostorRoles.Add((typeof(Blackmailer), CustomGameOptions.BlackmailerOn, true));
+                        ImpostorRoles.Add(new(typeof(Blackmailer), CustomGameOptions.BlackmailerOn, true));
 
                     if (CustomGameOptions.MinerOn > 0)
-                        ImpostorRoles.Add((typeof(Miner), CustomGameOptions.MinerOn, true));
+                        ImpostorRoles.Add(new(typeof(Miner), CustomGameOptions.MinerOn, true));
 
                     if (CustomGameOptions.SwooperOn > 0)
-                        ImpostorRoles.Add((typeof(Swooper), CustomGameOptions.SwooperOn, false));
+                        ImpostorRoles.Add(new(typeof(Swooper), CustomGameOptions.SwooperOn, false));
 
                     if (CustomGameOptions.JanitorOn > 0)
-                        ImpostorRoles.Add((typeof(Janitor), CustomGameOptions.JanitorOn, false));
+                        ImpostorRoles.Add(new(typeof(Janitor), CustomGameOptions.JanitorOn, false));
 
                     if (CustomGameOptions.GrenadierOn > 0)
-                        ImpostorRoles.Add((typeof(Grenadier), CustomGameOptions.GrenadierOn, true));
+                        ImpostorRoles.Add(new(typeof(Grenadier), CustomGameOptions.GrenadierOn, true));
 
                     if (CustomGameOptions.EscapistOn > 0)
-                        ImpostorRoles.Add((typeof(Escapist), CustomGameOptions.EscapistOn, false));
+                        ImpostorRoles.Add(new(typeof(Escapist), CustomGameOptions.EscapistOn, false));
 
                     if (CustomGameOptions.BomberOn > 0)
-                        ImpostorRoles.Add((typeof(Bomber), CustomGameOptions.BomberOn, true));
+                        ImpostorRoles.Add(new(typeof(Bomber), CustomGameOptions.BomberOn, true));
 
                     if (CustomGameOptions.WarlockOn > 0)
-                        ImpostorRoles.Add((typeof(Warlock), CustomGameOptions.WarlockOn, false));
+                        ImpostorRoles.Add(new(typeof(Warlock), CustomGameOptions.WarlockOn, false));
 
                     if (CustomGameOptions.VenererOn > 0)
-                        ImpostorRoles.Add((typeof(Venerer), CustomGameOptions.VenererOn, true));
+                        ImpostorRoles.Add(new(typeof(Venerer), CustomGameOptions.VenererOn, true));
                     #endregion
                     #region Crewmate Modifiers
                     if (Check(CustomGameOptions.TorchOn))
-                        CrewmateModifiers.Add((typeof(Torch), CustomGameOptions.TorchOn));
+                        CrewmateModifiers.Add(new(typeof(Torch), CustomGameOptions.TorchOn));
 
                     if (Check(CustomGameOptions.DiseasedOn))
-                        CrewmateModifiers.Add((typeof(Diseased), CustomGameOptions.DiseasedOn));
+                        CrewmateModifiers.Add(new(typeof(Diseased), CustomGameOptions.DiseasedOn));
 
                     if (Check(CustomGameOptions.BaitOn))
-                        CrewmateModifiers.Add((typeof(Bait), CustomGameOptions.BaitOn));
+                        CrewmateModifiers.Add(new(typeof(Bait), CustomGameOptions.BaitOn));
 
                     if (Check(CustomGameOptions.AftermathOn))
-                        CrewmateModifiers.Add((typeof(Aftermath), CustomGameOptions.AftermathOn));
+                        CrewmateModifiers.Add(new(typeof(Aftermath), CustomGameOptions.AftermathOn));
 
                     if (Check(CustomGameOptions.MultitaskerOn))
-                        CrewmateModifiers.Add((typeof(Multitasker), CustomGameOptions.MultitaskerOn));
+                        CrewmateModifiers.Add(new(typeof(Multitasker), CustomGameOptions.MultitaskerOn));
 
                     if (Check(CustomGameOptions.FrostyOn))
-                        CrewmateModifiers.Add((typeof(Frosty), CustomGameOptions.FrostyOn));
+                        CrewmateModifiers.Add(new(typeof(Frosty), CustomGameOptions.FrostyOn));
                     #endregion
                     #region Global Modifiers
                     if (Check(CustomGameOptions.TiebreakerOn))
-                        GlobalModifiers.Add((typeof(Tiebreaker), CustomGameOptions.TiebreakerOn));
+                        GlobalModifiers.Add(new(typeof(Tiebreaker), CustomGameOptions.TiebreakerOn));
 
                     if (Check(CustomGameOptions.FlashOn))
-                        GlobalModifiers.Add((typeof(Flash), CustomGameOptions.FlashOn));
+                        GlobalModifiers.Add(new(typeof(Flash), CustomGameOptions.FlashOn));
 
                     if (Check(CustomGameOptions.GiantOn))
-                        GlobalModifiers.Add((typeof(Giant), CustomGameOptions.GiantOn));
+                        GlobalModifiers.Add(new(typeof(Giant), CustomGameOptions.GiantOn));
 
                     if (Check(CustomGameOptions.ButtonBarryOn))
-                        ButtonModifiers.Add((typeof(ButtonBarry), CustomGameOptions.ButtonBarryOn));
+                        ButtonModifiers.Add(new(typeof(ButtonBarry), CustomGameOptions.ButtonBarryOn));
 
                     if (Check(CustomGameOptions.LoversOn))
-                        GlobalModifiers.Add((typeof(Lover), CustomGameOptions.LoversOn));
+                        GlobalModifiers.Add(new(typeof(Lover), CustomGameOptions.LoversOn));
 
                     if (Check(CustomGameOptions.SleuthOn))
-                        GlobalModifiers.Add((typeof(Sleuth), CustomGameOptions.SleuthOn));
+                        GlobalModifiers.Add(new(typeof(Sleuth), CustomGameOptions.SleuthOn));
 
                     if (Check(CustomGameOptions.RadarOn))
-                        GlobalModifiers.Add((typeof(Radar), CustomGameOptions.RadarOn));
+                        GlobalModifiers.Add(new(typeof(Radar), CustomGameOptions.RadarOn));
                     #endregion
                     #region Impostor Modifiers
                     if (Check(CustomGameOptions.DisperserOn) && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 4 && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 5)
-                        ImpostorModifiers.Add((typeof(Disperser), CustomGameOptions.DisperserOn));
+                        ImpostorModifiers.Add(new(typeof(Disperser), CustomGameOptions.DisperserOn));
 
                     if (Check(CustomGameOptions.DoubleShotOn))
-                        AssassinModifiers.Add((typeof(DoubleShot), CustomGameOptions.DoubleShotOn));
+                        AssassinModifiers.Add(new(typeof(DoubleShot), CustomGameOptions.DoubleShotOn));
 
                     if (CustomGameOptions.UnderdogOn > 0)
-                        ImpostorModifiers.Add((typeof(Underdog), CustomGameOptions.UnderdogOn));
+                        ImpostorModifiers.Add(new(typeof(Underdog), CustomGameOptions.UnderdogOn));
                     #endregion
                     #region Assassin Ability
-                    AssassinAbility.Add((typeof(Assassin), CustomRPC.SetAssassin, 100));
+                    AssassinAbility.Add(new(typeof(Assassin), CustomRPC.SetAssassin, 100));
                     #endregion
                 }
 

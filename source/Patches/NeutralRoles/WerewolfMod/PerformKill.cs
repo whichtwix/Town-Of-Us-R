@@ -38,25 +38,25 @@ namespace TownOfUs.NeutralRoles.WerewolfMod
             if (!flag3) return false;
 
             var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer, true);
-            if (interact.abilityUsed) return false;
-            else if (interact.fullCooldownReset)
+            if (interact.AbilityUsed) return false;
+            else if (interact.FullCooldownReset)
             {
                 role.LastKilled = DateTime.UtcNow;
                 return false;
             }
-            else if (interact.gaReset)
+            else if (interact.GaReset)
             {
                 role.LastKilled = DateTime.UtcNow;
                 role.LastKilled = role.LastKilled.AddSeconds(CustomGameOptions.ProtectKCReset - CustomGameOptions.RampageKillCd);
                 return false;
             }
-            else if (interact.survReset)
+            else if (interact.SurvReset)
             {
                 role.LastKilled = DateTime.UtcNow;
                 role.LastKilled = role.LastKilled.AddSeconds(CustomGameOptions.VestKCReset - CustomGameOptions.RampageKillCd);
                 return false;
             }
-            else if (interact.zeroSecReset) return false;
+            else if (interact.ZeroSecReset) return false;
             return false;
         }
     }
