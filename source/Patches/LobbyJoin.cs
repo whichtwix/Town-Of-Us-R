@@ -6,7 +6,7 @@ namespace TownOfUs.Patches
 {
     [HarmonyPatch]
 
-    public class LobbyJoin
+    public sealed class LobbyJoin
     {
         static int GameId;
 
@@ -27,8 +27,8 @@ namespace TownOfUs.Patches
         {
             LobbyText = new("lobbycode");
             var comp = LobbyText.AddComponent<TMPro.TextMeshPro>();
-            comp.fontSize = 5;
-            LobbyText.transform.localPosition = new(10.4182f, -3.7f, 0);
+            comp.fontSize = 2.5f;
+            LobbyText.transform.localPosition = new(10.3f, -3.9f, 0);
             LobbyText.SetActive(true);
         }
 
@@ -45,7 +45,8 @@ namespace TownOfUs.Patches
             }
             if (LobbyText && LobbyText.GetComponent<TMPro.TextMeshPro>()) 
             {
-                LobbyText.GetComponent<TMPro.TextMeshPro>().text = $"Prev Lobby: {GameCode.IntToGameName(GameId)}";
+                LobbyText.GetComponent<TMPro.TextMeshPro>().text = 
+                    $"Prev Lobby: {GameCode.IntToGameName(GameId)}\nClick Tab key to attempt joining";
             }
         }
     }
