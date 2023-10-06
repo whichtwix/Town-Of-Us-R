@@ -161,8 +161,6 @@ namespace TownOfUs
         public static bool ImpostorSeeRoles => Generate.ImpostorSeeRoles.Get();
         public static bool DeadSeeRoles => Generate.DeadSeeRoles.Get();
 
-        public static bool DisableLevels => Generate.DisableLevels.Get();
-        public static bool WhiteNameplates => Generate.WhiteNameplates.Get();
         public static bool Locationreports => Generate.Locationreports.Get();
 
         public static bool HiddenRoles => Generate.HiddenRoles.Get();
