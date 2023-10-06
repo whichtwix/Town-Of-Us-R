@@ -781,8 +781,6 @@ namespace TownOfUs.CustomOption
             ParallelMedScans = new CustomToggleOption(num++, MultiMenu.main, "Parallel Medbay Scans", false);
             SkipButtonDisable = new CustomStringOption(num++, MultiMenu.main, "Disable Meeting Skip Button", new[] { "No", "Emergency", "Always" });
 
-            DisableLevels = new CustomToggleOption(num++, MultiMenu.main, "Disable Level Icons", false);
-            WhiteNameplates = new CustomToggleOption(num++, MultiMenu.main, "Disable Player Nameplates", false);
             Locationreports = new CustomToggleOption(num++, MultiMenu.main, "Locations of body reports are displayed in chat", false);
 
             HiddenRoles = new CustomToggleOption(num++, MultiMenu.main, "Enable Hidden Roles", true);
