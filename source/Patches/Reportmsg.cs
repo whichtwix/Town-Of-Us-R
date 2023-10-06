@@ -34,10 +34,7 @@ namespace TownOfUs
                 if (target != null && CustomGameOptions.Locationreports)
                 {
                     DestroyableSingleton<HudManager>.Instance.Chat.AddChat(PlayerControl.LocalPlayer, report);
-                    var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                        (byte)CustomRPC.Sendchat, SendOption.Reliable, -1);
-                    writer.Write(report);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    Utils.Rpc(CustomRPC.SendChat, report);
                 }
                 
             }
