@@ -72,6 +72,9 @@ namespace TownOfUs
         Bless,
         Camouflage,
         SnitchCultistReveal,
+        HunterStalk,
+        HunterCatchPlayer,
+        Retribution,
 
         BypassKill,
         BypassMultiKill,
@@ -93,6 +96,8 @@ namespace TownOfUs
 
         SubmergedFixOxygen,
 
-        Sendchat
+        Sendchat,
+
+        ContentAddition
     }
 }
