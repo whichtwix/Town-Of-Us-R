@@ -1,6 +1,5 @@
 ﻿using System;
 using HarmonyLib;
-using Hazel;
 using TownOfUs.CrewmateRoles.MedicMod;
 using TownOfUs.Extensions;
 using TownOfUs.Roles;
@@ -47,6 +46,11 @@ namespace TownOfUs.CrewmateRoles.SheriffMod
             if (role.ClosestPlayer.IsInfected() || role.Player.IsInfected())
             {
                 foreach (var pb in Role.GetRoles(RoleEnum.Plaguebearer)) ((Plaguebearer)pb).RpcSpreadInfection(role.ClosestPlayer, role.Player);
+            }
+            foreach (Role hunterRole in Role.GetRoles(RoleEnum.Hunter))
+            {
+                Hunter hunter = (Hunter)hunterRole;
+                hunter.CatchPlayer(role.Player);
             }
             if (role.ClosestPlayer.IsOnAlert())
             {

@@ -366,6 +366,16 @@ namespace TownOfUs
                 data.FullCooldownReset = true;
             }
 
+            if (data.AbilityUsed)
+            {
+                foreach (Role role in Role.GetRoles(RoleEnum.Hunter))
+                {
+                    Hunter hunter = (Hunter)role;
+                    hunter.CatchPlayer(player);
+                }
+            }
+
+
             return data;
         }
 
@@ -507,6 +517,19 @@ namespace TownOfUs
                     else if (killer != target) veteran.IncorrectKills += 1;
                 }
 
+                if (killer.Is(RoleEnum.Hunter))
+                {
+                    var hunter = Role.GetRole<Hunter>(killer);
+                    if (target.Is(RoleEnum.Doomsayer) || target.Is(Faction.Impostors) || target.Is(Faction.NeutralKilling))
+                    {
+                        hunter.CorrectKills += 1;
+                    }
+                    else
+                    {
+                        hunter.IncorrectKills += 1;
+                    }
+                }
+
                 target.gameObject.layer = LayerMask.NameToLayer("Ghost");
                 target.Visible = false;
 
@@ -519,6 +542,31 @@ namespace TownOfUs
                 {
                     var detective = Role.GetRole<Detective>(PlayerControl.LocalPlayer);
                     detective.LastKiller = killer;
+                }
+
+                if (!CustomGameOptions.GhostsDoTasks)
+                {
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        var modded_criteria = Role.ShipStatus_KMPKPPGPNIH.Prefix((LogicGameFlowNormal)GameManager.Instance.LogicFlow);
+                        if (modded_criteria) GameManager.Instance.LogicFlow.CheckEndCriteria();
+                        if (GameManager.Instance.ShouldCheckForGameEnd && target.myTasks.ToArray().Count(x => !x.IsComplete) + GameData.Instance.CompletedTasks < GameData.Instance.TotalTasks)
+                        {
+                            // Host should only process tasks being removed if the game wouldn't have ended otherwise.
+                            for (var i = 0; i < target.myTasks.Count; i++)
+                            {
+                                var playerTask = target.myTasks.ToArray()[i];
+                                GameData.Instance.CompleteTask(target, playerTask.Id);
+                            }
+                        }
+                    } else
+                    {
+                        for (var i = 0; i < target.myTasks.Count; i++)
+                        {
+                            var playerTask = target.myTasks.ToArray()[i];
+                            GameData.Instance.CompleteTask(target, playerTask.Id);
+                        }
+                    }
                 }
 
                 if (target.AmOwner)
@@ -547,11 +595,14 @@ namespace TownOfUs
                     target.RpcSetScanner(false);
                     var importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
                     importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
-                    if (!GameOptionsManager.Instance.currentNormalGameOptions.GhostsDoTasks)
+                    if (!CustomGameOptions.GhostsDoTasks)//&& target.myTasks.ToArray().Count(x=>!x.IsComplete)+GameData.Instance.CompletedTasks < GameData.Instance.TotalTasks
                     {
+                        //GameManager.Instance.LogicFlow.CheckEndCriteria();
                         for (var i = 0; i < target.myTasks.Count; i++)
                         {
                             var playerTask = target.myTasks.ToArray()[i];
+                            GameData.Instance.CompleteTask(target, playerTask.Id);
+                            playerTask.Complete();
                             playerTask.OnRemove();
                             Object.Destroy(playerTask.gameObject);
                         }
@@ -947,7 +998,7 @@ namespace TownOfUs
                         GameOptionsManager.Instance.currentNormalGameOptions.MapId == 4))
                         normalPlayerTask.taskStep = 1;
                     if (updateArrow)
-                        normalPlayerTask.UpdateArrow();
+                        normalPlayerTask.UpdateArrowAndLocation();
 
                     var taskInfo = player.Data.FindTaskById(task.Id);
                     taskInfo.Complete = false;
@@ -1122,6 +1173,11 @@ namespace TownOfUs
             {
                 var sheriff = Role.GetRole<Sheriff>(PlayerControl.LocalPlayer);
                 sheriff.LastKilled = DateTime.UtcNow;
+            }
+            if (PlayerControl.LocalPlayer.Is(RoleEnum.Hunter))
+            {
+                var hunter = Role.GetRole<Hunter>(PlayerControl.LocalPlayer);
+                hunter.LastKilled = DateTime.UtcNow;
             }
             if (PlayerControl.LocalPlayer.Is(RoleEnum.Tracker))
             {

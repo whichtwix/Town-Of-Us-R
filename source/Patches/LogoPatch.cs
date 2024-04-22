@@ -1,13 +1,14 @@
 using HarmonyLib;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace TownOfUs {
+namespace TownOfUs
+{
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public static class LogoPatch
     {
         private static Sprite Sprite => TownOfUs.ToUBanner;
-        static void Postfix(PingTracker __instance) {
+        static void Postfix(PingTracker __instance)
+        {
             var touLogo = new GameObject("bannerLogo_TownOfUs");
             touLogo.transform.localScale = new Vector3(0.8f, 0.8f, 1f);
 
@@ -33,8 +34,6 @@ namespace TownOfUs {
             scaler.aspectPosition = position;
 
             touLogo.transform.SetParent(GameObject.Find("RightPanel").transform);
-
-
         }
     }
 }

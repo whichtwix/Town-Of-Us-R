@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using TMPro;
-using AmongUs.GameOptions;
 
 namespace TownOfUs.Roles
 {
@@ -57,7 +56,7 @@ namespace TownOfUs.Roles
             LastVested = DateTime.UtcNow;
         }
 
-        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__36 __instance)
+        protected override void IntroPrefix(IntroCutscene._ShowTeam_d__38 __instance)
         {
             var survTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             survTeam.Add(PlayerControl.LocalPlayer);

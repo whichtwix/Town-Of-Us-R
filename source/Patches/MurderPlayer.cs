@@ -1,5 +1,4 @@
 using HarmonyLib;
-using Hazel;
 
 namespace TownOfUs.Patches
 {
@@ -20,8 +19,9 @@ namespace TownOfUs.Patches
         [HarmonyPriority(Priority.Last)]
         public class DoClickPatch
         {
-            public static bool Prefix(KillButton __instance)
+            public static bool Prefix(KillButton __instance, ref bool __runOriginal)
             {
+                if (!__runOriginal) return false;
                 if (__instance.isActiveAndEnabled && __instance.currentTarget && !__instance.isCoolingDown && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.CanMove)
                 {
                     if (AmongUsClient.Instance.AmHost)
