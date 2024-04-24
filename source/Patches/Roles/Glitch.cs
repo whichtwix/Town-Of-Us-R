@@ -454,7 +454,8 @@ namespace TownOfUs.Roles
                         $"{__instance.ColorString}Mimicking {mimicPlayer.Data.PlayerName} ({CustomGameOptions.MimicDuration - Math.Round(totalMimickTime)}s)</color>";
                     if (totalMimickTime > CustomGameOptions.MimicDuration ||
                         PlayerControl.LocalPlayer.Data.IsDead ||
-                        AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Ended)
+                        AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Ended
+                        || Utils.HasTask(TaskTypes.MushroomMixupSabotage))
                     {
                         PlayerControl.LocalPlayer.myTasks.Remove(mimicText);
                         //System.Console.WriteLine("Unsetting mimic");
