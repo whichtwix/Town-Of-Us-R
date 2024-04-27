@@ -629,7 +629,8 @@ namespace TownOfUs.Roles
 
                 __gInstance.MimicButton.gameObject.SetActive((__instance.UseButton.isActiveAndEnabled || __instance.PetButton.isActiveAndEnabled)
                     && !MeetingHud.Instance && !__gInstance.Player.Data.IsDead
-                    && AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started);
+                    && AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started
+                    && !Utils.HasTask(TaskTypes.MushroomMixupSabotage));
                 if (__instance.UseButton != null)
                 {
                     __gInstance.MimicButton.transform.position = new Vector3(
