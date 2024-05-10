@@ -26,7 +26,6 @@ namespace TownOfUs.Patches
                     if (player.TargetPlayerId != reportedBody.PlayerId)
                     {
                         player.Megaphone.sprite = GameManager.Instance.DeadBodyPrefab.bodyRenderers[0].sprite;
-                        Utils.PlayerById(player.TargetPlayerId).SetPlayerMaterialColors(player.Megaphone);
                         player.Megaphone.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
                         player.Megaphone.transform.localPosition -= new Vector3(0.2f, 0, 0);
                     }
