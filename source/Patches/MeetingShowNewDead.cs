@@ -14,6 +14,8 @@ namespace TownOfUs.Patches
 
         public static void Postfix(MeetingHud __instance, ref GameData.PlayerInfo reportedBody, ref Il2CppReferenceArray<GameData.PlayerInfo> deadBodies)
         {
+            if (!CustomGameOptions.IndicateRecentDead) return;
+
             foreach (var player in __instance.playerStates)
             {
                 if (deadBodies.Any(x => x.PlayerId == player.TargetPlayerId))
