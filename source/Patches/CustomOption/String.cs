@@ -12,7 +12,7 @@ namespace TownOfUs.CustomOption
             Format = value => Values[(int)value];
         }
 
-        protected string[] Values { get; set; }
+        internal string[] Values { get; set; }
 
         protected internal int Get()
         {

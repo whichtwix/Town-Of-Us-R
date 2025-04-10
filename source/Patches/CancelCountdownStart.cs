@@ -57,6 +57,30 @@ namespace TownOfUs.Patches
             {
                 startTexttransform.localPosition = new Vector3(startTexttransform.localPosition.x, 2f, startTexttransform.localPosition.z);
             }
+
+            if (Input.GetKeyDown(KeyCode.Tab) && !PlayerCustomizationMenu.Instance)
+            {
+                foreach (var option in CustomOption.CustomOption.AllOptions)
+                {
+                    if (option.Type is CustomOptionType.Header or CustomOptionType.Button) continue;
+
+                    if (option is CustomToggleOption toggle)
+                    {
+                        toggle.Set(System.Random.Shared.Next(0, 2) == 0);
+                    }
+                    else if (option is CustomNumberOption number)
+                    {
+                        number.Set(Random.RandomRange(number.Min - 0.001f, number.Max + 0.001f));
+                    }
+                    else if (option is CustomStringOption str)
+                    {
+                        var values = str.Values;
+                        str.Set(System.Random.Shared.Next(0, values.Length));
+                    }
+
+                    Coroutines.Start(Rpc.SendRpc(option));
+                }
+            }
         }
 
         [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.ResetStartState))]

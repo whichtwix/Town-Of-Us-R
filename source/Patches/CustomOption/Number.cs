@@ -13,8 +13,8 @@ namespace TownOfUs.CustomOption
             Increment = increment;
         }
 
-        protected float Min { get; set; }
-        protected float Max { get; set; }
+        internal float Min { get; set; }
+        internal float Max { get; set; }
         protected float Increment { get; set; }
 
         protected internal float Get()
